@@ -6,7 +6,7 @@ import com.epam.esm.exception.ResourceIsAlreadyExistException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.*;
 import com.epam.esm.model.converter.impl.GiftCertificateConverterImpl;
-import com.epam.esm.model.querybuilder.GiftCertificateSearchBuilder;
+import com.epam.esm.querybuilder.GiftCertificateSearchBuilder;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.ErrorMessageReader;

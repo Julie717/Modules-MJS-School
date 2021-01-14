@@ -1,6 +1,6 @@
-package com.epam.esm.model.querybuilder.impl;
+package com.epam.esm.querybuilder.impl;
 
-import com.epam.esm.model.querybuilder.PartQueryBuilder;
+import com.epam.esm.querybuilder.PartQueryBuilder;
 
 public class PartQuerySearchBuilder implements PartQueryBuilder {
     private static final String START_LIKE = " LIKE \'%";

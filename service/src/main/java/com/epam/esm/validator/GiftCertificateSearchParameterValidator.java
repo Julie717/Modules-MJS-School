@@ -1,6 +1,6 @@
 package com.epam.esm.validator;
 
-import com.epam.esm.model.querybuilder.GiftCertificateSearchParameterName;
+import com.epam.esm.querybuilder.GiftCertificateSearchParameterName;
 
 import java.util.Arrays;
 import java.util.Map;

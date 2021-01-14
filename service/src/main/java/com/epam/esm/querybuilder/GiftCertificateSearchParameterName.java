@@ -1,8 +1,8 @@
-package com.epam.esm.model.querybuilder;
+package com.epam.esm.querybuilder;
 
 import com.epam.esm.dao.ColumnName;
-import com.epam.esm.model.querybuilder.impl.PartQuerySearchBuilder;
-import com.epam.esm.model.querybuilder.impl.PartQuerySortBuilder;
+import com.epam.esm.querybuilder.impl.PartQuerySearchBuilder;
+import com.epam.esm.querybuilder.impl.PartQuerySortBuilder;
 import com.epam.esm.validator.CommonValidator;
 import com.epam.esm.validator.impl.GiftCertificateDescriptionValidator;
 import com.epam.esm.validator.impl.GiftCertificateNameValidator;

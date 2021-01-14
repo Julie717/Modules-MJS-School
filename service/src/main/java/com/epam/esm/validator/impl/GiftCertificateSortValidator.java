@@ -1,6 +1,6 @@
 package com.epam.esm.validator.impl;
 
-import com.epam.esm.model.querybuilder.GiftCertificateSortParameterName;
+import com.epam.esm.querybuilder.GiftCertificateSortParameterName;
 import com.epam.esm.validator.CommonValidator;
 
 import java.util.Arrays;

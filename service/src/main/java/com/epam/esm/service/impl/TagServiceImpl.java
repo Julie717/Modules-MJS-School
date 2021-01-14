@@ -6,7 +6,7 @@ import com.epam.esm.exception.ResourceIsAlreadyExistException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.TagDto;
 import com.epam.esm.model.converter.impl.TagConverterImpl;
-import com.epam.esm.model.querybuilder.TagSearchBuilder;
+import com.epam.esm.querybuilder.TagSearchBuilder;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.ErrorMessageReader;
 import org.springframework.beans.factory.annotation.Autowired;

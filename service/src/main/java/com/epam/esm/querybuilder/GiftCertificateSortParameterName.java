@@ -1,4 +1,4 @@
-package com.epam.esm.model.querybuilder;
+package com.epam.esm.querybuilder;
 
 import com.epam.esm.dao.ColumnName;
 import lombok.AccessLevel;

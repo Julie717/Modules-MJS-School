@@ -1,7 +1,7 @@
-package com.epam.esm.model.querybuilder.impl;
+package com.epam.esm.querybuilder.impl;
 
-import com.epam.esm.model.querybuilder.GiftCertificateSortParameterName;
-import com.epam.esm.model.querybuilder.PartQueryBuilder;
+import com.epam.esm.querybuilder.GiftCertificateSortParameterName;
+import com.epam.esm.querybuilder.PartQueryBuilder;
 
 public class PartQuerySortBuilder implements PartQueryBuilder {
     private final static String COMMA = ",";
