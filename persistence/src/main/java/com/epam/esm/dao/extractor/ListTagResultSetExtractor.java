@@ -1,6 +1,5 @@
-package com.epam.esm.extractor;
+package com.epam.esm.dao.extractor;
 
-import com.epam.esm.dao.ColumnName;
 import com.epam.esm.model.Tag;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -16,9 +15,7 @@ public class ListTagResultSetExtractor implements ResultSetExtractor<List<Tag>> 
         List<Tag> tags = new ArrayList<>();
         Tag tag;
         while (rs.next()) {
-            tag = new Tag();
-            tag.setIdTag(rs.getInt(ColumnName.TAG_ID));
-            tag.setName(rs.getString(ColumnName.TAG_NAME));
+            tag = TagResultSetExtractor.extractOneTag(rs);
             tags.add(tag);
         }
         return tags;

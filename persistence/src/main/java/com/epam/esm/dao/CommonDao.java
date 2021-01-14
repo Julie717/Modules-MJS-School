@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommonDao<T> {
-    boolean add(T entity);
+    T add(T entity);
 
     boolean deleteById(int id);
 

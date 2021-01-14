@@ -1,18 +1,17 @@
 package com.epam.esm.exception;
 
-public class ResourceIsAlreadyExistException extends Exception {
-    public ResourceIsAlreadyExistException() {
-    }
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
-    public ResourceIsAlreadyExistException(String message) {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ResourceIsAlreadyExistException extends RuntimeException {
+    String nameResource;
+
+    public ResourceIsAlreadyExistException(String message, String nameResource) {
         super(message);
-    }
-
-    public ResourceIsAlreadyExistException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public ResourceIsAlreadyExistException(Throwable cause) {
-        super(cause);
+        this.nameResource = nameResource;
     }
 }

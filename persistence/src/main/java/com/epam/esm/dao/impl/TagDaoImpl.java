@@ -3,11 +3,15 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.SqlQuery;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.model.Tag;
-import com.epam.esm.extractor.ListTagResultSetExtractor;
-import com.epam.esm.extractor.TagResultSetExtractor;
+import com.epam.esm.dao.extractor.ListTagResultSetExtractor;
+import com.epam.esm.dao.extractor.TagResultSetExtractor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,13 +29,20 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public List<Tag> findTagByPartName(String nameTag) {
-        return jdbcTemplate.query(SqlQuery.SELECT_TAG_BY_PART_NAME, new ListTagResultSetExtractor(), nameTag);
-    }
-
-    @Override
-    public boolean add(Tag entity) {
-        return jdbcTemplate.update(SqlQuery.ADD_TAG, entity.getName()) > 0;
+    public Tag add(Tag entity) {
+        KeyHolder key = new GeneratedKeyHolder();
+        PreparedStatementCreator preparedStatementCreator = connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(SqlQuery.ADD_TAG,
+                    Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, entity.getNameTag());
+            return preparedStatement;
+        };
+        jdbcTemplate.update(preparedStatementCreator, key);
+        Number id = key.getKey();
+        if (id != null) {
+            entity.setIdTag(id.intValue());
+        }
+        return entity;
     }
 
     @Override
@@ -47,5 +58,11 @@ public class TagDaoImpl implements TagDao {
     @Override
     public List<Tag> findAll() {
         return jdbcTemplate.query(SqlQuery.SELECT_ALL_TAG, new ListTagResultSetExtractor());
+    }
+
+    @Override
+    public List<Tag> findTagByNameInRange(String tagRangeNames) {
+        return jdbcTemplate.query(SqlQuery.SELECT_TAG_BY_NAME_IN_RANGE + tagRangeNames,
+                new ListTagResultSetExtractor());
     }
 }

@@ -1,4 +1,4 @@
-package com.epam.esm.extractor;
+package com.epam.esm.dao.extractor;
 
 import com.epam.esm.dao.ColumnName;
 import com.epam.esm.model.Tag;
@@ -13,10 +13,15 @@ public class TagResultSetExtractor implements ResultSetExtractor<Tag> {
     public Tag extractData(ResultSet rs) throws SQLException, DataAccessException {
         Tag tag = null;
         if (rs.next()) {
-            tag = new Tag();
-            tag.setIdTag(rs.getInt(ColumnName.TAG_ID));
-            tag.setName(rs.getString(ColumnName.TAG_NAME));
+            tag = extractOneTag(rs);
         }
+        return tag;
+    }
+
+    public static Tag extractOneTag(ResultSet rs) throws SQLException, DataAccessException {
+        Tag tag = new Tag();
+        tag.setIdTag(rs.getInt(ColumnName.TAG_ID));
+        tag.setNameTag(rs.getString(ColumnName.TAG_NAME));
         return tag;
     }
 }

@@ -5,51 +5,64 @@ import com.epam.esm.model.Tag;
 import com.epam.esm.exception.ResourceIsAlreadyExistException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.TagDto;
+import com.epam.esm.model.converter.impl.TagConverterImpl;
+import com.epam.esm.model.querybuilder.TagSearchBuilder;
 import com.epam.esm.service.TagService;
+import com.epam.esm.util.ErrorMessageReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class TagServiceImpl implements TagService {
     private final TagDao tagDao;
+    private final TagConverterImpl tagConverter;
 
     @Autowired
-    public TagServiceImpl(TagDao tagDao) {
+
+    public TagServiceImpl(TagDao tagDao, TagConverterImpl tagConverter) {
         this.tagDao = tagDao;
+        this.tagConverter = tagConverter;
     }
 
     @Override
-    public List<Tag> findAll() {
-        return tagDao.findAll();
+    public List<TagDto> findAll() {
+        List<Tag> tags = tagDao.findAll();
+        List<TagDto> tagsDto = new ArrayList<>();
+        tags.forEach(t -> tagsDto.add(tagConverter.convertTo(t)));
+        return tagsDto;
     }
 
     @Override
-    public Tag findById(int idTag) throws ResourceNotFoundException {
-        return tagDao.findById(idTag)
-                .orElseThrow(() -> new ResourceNotFoundException("Tag with id = " + idTag + " isn't found"));
+    public TagDto findById(int idTag) {
+        Tag tag = tagDao.findById(idTag)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessageReader.TAG_NOT_FOUND, idTag));
+        return tagConverter.convertTo(tag);
     }
 
     @Override
-    public boolean add(TagDto tagDto) throws ResourceIsAlreadyExistException {
-        boolean isExisted = tagDao.findTagByName(tagDto.getName()).isPresent();
-        if (isExisted) {
-            throw new ResourceIsAlreadyExistException("Tag with name \"" + tagDto.getName() + "\" is already exist");
-        } else {
-            Tag tag = new Tag();
-            tag.setName(tagDto.getName());
-            return tagDao.add(tag);
+    public TagDto add(TagDto tagDto) {
+        boolean isExist = tagDao.findTagByName(tagDto.getNameTag()).isPresent();
+        if (isExist) {
+            throw new ResourceIsAlreadyExistException(ErrorMessageReader.TAG_ALREADY_EXISTS,
+                    tagDto.getNameTag());
         }
+        Tag tag = tagConverter.convertFrom(tagDto);
+        return tagConverter.convertTo(tagDao.add(tag));
     }
 
     @Override
-    public boolean deleteById(int idTag) throws ResourceNotFoundException {
-        boolean isExisted = tagDao.findById(idTag).isPresent();
-        if (isExisted) {
-            throw new ResourceNotFoundException("Tag with id \"" + idTag + "\" isn't found");
-        } else {
-            return tagDao.deleteById(idTag);
-        }
+    public void deleteById(int idTag) {
+        tagDao.findById(idTag)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessageReader.TAG_NOT_FOUND, idTag));
+        tagDao.deleteById(idTag);
+    }
+
+    @Override
+    public List<TagDto> findByRangeNames(List<TagDto> tagsDto) {
+        String tagsNameForQuery = TagSearchBuilder.buildQueryToSearchTags(tagsDto);
+        return tagConverter.convertTo(tagDao.findTagByNameInRange(tagsNameForQuery));
     }
 }

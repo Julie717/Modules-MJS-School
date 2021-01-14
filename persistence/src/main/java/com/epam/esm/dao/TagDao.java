@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface TagDao extends CommonDao<Tag> {
     Optional<Tag> findTagByName(String nameTag);
-    List<Tag> findTagByPartName(String nameTag);
+
+    List<Tag> findTagByNameInRange(String tagRangeNames);
 }
