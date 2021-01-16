@@ -5,8 +5,8 @@ import com.epam.esm.querybuilder.PartQueryBuilder;
 
 public class PartQuerySortBuilder implements PartQueryBuilder {
     private final static String COMMA = ",";
+    private final static String SPACE = " ";
     private final static char SIGN_MINUS = '-';
-    private final static char SPACE = ' ';
     private static final String ORDER_BY = "ORDER BY ";
     private final static String ASC = " ASC";
     private final static String DESC = " DESC";
@@ -27,11 +27,11 @@ public class PartQuerySortBuilder implements PartQueryBuilder {
             GiftCertificateSortParameterName sortParameterName = GiftCertificateSortParameterName
                     .getSortParameterName(paramName).get();
             request.append(sortParameterName.getParameterNameInDb());
-            request.append(SPACE);
             request.append(typeSort);
             request.append(COMMA);
+            request.append(SPACE);
         }
-        request.deleteCharAt(request.length() - 1);
+        request.delete(request.length() - 2, request.length());
         return request.toString();
     }
 }

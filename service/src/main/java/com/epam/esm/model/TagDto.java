@@ -1,6 +1,7 @@
 package com.epam.esm.model;
 
 import com.epam.esm.util.ErrorMessageReader;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TagDto implements Serializable {
     Integer idTag;
 

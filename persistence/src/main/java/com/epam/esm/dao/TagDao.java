@@ -9,4 +9,6 @@ public interface TagDao extends CommonDao<Tag> {
     Optional<Tag> findTagByName(String nameTag);
 
     List<Tag> findTagByNameInRange(String tagRangeNames);
+
+    boolean deleteFromGiftCertificateTag(int idTag);
 }

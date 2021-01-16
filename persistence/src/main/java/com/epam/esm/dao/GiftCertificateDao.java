@@ -21,4 +21,6 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
     Boolean isGiftCertificateWithTagExist(int idGiftCertificate, int idTag);
 
     List<GiftCertificate> findAllWithTags();
+
+    boolean deleteFromGiftCertificateTag(int idGiftCertificate);
 }

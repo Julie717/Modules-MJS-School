@@ -7,8 +7,12 @@ import java.util.Map;
 
 public class GiftCertificateSearchParameterValidator {
     public static boolean isParametersValid(Map<String, String> parameters) {
-        return parameters.entrySet().stream()
-                .allMatch(p -> IsParameterNameValid(p.getKey()) && IsParametersValueValid(p.getKey(), p.getValue()));
+        boolean isValid = false;
+        if (parameters != null && !parameters.isEmpty()) {
+            isValid = parameters.entrySet().stream()
+                    .allMatch(p -> IsParameterNameValid(p.getKey()) && IsParametersValueValid(p.getKey(), p.getValue()));
+        }
+        return isValid;
     }
 
     private static boolean IsParameterNameValid(String parameterName) {

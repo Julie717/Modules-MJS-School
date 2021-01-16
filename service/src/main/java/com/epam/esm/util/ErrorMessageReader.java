@@ -14,6 +14,9 @@ public class ErrorMessageReader {
     public static final String GIFT_CERTIFICATE_INCORRECT_DESCRIPTION_SIZE = "certificate.incorrect_description_size";
     public static final String TAG_INCORRECT_NAME_SIZE = "tag.incorrect_name_size";
     public static final String INTERNAL_SERVER_ERROR = "internal_server_error";
+    public static final String INCORRECT_REQUEST = "incorrect_request";
+    public static final String METHOD_NOT_ALLOWED = "method_not_allowed";
+    public static final String BAD_REQUEST_PARAM_ABSENT="param_absent";
 
     private ErrorMessageReader() {
     }

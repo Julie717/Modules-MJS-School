@@ -5,6 +5,7 @@ import com.epam.esm.dao.TagDao;
 import com.epam.esm.model.Tag;
 import com.epam.esm.dao.extractor.ListTagResultSetExtractor;
 import com.epam.esm.dao.extractor.TagResultSetExtractor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,14 +19,20 @@ import java.util.Optional;
 @Repository
 public class TagDaoImpl implements TagDao {
     private final JdbcTemplate jdbcTemplate;
+    private final TagResultSetExtractor tagExtractor;
+    private final ListTagResultSetExtractor listTagExtractor;
 
-    public TagDaoImpl(JdbcTemplate jdbcTemplate) {
+    @Autowired
+    public TagDaoImpl(JdbcTemplate jdbcTemplate, TagResultSetExtractor tagExtractor,
+                      ListTagResultSetExtractor listTagExtractor) {
         this.jdbcTemplate = jdbcTemplate;
+        this.tagExtractor = tagExtractor;
+        this.listTagExtractor = listTagExtractor;
     }
 
     @Override
     public Optional<Tag> findTagByName(String nameTag) {
-        return Optional.ofNullable(jdbcTemplate.query(SqlQuery.SELECT_TAG_BY_NAME, new TagResultSetExtractor(), nameTag));
+        return Optional.ofNullable(jdbcTemplate.query(SqlQuery.SELECT_TAG_BY_NAME, tagExtractor, nameTag));
     }
 
     @Override
@@ -52,17 +59,22 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public Optional<Tag> findById(int id) {
-        return Optional.ofNullable(jdbcTemplate.query(SqlQuery.SELECT_TAG_BY_ID, new TagResultSetExtractor(), id));
+        return Optional.ofNullable(jdbcTemplate.query(SqlQuery.SELECT_TAG_BY_ID, tagExtractor, id));
     }
 
     @Override
     public List<Tag> findAll() {
-        return jdbcTemplate.query(SqlQuery.SELECT_ALL_TAG, new ListTagResultSetExtractor());
+        return jdbcTemplate.query(SqlQuery.SELECT_ALL_TAG, listTagExtractor);
     }
 
     @Override
     public List<Tag> findTagByNameInRange(String tagRangeNames) {
         return jdbcTemplate.query(SqlQuery.SELECT_TAG_BY_NAME_IN_RANGE + tagRangeNames,
-                new ListTagResultSetExtractor());
+                listTagExtractor);
+    }
+
+    @Override
+    public boolean deleteFromGiftCertificateTag(int idTag) {
+        return jdbcTemplate.update(SqlQuery.DELETE_TAGS_FROM_GIFT_CERTIFICATE_TAG, idTag) > 0;
     }
 }

@@ -1,7 +1,6 @@
 package com.epam.esm.validator.impl;
 
 import com.epam.esm.validator.CommonValidator;
-
 import java.util.regex.Pattern;
 
 public class GiftCertificateDescriptionValidator implements CommonValidator {

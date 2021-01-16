@@ -11,9 +11,13 @@ public class GiftCertificateSortValidator implements CommonValidator {
 
     @Override
     public boolean isValid(String value) {
-        String[] sortParameters = value.split(COMMA);
-        sortParameters = Arrays.stream(sortParameters).map(p -> findSortParameterName(p)).toArray(String[]::new);
-        return Arrays.stream(sortParameters).allMatch(p -> isOneParameterValid(p));
+        boolean isValid = false;
+        if (value != null && !value.isEmpty()) {
+            String[] sortParameters = value.split(COMMA);
+            sortParameters = Arrays.stream(sortParameters).map(p -> findSortParameterName(p)).toArray(String[]::new);
+            isValid = Arrays.stream(sortParameters).allMatch(p -> isOneParameterValid(p));
+        }
+        return isValid;
     }
 
     private static String findSortParameterName(String value) {

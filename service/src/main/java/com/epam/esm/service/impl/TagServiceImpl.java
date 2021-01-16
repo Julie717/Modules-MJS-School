@@ -11,8 +11,8 @@ import com.epam.esm.service.TagService;
 import com.epam.esm.util.ErrorMessageReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,9 +30,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public List<TagDto> findAll() {
         List<Tag> tags = tagDao.findAll();
-        List<TagDto> tagsDto = new ArrayList<>();
-        tags.forEach(t -> tagsDto.add(tagConverter.convertTo(t)));
-        return tagsDto;
+        return tagConverter.convertTo(tags);
     }
 
     @Override
@@ -54,9 +52,11 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transactional
     public void deleteById(int idTag) {
         tagDao.findById(idTag)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessageReader.TAG_NOT_FOUND, idTag));
+        tagDao.deleteFromGiftCertificateTag(idTag);
         tagDao.deleteById(idTag);
     }
 

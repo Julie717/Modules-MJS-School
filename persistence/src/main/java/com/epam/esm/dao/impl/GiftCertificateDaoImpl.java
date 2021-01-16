@@ -7,6 +7,7 @@ import com.epam.esm.dao.extractor.GiftCertificateWithTagResultSetExtractor;
 import com.epam.esm.dao.extractor.ListGiftCertificateResultSetExtractor;
 import com.epam.esm.dao.extractor.ListGiftCertificateWithTagResultSetExtractor;
 import com.epam.esm.model.GiftCertificate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -22,9 +23,21 @@ import java.util.Optional;
 @Repository
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
     private final JdbcTemplate jdbcTemplate;
+    private final GiftCertificateResultSetExtractor giftCertificateExtractor;
+    private final GiftCertificateWithTagResultSetExtractor giftCertificateWithTagExtractor;
+    private final ListGiftCertificateResultSetExtractor listGiftCertificateExtractor;
+    private final ListGiftCertificateWithTagResultSetExtractor listGiftCertificateWithTagExtractor;
 
-    public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplate) {
+    @Autowired
+    public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplate, GiftCertificateResultSetExtractor
+            giftCertificateExtractor, GiftCertificateWithTagResultSetExtractor
+            giftCertificateWithTagExtractor, ListGiftCertificateResultSetExtractor
+            listGiftCertificateExtractor, ListGiftCertificateWithTagResultSetExtractor listGiftCertificateWithTagExtractor) {
         this.jdbcTemplate = jdbcTemplate;
+        this.giftCertificateExtractor = giftCertificateExtractor;
+        this.giftCertificateWithTagExtractor = giftCertificateWithTagExtractor;
+        this.listGiftCertificateExtractor = listGiftCertificateExtractor;
+        this.listGiftCertificateWithTagExtractor = listGiftCertificateWithTagExtractor;
     }
 
     @Override
@@ -57,25 +70,24 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     @Override
     public Optional<GiftCertificate> findById(int id) {
         return Optional.ofNullable(jdbcTemplate.query(SqlQuery.SELECT_GIFT_CERTIFICATE_BY_ID,
-                new GiftCertificateResultSetExtractor(), id));
+                giftCertificateExtractor, id));
     }
 
     @Override
     public List<GiftCertificate> findAll() {
-        return jdbcTemplate.query(SqlQuery.SELECT_ALL_GIFT_CERTIFICATES, new ListGiftCertificateResultSetExtractor());
+        return jdbcTemplate.query(SqlQuery.SELECT_ALL_GIFT_CERTIFICATES, listGiftCertificateExtractor);
     }
 
     @Override
     public Optional<GiftCertificate> findGiftCertificateByName(String nameGiftCertificate) {
         return Optional.ofNullable(jdbcTemplate.query(SqlQuery.SELECT_GIFT_CERTIFICATE_BY_NAME,
-                new GiftCertificateResultSetExtractor(), nameGiftCertificate));
+                giftCertificateExtractor, nameGiftCertificate));
     }
 
     @Override
     public List<GiftCertificate> findByParameters(String queryLastPart) {
         String sqlQuery = SqlQuery.SELECT_ALL_GIFT_CERTIFICATES + queryLastPart;
-        System.out.println(sqlQuery);
-        return jdbcTemplate.query(sqlQuery, new ListGiftCertificateResultSetExtractor());
+        return jdbcTemplate.query(sqlQuery, listGiftCertificateExtractor);
     }
 
     @Override
@@ -89,13 +101,13 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     @Override
     public Optional<GiftCertificate> findGiftCertificateWithTags(int idGiftCertificate) {
         return Optional.ofNullable(jdbcTemplate.query(SqlQuery.SELECT_GIFT_CERTIFICATE_BY_ID_WITH_TAGS,
-                new GiftCertificateWithTagResultSetExtractor(), idGiftCertificate));
+                giftCertificateWithTagExtractor, idGiftCertificate));
     }
 
     @Override
     public Optional<GiftCertificate> findGiftCertificateWithTagsByTagName(int idGiftCertificate, String nameTag) {
         return Optional.ofNullable(jdbcTemplate.query(SqlQuery.SELECT_GIFT_CERTIFICATE_BY_ID_WITH_TAGS_BY_TAG_NAME,
-                new GiftCertificateWithTagResultSetExtractor(), idGiftCertificate, nameTag));
+                giftCertificateWithTagExtractor, idGiftCertificate, nameTag));
     }
 
     @Override
@@ -112,6 +124,11 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     @Override
     public List<GiftCertificate> findAllWithTags() {
         return jdbcTemplate.query(SqlQuery.SELECT_GIFT_CERTIFICATES_WITH_TAGS,
-                new ListGiftCertificateWithTagResultSetExtractor());
+                listGiftCertificateWithTagExtractor);
+    }
+
+    @Override
+    public boolean deleteFromGiftCertificateTag(int idGiftCertificate) {
+        return jdbcTemplate.update(SqlQuery.DELETE_GIFT_CERTIFICATES_FROM_GIFT_CERTIFICATE_TAG, idGiftCertificate) > 0;
     }
 }

@@ -13,7 +13,7 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 public enum GiftCertificateSortParameterName {
-    NAME("name", ColumnName.GIFT_CERTIFICATE_NAME),
+    NAME("nameGiftCertificate", ColumnName.GIFT_CERTIFICATE_NAME),
     CREATE_DATE("createDate", ColumnName.GIFT_CERTIFICATE_CREATE_DATE);
 
     private final String parameterName;

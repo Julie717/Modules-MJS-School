@@ -17,9 +17,9 @@ public class TagConverterImpl implements CommonConverter<Tag, TagDto> {
 
     @Override
     public Tag convertFrom(TagDto entity) {
-        Tag tag=new Tag();
+        Tag tag = new Tag();
         tag.setNameTag(entity.getNameTag());
-        if(entity.getIdTag()!=null){
+        if (entity.getIdTag() != null) {
             tag.setIdTag(entity.getIdTag());
         }
         return tag;

@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,16 +70,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public void deleteById(int idGiftCertificate) {
         giftCertificateDao.findById(idGiftCertificate).orElseThrow(() ->
                 new ResourceNotFoundException(ErrorMessageReader.GIFT_CERTIFICATE_NOT_FOUND, idGiftCertificate));
+        giftCertificateDao.deleteFromGiftCertificateTag(idGiftCertificate);
         giftCertificateDao.deleteById(idGiftCertificate);
-    }
-
-    private void addCreateAndUpdateDate(GiftCertificate giftCertificate) {
-        Timestamp dateTimeNow = Timestamp.valueOf(LocalDateTime.now());
-        giftCertificate.setCreateDate(dateTimeNow);
-        giftCertificate.setLastUpdateDate(dateTimeNow);
     }
 
     @Override
@@ -100,10 +97,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessageReader.GIFT_CERTIFICATE_NOT_FOUND,
                         giftCertificateDto.getIdGiftCertificate()));
         if (giftCertificateDto.getNameGiftCertificate() != null && !giftCertificateDto.getNameGiftCertificate().isEmpty()) {
-            boolean isExist = giftCertificateDao.findGiftCertificateByName(giftCertificateDto.getNameGiftCertificate()).isPresent();
-            if (isExist) {
-                throw new ResourceIsAlreadyExistException(ErrorMessageReader.GIFT_CERTIFICATE_ALREADY_EXISTS,
-                        giftCertificateDto.getNameGiftCertificate());
+            Optional<GiftCertificate> giftCertificateWithNewNameInDB = giftCertificateDao.findGiftCertificateByName(giftCertificateDto.getNameGiftCertificate());
+            if (giftCertificateWithNewNameInDB.isPresent()) {
+                if (giftCertificateWithNewNameInDB.get().getIdGiftCertificate() != giftCertificateDto.getIdGiftCertificate()) {
+                    throw new ResourceIsAlreadyExistException(ErrorMessageReader.GIFT_CERTIFICATE_ALREADY_EXISTS,
+                            giftCertificateDto.getNameGiftCertificate());
+                }
             }
         }
         GiftCertificate newGiftCertificate = mergeCurrentAndNewGiftCertificate(currentGiftCertificate, giftCertificateDto);
@@ -126,6 +125,39 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificateConverter.convertTo(giftCertificate);
     }
 
+    @Override
+    @Transactional
+    public GiftCertificateDto addTagsToGiftCertificate(int idGiftCertificate, List<TagDto> tagsDto) {
+        giftCertificateDao.findGiftCertificateWithTags(idGiftCertificate)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessageReader.GIFT_CERTIFICATE_NOT_FOUND,
+                        idGiftCertificate));
+        List<TagDto> tagsAlreadyExist = tagService.findByRangeNames(tagsDto);
+        List<TagDto> tagsNotExist = tagsDto;
+        if (!tagsAlreadyExist.isEmpty()) {
+            tagsNotExist = tagsDto.stream()
+                    .filter(tag -> tagsAlreadyExist.stream()
+                            .noneMatch(t -> t.getNameTag().equals(tag.getNameTag())))
+                    .collect(Collectors.toList());
+            for (TagDto tag : tagsAlreadyExist) {
+                Boolean isExist = giftCertificateDao.isGiftCertificateWithTagExist(idGiftCertificate,
+                        tag.getIdTag());
+                if (isExist == null || !isExist) {
+                    giftCertificateDao.addTagToGiftCertificate(idGiftCertificate, tag.getIdTag());
+                }
+            }
+        }
+        if (!tagsNotExist.isEmpty()) {
+            List<TagDto> newTags = new ArrayList<>();
+            TagDto tagDto;
+            for (TagDto tag : tagsNotExist) {
+                tagDto = tagService.add(tag);
+                newTags.add(tagDto);
+            }
+            newTags.forEach(tag -> giftCertificateDao.addTagToGiftCertificate(idGiftCertificate, tag.getIdTag()));
+        }
+        return findGiftCertificateWithTags(idGiftCertificate);
+    }
+
     private GiftCertificate mergeCurrentAndNewGiftCertificate(GiftCertificate currentGiftCertificate,
                                                               GiftCertificateDto newGiftCertificate) {
         if (newGiftCertificate.getNameGiftCertificate() != null && !newGiftCertificate.getNameGiftCertificate().isEmpty()) {
@@ -144,35 +176,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return currentGiftCertificate;
     }
 
-    @Override
-    @Transactional
-    public GiftCertificateDto addTagsToGiftCertificate(int idGiftCertificate, List<TagDto> tagsDto) {
-        giftCertificateDao.findGiftCertificateWithTags(idGiftCertificate)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessageReader.GIFT_CERTIFICATE_NOT_FOUND,
-                        idGiftCertificate));
-        List<TagDto> tagsAlreadyExist = tagService.findByRangeNames(tagsDto);
-        List<TagDto> tagsNotExist = tagsDto;
-        if (!tagsAlreadyExist.isEmpty()) {
-            tagsNotExist = tagsDto.stream()
-                    .filter(tag -> tagsAlreadyExist.stream()
-                            .noneMatch(t -> t.getNameTag().equals(tag.getNameTag())))
-                    .collect(Collectors.toList());
-            for (TagDto tag : tagsAlreadyExist) {
-                Boolean isExist = giftCertificateDao.isGiftCertificateWithTagExist(idGiftCertificate, tag.getIdTag());
-                if (isExist == null || !isExist) {
-                    giftCertificateDao.addTagToGiftCertificate(idGiftCertificate, tag.getIdTag());
-                }
-            }
-        }
-        if (!tagsNotExist.isEmpty()) {
-            List<TagDto> newTags = new ArrayList<>();
-            TagDto tagDto;
-            for (TagDto tag : tagsNotExist) {
-                tagDto = tagService.add(tag);
-                newTags.add(tagDto);
-            }
-            newTags.forEach(tag -> giftCertificateDao.addTagToGiftCertificate(idGiftCertificate, tag.getIdTag()));
-        }
-        return findGiftCertificateWithTags(idGiftCertificate);
+    private void addCreateAndUpdateDate(GiftCertificate giftCertificate) {
+        Timestamp dateTimeNow = Timestamp.valueOf(LocalDateTime.now());
+        giftCertificate.setCreateDate(dateTimeNow);
+        giftCertificate.setLastUpdateDate(dateTimeNow);
     }
 }

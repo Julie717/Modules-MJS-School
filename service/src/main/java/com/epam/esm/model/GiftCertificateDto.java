@@ -3,6 +3,7 @@ package com.epam.esm.model;
 import com.epam.esm.util.ErrorMessageReader;
 import com.epam.esm.validator.ValidationGroup;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @Validated
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GiftCertificateDto implements Serializable {
     Integer idGiftCertificate;
 
@@ -48,5 +50,5 @@ public class GiftCertificateDto implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
     Timestamp lastUpdateDate;
 
-    List<Tag> tags;
+    List<TagDto> tags;
 }
