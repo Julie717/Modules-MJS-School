@@ -2,7 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.exception.IllegalParameterException;
-import com.epam.esm.exception.ResourceIsAlreadyExistException;
+import com.epam.esm.exception.ResourceAlreadyExistsException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.*;
 import com.epam.esm.model.converter.impl.GiftCertificateConverterImpl;
@@ -61,7 +61,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificateDto add(GiftCertificateDto giftCertificateDto) {
         boolean isExist = giftCertificateDao.findGiftCertificateByName(giftCertificateDto.getNameGiftCertificate()).isPresent();
         if (isExist) {
-            throw new ResourceIsAlreadyExistException(ErrorMessageReader.GIFT_CERTIFICATE_ALREADY_EXISTS,
+            throw new ResourceAlreadyExistsException(ErrorMessageReader.GIFT_CERTIFICATE_ALREADY_EXISTS,
                     giftCertificateDto.getNameGiftCertificate());
         }
         GiftCertificate giftCertificate = giftCertificateConverter.convertFrom(giftCertificateDto);
@@ -100,7 +100,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             Optional<GiftCertificate> giftCertificateWithNewNameInDB = giftCertificateDao.findGiftCertificateByName(giftCertificateDto.getNameGiftCertificate());
             if (giftCertificateWithNewNameInDB.isPresent()) {
                 if (giftCertificateWithNewNameInDB.get().getIdGiftCertificate() != giftCertificateDto.getIdGiftCertificate()) {
-                    throw new ResourceIsAlreadyExistException(ErrorMessageReader.GIFT_CERTIFICATE_ALREADY_EXISTS,
+                    throw new ResourceAlreadyExistsException(ErrorMessageReader.GIFT_CERTIFICATE_ALREADY_EXISTS,
                             giftCertificateDto.getNameGiftCertificate());
                 }
             }

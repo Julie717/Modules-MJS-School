@@ -4,7 +4,7 @@ import com.epam.esm.controller.advice.error.ErrorCode;
 import com.epam.esm.controller.advice.error.ErrorFieldValidationInfo;
 import com.epam.esm.controller.advice.error.ErrorResponse;
 import com.epam.esm.exception.IllegalParameterException;
-import com.epam.esm.exception.ResourceIsAlreadyExistException;
+import com.epam.esm.exception.ResourceAlreadyExistsException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.util.ErrorMessageReader;
 import lombok.extern.log4j.Log4j2;
@@ -51,8 +51,8 @@ public class CommonAdvice {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(ResourceIsAlreadyExistException.class)
-    public ResponseEntity<ErrorResponse> handleResourceIsAlreadyExistException(ResourceIsAlreadyExistException ex, Locale locale) {
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleResourceIsAlreadyExistException(ResourceAlreadyExistsException ex, Locale locale) {
         String errorMessage = String.format(messageSource.getMessage(ex.getMessage(), new Object[]{},
                 locale), ex.getNameResource());
         ErrorResponse errorResponse = new ErrorResponse(RESOURCE_ALREADY_EXIST, errorMessage);

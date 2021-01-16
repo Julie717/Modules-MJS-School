@@ -7,10 +7,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ResourceIsAlreadyExistException extends RuntimeException {
+public class ResourceAlreadyExistsException extends RuntimeException {
     String nameResource;
 
-    public ResourceIsAlreadyExistException(String message, String nameResource) {
+    public ResourceAlreadyExistsException(String message, String nameResource) {
         super(message);
         this.nameResource = nameResource;
     }

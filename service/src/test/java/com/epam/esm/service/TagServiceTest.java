@@ -1,7 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.exception.ResourceIsAlreadyExistException;
+import com.epam.esm.exception.ResourceAlreadyExistsException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.model.TagDto;
@@ -93,7 +93,7 @@ public class TagServiceTest {
         Mockito.when(tagDao.findTagByName(anyString())).thenReturn(Optional.of(new Tag()));
         TagDto tagDto = new TagDto();
         tagDto.setNameTag("Skating");
-        assertThrows(ResourceIsAlreadyExistException.class, () -> tagService.add(tagDto));
+        assertThrows(ResourceAlreadyExistsException.class, () -> tagService.add(tagDto));
     }
 
     @Test

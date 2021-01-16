@@ -2,7 +2,7 @@ package com.epam.esm.service;
 
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.exception.IllegalParameterException;
-import com.epam.esm.exception.ResourceIsAlreadyExistException;
+import com.epam.esm.exception.ResourceAlreadyExistsException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.GiftCertificateDto;
@@ -175,7 +175,7 @@ public class GiftCertificateServiceTest {
         Mockito.when(giftCertificateDao.findGiftCertificateByName(anyString())).thenReturn(Optional.of(new GiftCertificate()));
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
         giftCertificateDto.setNameGiftCertificate("Skating");
-        assertThrows(ResourceIsAlreadyExistException.class, () -> giftCertificateService.add(giftCertificateDto));
+        assertThrows(ResourceAlreadyExistsException.class, () -> giftCertificateService.add(giftCertificateDto));
     }
 
     @Test
@@ -289,7 +289,7 @@ public class GiftCertificateServiceTest {
                 Timestamp.valueOf("2021-01-10 12:15:37"), null);
         Mockito.when(giftCertificateDao.findGiftCertificateByName(giftCertificateDto.getNameGiftCertificate()))
                 .thenReturn(Optional.of(giftCertificateFound));
-        assertThrows(ResourceIsAlreadyExistException.class, () -> giftCertificateService.updateGiftCertificate(giftCertificateDto));
+        assertThrows(ResourceAlreadyExistsException.class, () -> giftCertificateService.updateGiftCertificate(giftCertificateDto));
     }
 
     @Test

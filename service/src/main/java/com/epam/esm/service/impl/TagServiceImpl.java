@@ -2,7 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.model.Tag;
-import com.epam.esm.exception.ResourceIsAlreadyExistException;
+import com.epam.esm.exception.ResourceAlreadyExistsException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.TagDto;
 import com.epam.esm.model.converter.impl.TagConverterImpl;
@@ -44,7 +44,7 @@ public class TagServiceImpl implements TagService {
     public TagDto add(TagDto tagDto) {
         boolean isExist = tagDao.findTagByName(tagDto.getNameTag()).isPresent();
         if (isExist) {
-            throw new ResourceIsAlreadyExistException(ErrorMessageReader.TAG_ALREADY_EXISTS,
+            throw new ResourceAlreadyExistsException(ErrorMessageReader.TAG_ALREADY_EXISTS,
                     tagDto.getNameTag());
         }
         Tag tag = tagConverter.convertFrom(tagDto);
