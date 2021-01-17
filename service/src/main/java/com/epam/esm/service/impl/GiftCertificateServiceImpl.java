@@ -74,7 +74,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public void deleteById(int idGiftCertificate) {
         giftCertificateDao.findById(idGiftCertificate).orElseThrow(() ->
                 new ResourceNotFoundException(ErrorMessageReader.GIFT_CERTIFICATE_NOT_FOUND, idGiftCertificate));
-        giftCertificateDao.deleteFromGiftCertificateTag(idGiftCertificate);
+        giftCertificateDao.deleteFromGiftCertificateTags(idGiftCertificate);
         giftCertificateDao.deleteById(idGiftCertificate);
     }
 
@@ -156,6 +156,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             newTags.forEach(tag -> giftCertificateDao.addTagToGiftCertificate(idGiftCertificate, tag.getIdTag()));
         }
         return findGiftCertificateWithTags(idGiftCertificate);
+    }
+
+    @Override
+    public void deleteTagFromGiftCertificate(int idGiftCertificate, int idTag) {
+        giftCertificateDao.findById(idGiftCertificate).orElseThrow(() ->
+                new ResourceNotFoundException(ErrorMessageReader.GIFT_CERTIFICATE_NOT_FOUND, idGiftCertificate));
+        Boolean isExist = giftCertificateDao.isGiftCertificateWithTagExist(idGiftCertificate, idTag);
+        if (isExist == null || !isExist) {
+            throw new ResourceNotFoundException(ErrorMessageReader.TAG_IN_GIFT_CERTIFICATE_NOT_FOUND, idTag);
+        }
+        giftCertificateDao.deleteFromGiftCertificateTag(idGiftCertificate, idTag);
     }
 
     private GiftCertificate mergeCurrentAndNewGiftCertificate(GiftCertificate currentGiftCertificate,

@@ -182,7 +182,7 @@ public class GiftCertificateServiceTest {
     void deleteByIdTestPositive() {
         int id = 8;
         Mockito.when(giftCertificateDao.findById(id)).thenReturn(Optional.of(new GiftCertificate()));
-        Mockito.when(giftCertificateDao.deleteFromGiftCertificateTag(id)).thenReturn(true);
+        Mockito.when(giftCertificateDao.deleteFromGiftCertificateTags(id)).thenReturn(true);
         Mockito.when(giftCertificateDao.deleteById(id)).thenReturn(true);
         assertDoesNotThrow(() -> giftCertificateService.deleteById(id));
     }
@@ -371,8 +371,9 @@ public class GiftCertificateServiceTest {
         Mockito.when(giftCertificateDao.findGiftCertificateWithTags(idGiftCertificate))
                 .thenAnswer(new Answer() {
                     private int count = 0;
+
                     public Object answer(InvocationOnMock invocation) {
-                        if (count != 0){
+                        if (count != 0) {
                             List<Tag> tags = new ArrayList<>();
                             tags.add(new Tag(2, "wonderful gift"));
                             tags.add(new Tag(5, "skating"));
@@ -398,7 +399,7 @@ public class GiftCertificateServiceTest {
         giftCertificateDto.setTags(tagsDto);
         GiftCertificateDto actual = giftCertificateService.addTagsToGiftCertificate(idGiftCertificate, tagsDto);
         verify(giftCertificateDao, times(1)).addTagToGiftCertificate(idGiftCertificate, 5);
-        verify( giftCertificateDao, times(2)).findGiftCertificateWithTags(idGiftCertificate);
+        verify(giftCertificateDao, times(2)).findGiftCertificateWithTags(idGiftCertificate);
         assertEquals(giftCertificateDto, actual);
     }
 
@@ -406,8 +407,43 @@ public class GiftCertificateServiceTest {
     void addTagsToGiftCertificateTestNegative() {
         int idGiftCertificate = 2;
         Mockito.when(giftCertificateDao.findGiftCertificateWithTags(idGiftCertificate)).thenThrow(ResourceNotFoundException.class);
-          GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
+        GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
         giftCertificateDto.setNameGiftCertificate("Skating");
-        assertThrows(ResourceNotFoundException.class, () -> giftCertificateService.addTagsToGiftCertificate(idGiftCertificate,anyList()));
+        assertThrows(ResourceNotFoundException.class, () -> giftCertificateService.addTagsToGiftCertificate(idGiftCertificate, anyList()));
+    }
+
+    @Test
+    void deleteTagFromGiftCertificateTestPositive() {
+        int idGiftCertificate = 8;
+        int idTag = 2;
+        Mockito.when(giftCertificateDao.findById(idGiftCertificate))
+                .thenReturn(Optional.of(new GiftCertificate()));
+        Mockito.when(giftCertificateDao.isGiftCertificateWithTagExist(idGiftCertificate, idTag))
+                .thenReturn(true);
+        Mockito.when(giftCertificateDao.deleteFromGiftCertificateTag(idGiftCertificate, idTag))
+                .thenReturn(true);
+        assertDoesNotThrow(() -> giftCertificateService.deleteTagFromGiftCertificate(idGiftCertificate, idTag));
+    }
+
+    @Test
+    void deleteTagFromGiftCertificateTestGiftCertificateNotFound() {
+        int idGiftCertificate = 8;
+        int idTag = 2;
+        Mockito.when(giftCertificateDao.findById(idGiftCertificate))
+                .thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class,
+                () -> giftCertificateService.deleteTagFromGiftCertificate(idGiftCertificate, idTag));
+    }
+
+    @Test
+    void deleteTagFromGiftCertificateTestGiftCertificateWithTagNotFound() {
+        int idGiftCertificate = 8;
+        int idTag = 2;
+        Mockito.when(giftCertificateDao.findById(idGiftCertificate))
+                .thenReturn(Optional.of(new GiftCertificate()));
+        Mockito.when(giftCertificateDao.isGiftCertificateWithTagExist(idGiftCertificate, idTag))
+                .thenReturn(false);
+        assertThrows(ResourceNotFoundException.class,
+                () -> giftCertificateService.deleteTagFromGiftCertificate(idGiftCertificate, idTag));
     }
 }

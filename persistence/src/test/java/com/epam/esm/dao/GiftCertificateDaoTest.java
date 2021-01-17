@@ -280,14 +280,26 @@ public class GiftCertificateDaoTest {
     }
 
     @Test
+    void deleteFromGiftCertificateTagsTestPositive() {
+        boolean actual = giftCertificateDao.deleteFromGiftCertificateTags(3);
+        assertTrue(actual);
+    }
+
+    @Test
+    void deleteFromGiftCertificateTagsTestNegative() {
+        boolean actual = giftCertificateDao.deleteFromGiftCertificateTags(14);
+        assertFalse(actual);
+    }
+
+    @Test
     void deleteFromGiftCertificateTagTestPositive() {
-        boolean actual = giftCertificateDao.deleteFromGiftCertificateTag(3);
+        boolean actual = giftCertificateDao.deleteFromGiftCertificateTag(3,4);
         assertTrue(actual);
     }
 
     @Test
     void deleteFromGiftCertificateTagTestNegative() {
-        boolean actual = giftCertificateDao.deleteFromGiftCertificateTag(14);
+        boolean actual = giftCertificateDao.deleteFromGiftCertificateTag(4,1);
         assertFalse(actual);
     }
 }

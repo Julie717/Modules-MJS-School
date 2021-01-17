@@ -17,6 +17,7 @@ public class ErrorMessageReader {
     public static final String INCORRECT_REQUEST = "incorrect_request";
     public static final String METHOD_NOT_ALLOWED = "method_not_allowed";
     public static final String BAD_REQUEST_PARAM_ABSENT="param_absent";
+    public static final String TAG_IN_GIFT_CERTIFICATE_NOT_FOUND = "tag.not_found_in_gift_certificate";
 
     private ErrorMessageReader() {
     }

@@ -105,10 +105,11 @@ public class GiftCertificateController {
      * @param id                 the id
      * @param giftCertificateDto the gift certificate dto
      * @return the gift certificate dto
-     * @throws ResourceNotFoundException       if gift certificate with such id isn't found
+     * @throws ResourceNotFoundException      if gift certificate with such id isn't found
      * @throws ResourceAlreadyExistsException if gift certificate with updated name exists in DB
      */
     @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public GiftCertificateDto updateGiftCertificate(@PathVariable
                                                     @Positive Integer id,
                                                     @Validated(ValidationGroup.UpdateValidation.class)
@@ -144,10 +145,10 @@ public class GiftCertificateController {
      * @param id   the id
      * @param tags the tags
      * @return the gift certificate dto
-     *  @throws ResourceNotFoundException if gift certificate isn't found
+     * @throws ResourceNotFoundException if gift certificate isn't found
      */
     @PostMapping(value = "/{id}/tags")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificateDto addTagsToGiftCertificate(@PathVariable @Positive Integer id,
                                                        @Valid @NotNull @RequestBody List<TagDto> tags) {
         return giftCertificateService.addTagsToGiftCertificate(id, tags);
@@ -162,5 +163,19 @@ public class GiftCertificateController {
     @ResponseStatus(HttpStatus.FOUND)
     public List<GiftCertificateDto> findGiftCertificatesWithTags() {
         return giftCertificateService.findAllWithTags();
+    }
+
+    /**
+     * Delete tag from gift certificate.
+     *
+     * @param idGiftCertificate the id gift certificate
+     * @param idTag             the id tag
+     * @throws ResourceNotFoundException if gift certificate with such tag isn't found
+     */
+    @DeleteMapping(value = "/{idGiftCertificate}/tags/{idTag}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteTagFromGiftCertificate(@PathVariable @Positive Integer idGiftCertificate,
+                                             @PathVariable @Positive Integer idTag) {
+        giftCertificateService.deleteTagFromGiftCertificate(idGiftCertificate, idTag);
     }
 }

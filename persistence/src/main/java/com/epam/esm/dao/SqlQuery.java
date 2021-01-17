@@ -25,8 +25,10 @@ public class SqlQuery {
             "description, price, duration, create_date, last_update_date) VALUES(?, ?, ?, ?, ?, ?)";
     public static final String DELETE_GIFT_CERTIFICATE_BY_ID = "DELETE FROM gift_certificate " +
             "WHERE id_gift_certificate = ?";
-    public static final String DELETE_GIFT_CERTIFICATES_FROM_GIFT_CERTIFICATE_TAG = "DELETE FROM gift_certificate_tag " +
+    public static final String DELETE_TAGS_FROM_GIFT_CERTIFICATE = "DELETE FROM gift_certificate_tag " +
             "WHERE id_gift_certificate = ?";
+    public static final String DELETE_TAG_FROM_GIFT_CERTIFICATE = "DELETE FROM gift_certificate_tag " +
+            "WHERE id_gift_certificate = ? AND id_tag = ?";
     public static final String DELETE_TAGS_FROM_GIFT_CERTIFICATE_TAG = "DELETE FROM gift_certificate_tag " +
             "WHERE id_tag = ?";
     public static final String UPDATE_GIFT_CERTIFICATE = "UPDATE gift_certificate SET "

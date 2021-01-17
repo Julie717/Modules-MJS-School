@@ -88,4 +88,12 @@ public interface GiftCertificateService {
      * @return the gift certificate dto
      */
     GiftCertificateDto addTagsToGiftCertificate(int idGiftCertificate, List<TagDto> tagsDto);
+
+    /**
+     * Delete tag from gift certificate.
+     *
+     * @param idGiftCertificate the id gift certificate
+     * @param idTag             the id tag
+     */
+    void deleteTagFromGiftCertificate(int idGiftCertificate, int idTag);
 }

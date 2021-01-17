@@ -75,10 +75,18 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
     List<GiftCertificate> findAllWithTags();
 
     /**
+     * Delete tags from gift certificate.
+     *
+     * @param idGiftCertificate the id gift certificate
+     * @return the boolean
+     */
+    boolean deleteFromGiftCertificateTags(int idGiftCertificate);
+
+    /**
      * Delete tag from gift certificate.
      *
      * @param idGiftCertificate the id gift certificate
      * @return the boolean
      */
-    boolean deleteFromGiftCertificateTag(int idGiftCertificate);
+    boolean deleteFromGiftCertificateTag(int idGiftCertificate, int idTag);
 }

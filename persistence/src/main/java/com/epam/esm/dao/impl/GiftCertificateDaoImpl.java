@@ -31,8 +31,8 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     @Autowired
     public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplate, GiftCertificateResultSetExtractor
             giftCertificateExtractor, GiftCertificateWithTagResultSetExtractor
-            giftCertificateWithTagExtractor, ListGiftCertificateResultSetExtractor
-            listGiftCertificateExtractor, ListGiftCertificateWithTagResultSetExtractor listGiftCertificateWithTagExtractor) {
+                                          giftCertificateWithTagExtractor, ListGiftCertificateResultSetExtractor
+                                          listGiftCertificateExtractor, ListGiftCertificateWithTagResultSetExtractor listGiftCertificateWithTagExtractor) {
         this.jdbcTemplate = jdbcTemplate;
         this.giftCertificateExtractor = giftCertificateExtractor;
         this.giftCertificateWithTagExtractor = giftCertificateWithTagExtractor;
@@ -128,7 +128,12 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public boolean deleteFromGiftCertificateTag(int idGiftCertificate) {
-        return jdbcTemplate.update(SqlQuery.DELETE_GIFT_CERTIFICATES_FROM_GIFT_CERTIFICATE_TAG, idGiftCertificate) > 0;
+    public boolean deleteFromGiftCertificateTags(int idGiftCertificate) {
+        return jdbcTemplate.update(SqlQuery.DELETE_TAGS_FROM_GIFT_CERTIFICATE, idGiftCertificate) > 0;
+    }
+
+    @Override
+    public boolean deleteFromGiftCertificateTag(int idGiftCertificate, int idTag) {
+        return jdbcTemplate.update(SqlQuery.DELETE_TAG_FROM_GIFT_CERTIFICATE, idGiftCertificate, idTag) > 0;
     }
 }
