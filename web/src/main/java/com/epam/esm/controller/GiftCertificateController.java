@@ -48,7 +48,7 @@ public class GiftCertificateController {
      * @throws ResourceNotFoundException if gift certificate isn't found
      */
     @GetMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.OK)
     public GiftCertificateDto findById(@PathVariable @Positive Integer id) {
         return giftCertificateService.findById(id);
     }
@@ -88,7 +88,7 @@ public class GiftCertificateController {
      * @throws ResourceNotFoundException if gift certificates with such parameters aren't found
      */
     @GetMapping
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.OK)
     public List<GiftCertificateDto> findByParameters(@RequestParam Map<String, String> parameters) {
         List<GiftCertificateDto> giftCertificates;
         if (parameters.isEmpty()) {
@@ -127,7 +127,7 @@ public class GiftCertificateController {
      * @throws ResourceNotFoundException if gift certificate isn't found
      */
     @GetMapping(value = "/{id}/tags")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.OK)
     public GiftCertificateDto findGiftCertificateWithTags(@PathVariable @Positive Integer id,
                                                           @RequestParam(required = false) String nameTag) {
         GiftCertificateDto giftCertificateDto;
@@ -160,7 +160,7 @@ public class GiftCertificateController {
      * @return the list
      */
     @GetMapping(value = "/tags")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.OK)
     public List<GiftCertificateDto> findGiftCertificatesWithTags() {
         return giftCertificateService.findAllWithTags();
     }

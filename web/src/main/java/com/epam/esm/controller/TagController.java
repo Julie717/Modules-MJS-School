@@ -6,6 +6,7 @@ import com.epam.esm.model.TagDto;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -20,6 +21,7 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
  */
 @RestController
 @RequestMapping(value = "/tags", produces = APPLICATION_JSON_VALUE)
+@Validated
 public class TagController {
     private final TagService tagService;
 
@@ -39,7 +41,7 @@ public class TagController {
      * @return the list
      */
     @GetMapping
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.OK)
     public List<TagDto> findAllTags() {
         return tagService.findAll();
     }
@@ -52,7 +54,7 @@ public class TagController {
      * @throws ResourceNotFoundException if tag isn't found
      */
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.OK)
     public TagDto findById(@PathVariable @Positive Integer id) {
         return tagService.findById(id);
     }
