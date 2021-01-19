@@ -15,11 +15,11 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GiftCertificate {
-    int idGiftCertificate;
+    Integer idGiftCertificate;
     String nameGiftCertificate;
     String description;
     BigDecimal price;
-    int duration;
+    Integer duration;
     Timestamp createDate;
     Timestamp lastUpdateDate;
     List<Tag> tags;

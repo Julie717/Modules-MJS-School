@@ -1,4 +1,2 @@
 rootProject.name = 'GiftCertificates'
-include('persistence')
-include('service')
-include('web')
+include 'persistence','service','web'

@@ -78,7 +78,7 @@ public class TagServiceTest {
 
     @Test
     void addTestPositive() {
-        Tag tag = new Tag(0, "jumping");
+        Tag tag = new Tag(null, "jumping");
         Mockito.when(tagDao.findTagByName(tag.getNameTag())).thenReturn(Optional.empty());
         Tag tagWithId = new Tag(3, "jumping");
         Mockito.when(tagDao.add(tag)).thenReturn(tagWithId);
