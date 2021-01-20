@@ -1,0 +1,4 @@
+dependencies {
+    implementation project(":persistence")
+    testImplementation ("org.mockito:mockito-core:${mockitoVersion}")
+}
