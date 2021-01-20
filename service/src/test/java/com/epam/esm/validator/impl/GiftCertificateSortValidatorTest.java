@@ -12,6 +12,7 @@ public class GiftCertificateSortValidatorTest {
     @MethodSource("data")
     public void isValidTest(String sort, boolean expected) {
         boolean actual = sortValidator.isValid(sort);
+
         assertEquals(expected, actual);
     }
 

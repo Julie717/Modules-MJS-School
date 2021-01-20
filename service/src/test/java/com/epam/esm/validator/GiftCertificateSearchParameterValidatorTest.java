@@ -14,6 +14,7 @@ public class GiftCertificateSearchParameterValidatorTest {
     @MethodSource("data")
     public void isParametersValidTest(Map<String, String> parameters, boolean expected) {
         boolean actual = GiftCertificateSearchParameterValidator.isParametersValid(parameters);
+
         assertEquals(expected, actual);
     }
 

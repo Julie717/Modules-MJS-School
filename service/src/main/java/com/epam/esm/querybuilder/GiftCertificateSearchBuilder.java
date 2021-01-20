@@ -1,6 +1,8 @@
 package com.epam.esm.querybuilder;
 
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class GiftCertificateSearchBuilder {
     private final static String WHERE = "WHERE ";

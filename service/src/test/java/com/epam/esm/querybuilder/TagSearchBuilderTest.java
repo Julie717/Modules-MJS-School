@@ -22,7 +22,9 @@ public class TagSearchBuilderTest {
         tag.setNameTag("wonderful");
         tagsDto.add(tag);
         String expected = "('gift', 'beautiful', 'wonderful')";
+
         String actual = TagSearchBuilder.buildQueryToSearchTags(tagsDto);
+
         assertEquals(expected, actual);
     }
 }

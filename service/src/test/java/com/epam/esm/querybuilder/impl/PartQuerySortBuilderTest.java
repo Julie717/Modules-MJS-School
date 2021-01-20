@@ -12,6 +12,7 @@ public class PartQuerySortBuilderTest {
     @MethodSource("data")
     public void buildTest(String value, String parameterNameInDb, String expected) {
         String actual = partQuerySortBuilder.build(value, parameterNameInDb);
+
         assertEquals(expected, actual);
     }
 

@@ -12,6 +12,7 @@ public class PartQuerySearchBuilderTest {
     @MethodSource("data")
     public void buildTest(String value, String parameterNameInDb, String expected) {
         String actual = partQuerySearchBuilder.build(value, parameterNameInDb);
+
         assertEquals(expected, actual);
     }
 

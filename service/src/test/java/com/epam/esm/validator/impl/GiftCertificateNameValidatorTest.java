@@ -12,6 +12,7 @@ public class GiftCertificateNameValidatorTest {
     @MethodSource("data")
     public void isValidTest(String name, boolean expected) {
         boolean actual = nameValidator.isValid(name);
+
         assertEquals(expected, actual);
     }
 

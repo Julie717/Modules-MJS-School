@@ -12,6 +12,7 @@ public class GiftCertificateDescriptionValidatorTest {
     @MethodSource("data")
     public void isValidTest(String description, boolean expected) {
         boolean actual = descriptionValidator.isValid(description);
+
         assertEquals(expected, actual);
     }
 

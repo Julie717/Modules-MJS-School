@@ -26,7 +26,11 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
-import java.util.*;
+import java.util.Locale;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.Iterator;
 
 import static com.epam.esm.controller.advice.error.ErrorCode.RESOURCE_NOT_FOUND;
 import static com.epam.esm.controller.advice.error.ErrorCode.RESOURCE_ALREADY_EXIST;
@@ -150,7 +154,7 @@ public class CommonAdvice {
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(MissingServletRequestParameterException ex, Locale locale) {
         String errorMessage = messageSource.getMessage(ErrorMessageReader.BAD_REQUEST_PARAM_ABSENT, new Object[]{},
                 locale);
-        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.BAD_REQUEST_PARAM_ABSENT,errorMessage);
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.BAD_REQUEST_PARAM_ABSENT, errorMessage);
         log.log(Level.ERROR, errorMessage);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }

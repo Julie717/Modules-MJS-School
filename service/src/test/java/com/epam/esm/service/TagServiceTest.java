@@ -9,13 +9,19 @@ import com.epam.esm.model.converter.impl.TagConverterImpl;
 import com.epam.esm.service.impl.TagServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.Mock;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -38,7 +44,9 @@ public class TagServiceTest {
         List<Tag> tags = new ArrayList<>();
         Mockito.when(tagDao.findAll()).thenReturn(tags);
         List<TagDto> tagsDto = new ArrayList<>();
+
         List<TagDto> actual = tagService.findAll();
+
         verify(tagConverter).convertTo(tags);
         assertEquals(tagsDto, actual);
     }
@@ -54,7 +62,9 @@ public class TagServiceTest {
         tagsDto.add(new TagDto(1, "gift"));
         tagsDto.add(new TagDto(2, "sport"));
         tagsDto.add(new TagDto(3, "jumping"));
+
         List<TagDto> actual = tagService.findAll();
+
         verify(tagConverter, times(1)).convertTo(tags);
         assertEquals(tagsDto, actual);
     }
@@ -65,7 +75,9 @@ public class TagServiceTest {
         Optional<Tag> tag = Optional.of(new Tag(2, "sport"));
         Mockito.when(tagDao.findById(id)).thenReturn(tag);
         TagDto expected = new TagDto(2, "sport");
+
         TagDto actual = tagService.findById(id);
+
         assertEquals(expected, actual);
     }
 
@@ -83,7 +95,9 @@ public class TagServiceTest {
         Tag tagWithId = new Tag(3, "jumping");
         Mockito.when(tagDao.add(tag)).thenReturn(tagWithId);
         TagDto tagDto = new TagDto(null, "jumping");
+
         TagDto actual = tagService.add(tagDto);
+
         TagDto expected = new TagDto(3, "jumping");
         assertEquals(expected, actual);
     }
@@ -93,6 +107,7 @@ public class TagServiceTest {
         Mockito.when(tagDao.findTagByName(anyString())).thenReturn(Optional.of(new Tag()));
         TagDto tagDto = new TagDto();
         tagDto.setNameTag("Skating");
+
         assertThrows(ResourceAlreadyExistsException.class, () -> tagService.add(tagDto));
     }
 
@@ -102,6 +117,7 @@ public class TagServiceTest {
         Mockito.when(tagDao.findById(id)).thenReturn(Optional.of(new Tag()));
         Mockito.when(tagDao.deleteFromGiftCertificateTag(id)).thenReturn(true);
         Mockito.when(tagDao.deleteById(id)).thenReturn(true);
+
         assertDoesNotThrow(() -> tagService.deleteById(id));
     }
 
@@ -109,6 +125,7 @@ public class TagServiceTest {
     void deleteByIdTestNegative() {
         int id = 8;
         Mockito.when(tagDao.findById(id)).thenReturn(Optional.empty());
+
         assertThrows(ResourceNotFoundException.class, () -> tagService.deleteById(id));
     }
 
@@ -123,7 +140,9 @@ public class TagServiceTest {
         tags.add(new Tag(1, "gift"));
         tags.add(new Tag(8, "jumping"));
         Mockito.when(tagDao.findTagByNameInRange(tagsNameForQuery)).thenReturn(tags);
+
         List<TagDto> actual = tagService.findByRangeNames(tagsDto);
+
         List<TagDto> expected = new ArrayList<>();
         expected.add(new TagDto(1, "gift"));
         expected.add(new TagDto(8, "jumping"));
@@ -138,7 +157,9 @@ public class TagServiceTest {
         String tagsNameForQuery = "('gift', 'sport')";
         List<Tag> tags = new ArrayList<>();
         Mockito.when(tagDao.findTagByNameInRange(tagsNameForQuery)).thenReturn(tags);
+
         List<TagDto> actual = tagService.findByRangeNames(tagsDto);
+
         List<TagDto> expected = new ArrayList<>();
         assertEquals(expected, actual);
     }

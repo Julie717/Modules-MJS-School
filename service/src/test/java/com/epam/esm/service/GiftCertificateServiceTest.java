@@ -13,16 +13,26 @@ import com.epam.esm.model.converter.impl.TagConverterImpl;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.Mock;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyString;
@@ -52,7 +62,9 @@ public class GiftCertificateServiceTest {
         List<GiftCertificate> giftCertificates = new ArrayList<>();
         Mockito.when(giftCertificateDao.findAll()).thenReturn(giftCertificates);
         List<GiftCertificateDto> giftCertificatesDto = new ArrayList<>();
+
         List<GiftCertificateDto> actual = giftCertificateService.findAll();
+
         verify(giftCertificateConverter).convertTo(giftCertificates);
         assertEquals(giftCertificatesDto, actual);
     }
@@ -72,7 +84,9 @@ public class GiftCertificateServiceTest {
                 "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
                 30, Timestamp.valueOf("2021-01-10 12:15:37"),
                 Timestamp.valueOf("2021-01-10 12:15:37"), null));
+
         List<GiftCertificateDto> actual = giftCertificateService.findAll();
+
         verify(giftCertificateConverter, times(1)).convertTo(giftCertificates);
         assertEquals(giftCertificatesDto, actual);
     }
@@ -120,7 +134,9 @@ public class GiftCertificateServiceTest {
                 " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
                 BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
                 Timestamp.valueOf("2021-01-11 10:30:01"), tagsDto));
+
         List<GiftCertificateDto> actual = giftCertificateService.findAllWithTags();
+
         assertEquals(giftCertificatesDto, actual);
     }
 
@@ -138,7 +154,9 @@ public class GiftCertificateServiceTest {
                 "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
                 30, Timestamp.valueOf("2021-01-10 12:15:37"),
                 Timestamp.valueOf("2021-01-10 12:15:37"), null);
+
         GiftCertificateDto actual = giftCertificateService.findById(id);
+
         assertEquals(expected, actual);
     }
 
@@ -146,6 +164,7 @@ public class GiftCertificateServiceTest {
     void findByIdTestNegative() {
         int id = 25;
         Mockito.when(giftCertificateDao.findById(id)).thenReturn(Optional.empty());
+
         assertThrows(ResourceNotFoundException.class, () -> giftCertificateService.findById(id));
     }
 
@@ -164,7 +183,9 @@ public class GiftCertificateServiceTest {
                 "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
                 30, Timestamp.valueOf("2021-01-10 12:15:37"),
                 Timestamp.valueOf("2021-01-10 12:15:37"), null);
+
         GiftCertificateDto actual = giftCertificateService.add(giftCertificateDto);
+
         actual.setCreateDate(giftCertificateDto.getCreateDate());
         actual.setLastUpdateDate(giftCertificateDto.getLastUpdateDate());
         assertEquals(giftCertificateDto, actual);
@@ -175,6 +196,7 @@ public class GiftCertificateServiceTest {
         Mockito.when(giftCertificateDao.findGiftCertificateByName(anyString())).thenReturn(Optional.of(new GiftCertificate()));
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
         giftCertificateDto.setNameGiftCertificate("Skating");
+
         assertThrows(ResourceAlreadyExistsException.class, () -> giftCertificateService.add(giftCertificateDto));
     }
 
@@ -184,6 +206,7 @@ public class GiftCertificateServiceTest {
         Mockito.when(giftCertificateDao.findById(id)).thenReturn(Optional.of(new GiftCertificate()));
         Mockito.when(giftCertificateDao.deleteFromGiftCertificateTags(id)).thenReturn(true);
         Mockito.when(giftCertificateDao.deleteById(id)).thenReturn(true);
+
         assertDoesNotThrow(() -> giftCertificateService.deleteById(id));
     }
 
@@ -191,6 +214,7 @@ public class GiftCertificateServiceTest {
     void deleteByIdTestNegative() {
         int id = 8;
         Mockito.when(giftCertificateDao.findById(id)).thenReturn(Optional.empty());
+
         assertThrows(ResourceNotFoundException.class, () -> giftCertificateService.deleteById(id));
     }
 
@@ -218,7 +242,9 @@ public class GiftCertificateServiceTest {
                 30, Timestamp.valueOf("2021-01-10 12:15:37"),
                 Timestamp.valueOf("2021-01-10 12:15:37"), null);
         giftCertificatesDto.add(giftCertificateDto);
+
         List<GiftCertificateDto> actual = giftCertificateService.findByParameters(parameters);
+
         assertEquals(giftCertificatesDto, actual);
     }
 
@@ -227,6 +253,7 @@ public class GiftCertificateServiceTest {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("color", "gift");
         parameters.put("description", "beautiful");
+
         assertThrows(IllegalParameterException.class, () -> giftCertificateService.findByParameters(parameters));
     }
 
@@ -237,6 +264,7 @@ public class GiftCertificateServiceTest {
         String partQuery = " WHERE name_gift_certificate LIKE '%gift%'";
         List<GiftCertificate> giftCertificates = new ArrayList<>();
         Mockito.when(giftCertificateDao.findByParameters(partQuery)).thenReturn(giftCertificates);
+
         assertThrows(ResourceNotFoundException.class, () -> giftCertificateService.findByParameters(parameters));
     }
 
@@ -256,7 +284,9 @@ public class GiftCertificateServiceTest {
                 .thenReturn(Optional.empty());
         giftCertificate.setNameGiftCertificate(giftCertificateDto.getNameGiftCertificate());
         Mockito.when(giftCertificateDao.update(giftCertificate)).thenReturn(giftCertificate);
+
         GiftCertificateDto actual = giftCertificateService.updateGiftCertificate(giftCertificateDto);
+
         Timestamp lastUpdateDate = Timestamp.valueOf(LocalDateTime.now());
         actual.setLastUpdateDate(lastUpdateDate);
         giftCertificateDto.setLastUpdateDate(lastUpdateDate);
@@ -268,6 +298,7 @@ public class GiftCertificateServiceTest {
         Mockito.when(giftCertificateDao.findById(anyInt())).thenReturn(Optional.empty());
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
         giftCertificateDto.setIdGiftCertificate(15);
+
         assertThrows(ResourceNotFoundException.class, () -> giftCertificateService.updateGiftCertificate(giftCertificateDto));
     }
 
@@ -289,7 +320,9 @@ public class GiftCertificateServiceTest {
                 Timestamp.valueOf("2021-01-10 12:15:37"), null);
         Mockito.when(giftCertificateDao.findGiftCertificateByName(giftCertificateDto.getNameGiftCertificate()))
                 .thenReturn(Optional.of(giftCertificateFound));
-        assertThrows(ResourceAlreadyExistsException.class, () -> giftCertificateService.updateGiftCertificate(giftCertificateDto));
+
+        assertThrows(ResourceAlreadyExistsException.class,
+                () -> giftCertificateService.updateGiftCertificate(giftCertificateDto));
     }
 
     @Test
@@ -310,7 +343,9 @@ public class GiftCertificateServiceTest {
         List<TagDto> tagsDto = new ArrayList<>();
         tagsDto.add(new TagDto(2, "Skating"));
         expected.setTags(tagsDto);
+
         GiftCertificateDto actual = giftCertificateService.findGiftCertificateWithTags(id);
+
         assertEquals(expected, actual);
     }
 
@@ -318,6 +353,7 @@ public class GiftCertificateServiceTest {
     void findGiftCertificateWithTagsTestNegative() {
         int id = 25;
         Mockito.when(giftCertificateDao.findGiftCertificateWithTags(id)).thenReturn(Optional.empty());
+
         assertThrows(ResourceNotFoundException.class, () -> giftCertificateService.findGiftCertificateWithTags(id));
     }
 
@@ -341,7 +377,9 @@ public class GiftCertificateServiceTest {
         List<TagDto> tagsDto = new ArrayList<>();
         tagsDto.add(new TagDto(2, "wonderful gift"));
         expected.setTags(tagsDto);
+
         GiftCertificateDto actual = giftCertificateService.findGiftCertificateWithTagsByTagName(id, nameTag);
+
         assertEquals(expected, actual);
     }
 
@@ -351,6 +389,7 @@ public class GiftCertificateServiceTest {
         String nameTag = "gift";
         Mockito.when(giftCertificateDao.findGiftCertificateWithTagsByTagName(id, nameTag))
                 .thenReturn(Optional.empty());
+
         assertThrows(ResourceNotFoundException.class, () ->
                 giftCertificateService.findGiftCertificateWithTagsByTagName(id, nameTag));
     }
@@ -397,7 +436,9 @@ public class GiftCertificateServiceTest {
                 30, Timestamp.valueOf("2021-01-10 12:15:37"),
                 Timestamp.valueOf("2021-01-10 12:15:37"), null);
         giftCertificateDto.setTags(tagsDto);
+
         GiftCertificateDto actual = giftCertificateService.addTagsToGiftCertificate(idGiftCertificate, tagsDto);
+
         verify(giftCertificateDao, times(1)).addTagToGiftCertificate(idGiftCertificate, 5);
         verify(giftCertificateDao, times(2)).findGiftCertificateWithTags(idGiftCertificate);
         assertEquals(giftCertificateDto, actual);
@@ -409,7 +450,9 @@ public class GiftCertificateServiceTest {
         Mockito.when(giftCertificateDao.findGiftCertificateWithTags(idGiftCertificate)).thenThrow(ResourceNotFoundException.class);
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
         giftCertificateDto.setNameGiftCertificate("Skating");
-        assertThrows(ResourceNotFoundException.class, () -> giftCertificateService.addTagsToGiftCertificate(idGiftCertificate, anyList()));
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> giftCertificateService.addTagsToGiftCertificate(idGiftCertificate, anyList()));
     }
 
     @Test
@@ -422,6 +465,7 @@ public class GiftCertificateServiceTest {
                 .thenReturn(true);
         Mockito.when(giftCertificateDao.deleteFromGiftCertificateTag(idGiftCertificate, idTag))
                 .thenReturn(true);
+
         assertDoesNotThrow(() -> giftCertificateService.deleteTagFromGiftCertificate(idGiftCertificate, idTag));
     }
 
@@ -431,6 +475,7 @@ public class GiftCertificateServiceTest {
         int idTag = 2;
         Mockito.when(giftCertificateDao.findById(idGiftCertificate))
                 .thenReturn(Optional.empty());
+
         assertThrows(ResourceNotFoundException.class,
                 () -> giftCertificateService.deleteTagFromGiftCertificate(idGiftCertificate, idTag));
     }
@@ -443,6 +488,7 @@ public class GiftCertificateServiceTest {
                 .thenReturn(Optional.of(new GiftCertificate()));
         Mockito.when(giftCertificateDao.isGiftCertificateWithTagExist(idGiftCertificate, idTag))
                 .thenReturn(false);
+
         assertThrows(ResourceNotFoundException.class,
                 () -> giftCertificateService.deleteTagFromGiftCertificate(idGiftCertificate, idTag));
     }

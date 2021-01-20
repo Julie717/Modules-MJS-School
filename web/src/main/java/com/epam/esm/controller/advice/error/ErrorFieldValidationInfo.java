@@ -1,21 +1,27 @@
 package com.epam.esm.controller.advice.error;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
+import javax.validation.constraints.NotNull;
 
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level= AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ErrorFieldValidationInfo {
-    @NonNull
+    @NotNull
     String fieldName;
 
-    @NonNull
+    @NotNull
     String errorCode;
 
-    @NonNull
+    @NotNull
     Object rejectedValue;
 
     String errorMessage;
