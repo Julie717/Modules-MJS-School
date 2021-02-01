@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class GiftCertificateSearchBuilder {
+    private final static String BEGIN_QUERY="FROM GiftCertificate gift JOIN FETCH gift.tags tag ";
     private final static String WHERE = "WHERE ";
     private static final String SORT = "ORDER BY";
     private final static String AND = " AND ";
@@ -25,7 +26,7 @@ public class GiftCertificateSearchBuilder {
     public static String buildQuery(Map<String, String> parameters) {
         StringBuilder sqlQuery;
         List<String> requestParts = GiftCertificateSearchBuilder.buildQueryPart(parameters);
-        sqlQuery = new StringBuilder(SPACE);
+        sqlQuery = new StringBuilder(BEGIN_QUERY);
         if (requestParts.stream().anyMatch(r -> !r.contains(SORT))) {
             sqlQuery.append(WHERE);
             requestParts.stream().filter(r -> !r.contains(SORT)).forEach(r -> sqlQuery.append(r).append(AND));

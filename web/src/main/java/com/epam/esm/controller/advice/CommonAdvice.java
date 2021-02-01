@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity;;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -35,7 +34,6 @@ import java.util.Iterator;
 import static com.epam.esm.controller.advice.error.ErrorCode.RESOURCE_NOT_FOUND;
 import static com.epam.esm.controller.advice.error.ErrorCode.RESOURCE_ALREADY_EXIST;
 
-@EnableWebMvc
 @ControllerAdvice
 @Log4j2
 public class CommonAdvice {
@@ -57,7 +55,8 @@ public class CommonAdvice {
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleResourceIsAlreadyExistException(ResourceAlreadyExistsException ex, Locale locale) {
-        String errorMessage = String.format(messageSource.getMessage(ex.getMessage(), new Object[]{},
+        String errorMessage;
+        errorMessage = String.format(messageSource.getMessage(ex.getMessage(), new Object[]{},
                 locale), ex.getNameResource());
         ErrorResponse errorResponse = new ErrorResponse(RESOURCE_ALREADY_EXIST, errorMessage);
         log.log(Level.ERROR, errorMessage);
@@ -77,8 +76,7 @@ public class CommonAdvice {
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, Locale locale) {
         String errorMessage = messageSource.getMessage(ErrorMessageReader.INCORRECT_VALUE, new Object[]{},
                 locale);
-        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST_VALUE,
-                messageSource.getMessage(errorMessage, new Object[]{}, locale));
+        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST_VALUE, errorMessage);
         List<ErrorFieldValidationInfo> fields = new ArrayList<>();
         BindingResult result = ex.getBindingResult();
         for (FieldError field : result.getFieldErrors()) {
@@ -97,26 +95,26 @@ public class CommonAdvice {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(RuntimeException.class)
+   /* @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex, Locale locale) {
-        String errorMessage = messageSource.getMessage(ErrorMessageReader.INTERNAL_SERVER_ERROR, new Object[]{},
-                locale);
+        String errorMessage = messageSource.getMessage(ErrorMessageReader.INTERNAL_SERVER_ERROR,
+                new Object[]{}, locale);
         ErrorResponse response = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, errorMessage);
         log.log(Level.ERROR, errorMessage);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    }*/
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleResourceIsAlreadyExistException(ConstraintViolationException ex, Locale locale) {
-        String errorMessage = messageSource.getMessage(ErrorMessageReader.INCORRECT_VALUE, new Object[]{},
-                locale);
-        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST_VALUE,
-                messageSource.getMessage(errorMessage, new Object[]{}, locale));
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex, Locale locale) {
+        String errorMessage = messageSource.getMessage(ErrorMessageReader.INCORRECT_VALUE,
+                new Object[]{}, locale);
+        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST_VALUE, errorMessage);
         List<ErrorFieldValidationInfo> fields = new ArrayList<>();
         Set<ConstraintViolation<?>> result = ex.getConstraintViolations();
         result.forEach(s -> fields.add(new ErrorFieldValidationInfo(findLastElementName(s.getPropertyPath()),
                 s.getConstraintDescriptor().getAnnotation().annotationType().getSimpleName(),
-                s.getInvalidValue(), s.getMessage())));
+                s.getInvalidValue(), messageSource.getMessage(s.getMessage(),
+                new Object[]{}, locale))));
         response.setErrorFieldsValidationInfo(fields);
         log.log(Level.ERROR, errorMessage);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -135,8 +133,7 @@ public class CommonAdvice {
     public ResponseEntity<ErrorResponse> handleNoHandlerFoundException(NoHandlerFoundException ex, Locale locale) {
         String errorMessage = messageSource.getMessage(ErrorMessageReader.INCORRECT_REQUEST, new Object[]{},
                 locale);
-        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.BAD_REQUEST_PATH,
-                messageSource.getMessage(errorMessage, new Object[]{}, locale));
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.BAD_REQUEST_PATH, errorMessage);
         log.log(Level.ERROR, errorMessage);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }

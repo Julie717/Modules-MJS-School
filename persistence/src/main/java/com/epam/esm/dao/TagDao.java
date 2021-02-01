@@ -12,10 +12,10 @@ public interface TagDao extends CommonDao<Tag> {
     /**
      * Find tag by name.
      *
-     * @param nameTag the name tag
+     * @param name the name tag
      * @return the optional
      */
-    Optional<Tag> findTagByName(String nameTag);
+    Optional<Tag> findTagByName(String name);
 
     /**
      * Find tags by names where tagRangeNames is a string that includes tag names
@@ -24,13 +24,13 @@ public interface TagDao extends CommonDao<Tag> {
      * @param tagRangeNames the tag range names
      * @return the list
      */
-    List<Tag> findTagByNameInRange(String tagRangeNames);
+    List<Tag> findTagByNameInRange(List<String> tagRangeNames);
 
     /**
      * Delete tag from gift certificate.
      *
-     * @param idTag the id tag
+     * @param id the id tag
      * @return the boolean
      */
-    boolean deleteFromGiftCertificateTag(int idTag);
+    boolean deleteTagFromGiftCertificates(Long id);
 }

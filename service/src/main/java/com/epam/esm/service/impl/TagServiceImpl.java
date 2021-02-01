@@ -6,7 +6,6 @@ import com.epam.esm.exception.ResourceAlreadyExistsException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.TagDto;
 import com.epam.esm.model.converter.impl.TagConverterImpl;
-import com.epam.esm.querybuilder.TagSearchBuilder;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.ErrorMessageReader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -34,18 +34,26 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDto findById(int idTag) {
-        Tag tag = tagDao.findById(idTag)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessageReader.TAG_NOT_FOUND, idTag));
+    public TagDto findById(Long id) {
+        Tag tag = tagDao.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessageReader.RESOURCE_NOT_FOUND, id,
+                        Tag.class.getSimpleName()));
         return tagConverter.convertTo(tag);
     }
 
     @Override
+    public List<TagDto> findByRangeNames(List<TagDto> tagsDto) {
+        List<String> tagNames = tagsDto.stream().map(tag -> tag.getName()).collect(Collectors.toList());
+        return tagConverter.convertTo(tagDao.findTagByNameInRange(tagNames));
+    }
+
+    @Override
+    @Transactional
     public TagDto add(TagDto tagDto) {
-        boolean isExist = tagDao.findTagByName(tagDto.getNameTag()).isPresent();
+        boolean isExist = tagDao.findTagByName(tagDto.getName()).isPresent();
         if (isExist) {
             throw new ResourceAlreadyExistsException(ErrorMessageReader.TAG_ALREADY_EXISTS,
-                    tagDto.getNameTag());
+                    tagDto.getName());
         }
         Tag tag = tagConverter.convertFrom(tagDto);
         return tagConverter.convertTo(tagDao.add(tag));
@@ -53,16 +61,11 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public void deleteById(int idTag) {
-        tagDao.findById(idTag)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessageReader.TAG_NOT_FOUND, idTag));
-        tagDao.deleteFromGiftCertificateTag(idTag);
-        tagDao.deleteById(idTag);
-    }
-
-    @Override
-    public List<TagDto> findByRangeNames(List<TagDto> tagsDto) {
-        String tagsNameForQuery = TagSearchBuilder.buildQueryToSearchTags(tagsDto);
-        return tagConverter.convertTo(tagDao.findTagByNameInRange(tagsNameForQuery));
+    public void deleteById(Long id) {
+        Tag tag = tagDao.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessageReader.RESOURCE_NOT_FOUND, id,
+                        Tag.class.getSimpleName()));
+        tagDao.deleteTagFromGiftCertificates(id);
+        tagDao.delete(tag);
     }
 }

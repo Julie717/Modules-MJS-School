@@ -29,9 +29,9 @@ public class GiftCertificateWithTagResultSetExtractor implements ResultSetExtrac
     }
 
     public static void addTagToList(ResultSet rs, List<Tag> tags) throws SQLException {
-        Tag tag = TagResultSetExtractor.extractOneTag(rs);
-        if (tag.getNameTag() != null) {
+    /*    Tag tag = TagResultSetExtractor.extractOneTag(rs);
+        if (tag.getName() != null) {
             tags.add(tag);
-        }
+        }*/
     }
 }

@@ -2,6 +2,7 @@ package com.epam.esm.model.converter.impl;
 
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.GiftCertificateDto;
+import com.epam.esm.model.Tag;
 import com.epam.esm.model.TagDto;
 import com.epam.esm.model.converter.CommonConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,21 +26,25 @@ public class GiftCertificateConverterImpl implements CommonConverter<GiftCertifi
         if (entity.getTags() != null) {
             tags = tagConverter.convertTo(entity.getTags());
         }
-        return new GiftCertificateDto(entity.getIdGiftCertificate(),
-                entity.getNameGiftCertificate(), entity.getDescription(), entity.getPrice(), entity.getDuration(),
+        return new GiftCertificateDto(entity.getId(),
+                entity.getName(), entity.getDescription(), entity.getPrice(), entity.getDuration(),
                 entity.getCreateDate(), entity.getLastUpdateDate(), tags);
     }
 
     @Override
     public GiftCertificate convertFrom(GiftCertificateDto entity) {
         GiftCertificate giftCertificate = new GiftCertificate();
-        if (entity.getIdGiftCertificate() != null) {
-            giftCertificate.setIdGiftCertificate(entity.getIdGiftCertificate());
+        if (entity.getId() != null) {
+            giftCertificate.setId(entity.getId());
         }
-        giftCertificate.setNameGiftCertificate(entity.getNameGiftCertificate());
+        giftCertificate.setName(entity.getName());
         giftCertificate.setDescription(entity.getDescription());
         giftCertificate.setPrice(entity.getPrice());
         giftCertificate.setDuration(entity.getDuration());
+        if (entity.getTags() != null) {
+            List<Tag> tags = tagConverter.convertFrom(entity.getTags());
+            giftCertificate.setTags(tags);
+        }
         return giftCertificate;
     }
 
@@ -50,5 +55,14 @@ public class GiftCertificateConverterImpl implements CommonConverter<GiftCertifi
             entities.forEach(g -> giftCertificatesDto.add(convertTo(g)));
         }
         return giftCertificatesDto;
+    }
+
+    @Override
+    public List<GiftCertificate> convertFrom(List<GiftCertificateDto> entities) {
+        List<GiftCertificate> giftCertificates = new ArrayList<>();
+        if (!entities.isEmpty()) {
+            entities.forEach(g -> giftCertificates.add(convertFrom(g)));
+        }
+        return giftCertificates;
     }
 }

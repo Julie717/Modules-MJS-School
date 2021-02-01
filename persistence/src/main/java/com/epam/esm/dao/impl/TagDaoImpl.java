@@ -1,81 +1,75 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.dao.SqlQuery;
+import com.epam.esm.dao.Queries;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.model.Tag;
-import com.epam.esm.dao.extractor.ListTagResultSetExtractor;
-import com.epam.esm.dao.extractor.TagResultSetExtractor;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Statement;
-import java.sql.PreparedStatement;
+import javax.persistence.*;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class TagDaoImpl implements TagDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final TagResultSetExtractor tagExtractor;
-    private final ListTagResultSetExtractor listTagExtractor;
+    private final EntityManager entityManager;
 
     @Autowired
-    public TagDaoImpl(JdbcTemplate jdbcTemplate, TagResultSetExtractor tagExtractor,
-                      ListTagResultSetExtractor listTagExtractor) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.tagExtractor = tagExtractor;
-        this.listTagExtractor = listTagExtractor;
-    }
-
-    @Override
-    public Optional<Tag> findTagByName(String nameTag) {
-        return Optional.ofNullable(jdbcTemplate.query(SqlQuery.SELECT_TAG_BY_NAME, tagExtractor, nameTag));
-    }
-
-    @Override
-    public Tag add(Tag entity) {
-        KeyHolder key = new GeneratedKeyHolder();
-        PreparedStatementCreator preparedStatementCreator = connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(SqlQuery.ADD_TAG,
-                    Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, entity.getNameTag());
-            return preparedStatement;
-        };
-        jdbcTemplate.update(preparedStatementCreator, key);
-        Number id = key.getKey();
-        if (id != null) {
-            entity.setIdTag(id.intValue());
-        }
-        return entity;
-    }
-
-    @Override
-    public boolean deleteById(int id) {
-        return jdbcTemplate.update(SqlQuery.DELETE_TAG_BY_ID, id) > 0;
-    }
-
-    @Override
-    public Optional<Tag> findById(int id) {
-        return Optional.ofNullable(jdbcTemplate.query(SqlQuery.SELECT_TAG_BY_ID, tagExtractor, id));
+    public TagDaoImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
     public List<Tag> findAll() {
-        return jdbcTemplate.query(SqlQuery.SELECT_ALL_TAG, listTagExtractor);
+        Query query = entityManager.createQuery(Queries.SELECT_ALL_TAG, Tag.class);
+        return query.getResultList();
     }
 
     @Override
-    public List<Tag> findTagByNameInRange(String tagRangeNames) {
-        return jdbcTemplate.query(SqlQuery.SELECT_TAG_BY_NAME_IN_RANGE + tagRangeNames,
-                listTagExtractor);
+    public Optional<Tag> findById(Long id) {
+        return Optional.ofNullable(entityManager.find(Tag.class, id));
+    }
+
+
+    @Override
+    public Optional<Tag> findTagByName(String name) {
+        Optional<Tag> tag;
+        try {
+            Query query = entityManager.createQuery(Queries.SELECT_TAG_BY_NAME);
+            query.setParameter(1, name);
+            tag = Optional.ofNullable((Tag) query.getSingleResult());
+        } catch (NoResultException ex) {
+            tag = Optional.empty();
+        }
+        return tag;
     }
 
     @Override
-    public boolean deleteFromGiftCertificateTag(int idTag) {
-        return jdbcTemplate.update(SqlQuery.DELETE_TAGS_FROM_GIFT_CERTIFICATE_TAG, idTag) > 0;
+    public List<Tag> findTagByNameInRange(List<String> tagRangeNames) {
+        Query query = entityManager.createQuery(Queries.SELECT_TAG_BY_NAME_IN_RANGE, Tag.class)
+                .setParameter(1, tagRangeNames);
+        return query.getResultList();
+    }
+
+    @Override
+    public Tag add(Tag tag) {
+        entityManager.persist(tag);
+        entityManager.flush();
+        Long id = (Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(tag);
+        tag.setId(id);
+        return tag;
+    }
+
+    @Override
+    public void delete(Tag tag) {
+        entityManager.remove(tag);
+    }
+
+    @Override
+    public boolean deleteTagFromGiftCertificates(Long id) {
+        return entityManager.createNativeQuery(Queries.DELETE_TAGS_FROM_GIFT_CERTIFICATE_TAG)
+                .setParameter(1, id)
+                .executeUpdate() > 0;
     }
 }

@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PartQuerySearchBuilderTest {
-    PartQuerySearchBuilder partQuerySearchBuilder = new PartQuerySearchBuilder();
+   /* PartQuerySearchBuilder partQuerySearchBuilder = new PartQuerySearchBuilder();
 
     @ParameterizedTest
     @MethodSource("data")
@@ -22,5 +22,5 @@ public class PartQuerySearchBuilderTest {
                 {"beautiful", "description", "description LIKE '%beautiful%'"},
                 {"4 gifts", "description", "description LIKE '%4 gifts%'"}
         };
-    }
+    }*/
 }

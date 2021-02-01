@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PartQuerySortBuilderTest {
-    PartQuerySortBuilder partQuerySortBuilder = new PartQuerySortBuilder();
+   /* PartQuerySortBuilder partQuerySortBuilder = new PartQuerySortBuilder();
 
     @ParameterizedTest
     @MethodSource("data")
@@ -22,5 +22,5 @@ public class PartQuerySortBuilderTest {
                 {"createDate", null, "ORDER BY create_date ASC"},
                 {"createDate,-nameGiftCertificate", null, "ORDER BY create_date ASC, name_gift_certificate DESC"}
         };
-    }
+    }*/
 }

@@ -10,16 +10,7 @@ import com.epam.esm.validator.ValidationGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -58,34 +49,8 @@ public class GiftCertificateController {
      */
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public GiftCertificateDto findById(@PathVariable @Positive Integer id) {
+    public GiftCertificateDto findById(@PathVariable @Positive Long id) {
         return giftCertificateService.findById(id);
-    }
-
-    /**
-     * Add gift certificate to Db.
-     *
-     * @param giftCertificateDto the gift certificate dto
-     * @return the gift certificate dto
-     * @throws ResourceAlreadyExistsException if gift certificate with such name already exists in DB
-     */
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public GiftCertificateDto addGiftCertificate(@Validated(ValidationGroup.CreateValidation.class)
-                                                 @RequestBody GiftCertificateDto giftCertificateDto) {
-        return giftCertificateService.add(giftCertificateDto);
-    }
-
-    /**
-     * Delete gift certificate FROM Db.
-     *
-     * @param id the id
-     * @throws ResourceNotFoundException if gift certificate with such id isn't found
-     */
-    @DeleteMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteGiftCertificate(@PathVariable @Positive Integer id) {
-        giftCertificateService.deleteById(id);
     }
 
     /**
@@ -108,44 +73,31 @@ public class GiftCertificateController {
         return giftCertificates;
     }
 
-    /**
-     * Update gift certificate parameters.
-     *
-     * @param id                 the id
-     * @param giftCertificateDto the gift certificate dto
-     * @return the gift certificate dto
-     * @throws ResourceNotFoundException      if gift certificate with such id isn't found
-     * @throws ResourceAlreadyExistsException if gift certificate with updated name exists in DB
-     */
-    @PutMapping("/{id}")
+    @GetMapping(value = "/tags/{idTag}")
     @ResponseStatus(HttpStatus.OK)
-    public GiftCertificateDto updateGiftCertificate(@PathVariable
-                                                    @Positive Integer id,
-                                                    @Validated(ValidationGroup.UpdateValidation.class)
-                                                    @RequestBody GiftCertificateDto giftCertificateDto) {
-        giftCertificateDto.setIdGiftCertificate(id);
-        return giftCertificateService.updateGiftCertificate(giftCertificateDto);
+    public List<GiftCertificateDto> findGiftCertificatesByTag(@PathVariable @Positive Long idTag) {
+        return giftCertificateService.findByTagId(idTag);
+    }
+
+    @GetMapping(value = "/{idGiftCertificate}/tags/{idTag}")
+    @ResponseStatus(HttpStatus.OK)
+    public GiftCertificateDto findGiftCertificatesByTag(@PathVariable @Positive Long idGiftCertificate,
+                                                        @PathVariable @Positive Long idTag) {
+        return giftCertificateService.findGiftCertificateByTagId(idGiftCertificate, idTag);
     }
 
     /**
-     * Find gift certificate with tags by id.
+     * Add gift certificate to Db.
      *
-     * @param id      the id
-     * @param nameTag the name tag
+     * @param giftCertificateDto the gift certificate dto
      * @return the gift certificate dto
-     * @throws ResourceNotFoundException if gift certificate isn't found
+     * @throws ResourceAlreadyExistsException if gift certificate with such name already exists in DB
      */
-    @GetMapping(value = "/{id}/tags")
-    @ResponseStatus(HttpStatus.OK)
-    public GiftCertificateDto findGiftCertificateWithTags(@PathVariable @Positive Integer id,
-                                                          @RequestParam(required = false) String nameTag) {
-        GiftCertificateDto giftCertificateDto;
-        if (nameTag == null) {
-            giftCertificateDto = giftCertificateService.findGiftCertificateWithTags(id);
-        } else {
-            giftCertificateDto = giftCertificateService.findGiftCertificateWithTagsByTagName(id, nameTag);
-        }
-        return giftCertificateDto;
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public GiftCertificateDto addGiftCertificate(@Validated(ValidationGroup.CreateValidation.class)
+                                                 @RequestBody GiftCertificateDto giftCertificateDto) {
+        return giftCertificateService.add(giftCertificateDto);
     }
 
     /**
@@ -158,20 +110,21 @@ public class GiftCertificateController {
      */
     @PostMapping(value = "/{id}/tags")
     @ResponseStatus(HttpStatus.CREATED)
-    public GiftCertificateDto addTagsToGiftCertificate(@PathVariable @Positive Integer id,
+    public GiftCertificateDto addTagsToGiftCertificate(@PathVariable @Positive Long id,
                                                        @Valid @NotNull @RequestBody List<TagDto> tags) {
         return giftCertificateService.addTagsToGiftCertificate(id, tags);
     }
 
     /**
-     * Find gift certificates with tags list.
+     * Delete gift certificate FROM Db.
      *
-     * @return the list
+     * @param id the id
+     * @throws ResourceNotFoundException if gift certificate with such id isn't found
      */
-    @GetMapping(value = "/tags")
+    @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> findGiftCertificatesWithTags() {
-        return giftCertificateService.findAllWithTags();
+    public void deleteGiftCertificate(@PathVariable @Positive Long id) {
+        giftCertificateService.deleteById(id);
     }
 
     /**
@@ -182,9 +135,38 @@ public class GiftCertificateController {
      * @throws ResourceNotFoundException if gift certificate with such tag isn't found
      */
     @DeleteMapping(value = "/{idGiftCertificate}/tags/{idTag}")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteTagFromGiftCertificate(@PathVariable @Positive Integer idGiftCertificate,
-                                             @PathVariable @Positive Integer idTag) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTagFromGiftCertificate(@PathVariable @Positive Long idGiftCertificate,
+                                             @PathVariable @Positive Long idTag) {
         giftCertificateService.deleteTagFromGiftCertificate(idGiftCertificate, idTag);
+    }
+
+    /**
+     * Update gift certificate parameters.
+     *
+     * @param id                 the id
+     * @param giftCertificateDto the gift certificate dto
+     * @return the gift certificate dto
+     * @throws ResourceNotFoundException      if gift certificate with such id isn't found
+     * @throws ResourceAlreadyExistsException if gift certificate with updated name exists in DB
+     */
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public GiftCertificateDto updateGiftCertificate(@PathVariable
+                                                    @Positive Long id,
+                                                    @Validated(ValidationGroup.PutValidation.class)
+                                                    @RequestBody GiftCertificateDto giftCertificateDto) {
+        giftCertificateDto.setId(id);
+        return giftCertificateService.updateGiftCertificate(giftCertificateDto);
+    }
+
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public GiftCertificateDto patchGiftCertificate(@PathVariable
+                                                   @Positive Long id,
+                                                   @Validated(ValidationGroup.PatchValidation.class)
+                                                   @RequestBody GiftCertificateDto giftCertificateDto) {
+        giftCertificateDto.setId(id);
+        return giftCertificateService.patchGiftCertificate(giftCertificateDto);
     }
 }

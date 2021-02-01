@@ -8,4 +8,6 @@ public interface CommonConverter<S, T> {
     S convertFrom(T entity);
 
     List<T> convertTo(List<S> entities);
+
+    List<S> convertFrom(List<T> entities);
 }

@@ -19,18 +19,18 @@ public class ListGiftCertificateWithTagResultSetExtractor implements ResultSetEx
         List<GiftCertificate> giftCertificates = new ArrayList<>();
         GiftCertificate giftCertificate;
         List<Tag> tags;
-        int id;
+        Long id;
         if (rs.next()) {
             tags = new ArrayList<>();
             giftCertificate = GiftCertificateResultSetExtractor.extractOneGiftCertificate(rs);
-            id = giftCertificate.getIdGiftCertificate();
+            id = giftCertificate.getId();
             GiftCertificateWithTagResultSetExtractor.addTagToList(rs, tags);
             while (rs.next()) {
                 if (id != rs.getInt(ColumnName.GIFT_CERTIFICATE_ID)) {
                     giftCertificate.setTags(tags);
                     giftCertificates.add(giftCertificate);
                     giftCertificate = GiftCertificateResultSetExtractor.extractOneGiftCertificate(rs);
-                    id = giftCertificate.getIdGiftCertificate();
+                    id = giftCertificate.getId();
                     tags = new ArrayList<>();
                 }
                 GiftCertificateWithTagResultSetExtractor.addTagToList(rs, tags);

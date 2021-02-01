@@ -49,7 +49,7 @@ public class TagController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<TagDto> findAllTags() {
+    public List<TagDto> findAll() {
         return tagService.findAll();
     }
 
@@ -62,7 +62,7 @@ public class TagController {
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TagDto findById(@PathVariable @Positive Integer id) {
+    public TagDto findById(@PathVariable @Positive Long id) {
         return tagService.findById(id);
     }
 
@@ -86,8 +86,8 @@ public class TagController {
      * @throws ResourceNotFoundException if tag with such id isn't found
      */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteTag(@PathVariable @Positive Integer id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTag(@PathVariable @Positive Long id) {
         tagService.deleteById(id);
     }
 }

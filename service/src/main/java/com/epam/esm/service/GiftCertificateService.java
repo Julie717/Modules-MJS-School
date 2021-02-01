@@ -18,19 +18,12 @@ public interface GiftCertificateService {
     List<GiftCertificateDto> findAll();
 
     /**
-     * Find all gift certificates including appropriate tags.
-     *
-     * @return the list
-     */
-    List<GiftCertificateDto> findAllWithTags();
-
-    /**
      * Find gift certificate by id.
      *
-     * @param idGiftCertificate the id gift certificate
+     * @param id the id gift certificate
      * @return the gift certificate dto
      */
-    GiftCertificateDto findById(int idGiftCertificate);
+    GiftCertificateDto findById(Long id);
 
     /**
      * Add gift certificate to db.
@@ -43,17 +36,16 @@ public interface GiftCertificateService {
     /**
      * Delete gift certificate by id from Db.
      *
-     * @param idGiftCertificate the id gift certificate
+     * @param id the id gift certificate
      */
-    void deleteById(int idGiftCertificate);
+    void deleteById(Long id);
 
-    /**
-     * Find gift certificates by parameters.
-     *
-     * @param parameters the parameters
-     * @return the list
-     */
+
     List<GiftCertificateDto> findByParameters(Map<String, String> parameters);
+
+    List<GiftCertificateDto> findByTagId(Long idTag);
+
+    GiftCertificateDto findGiftCertificateByTagId(Long idGiftCertificate, Long idTag);
 
     /**
      * Update gift certificate parameters.
@@ -63,31 +55,16 @@ public interface GiftCertificateService {
      */
     GiftCertificateDto updateGiftCertificate(GiftCertificateDto giftCertificateDto);
 
-    /**
-     * Find gift certificate including appropriate tags.
-     *
-     * @param idGiftCertificate the id gift certificate
-     * @return the gift certificate dto
-     */
-    GiftCertificateDto findGiftCertificateWithTags(int idGiftCertificate);
-
-    /**
-     * Find gift certificate including appropriate tags with nameTag.
-     *
-     * @param idGiftCertificate the id gift certificate
-     * @param nameTag           the name tag
-     * @return the gift certificate dto
-     */
-    GiftCertificateDto findGiftCertificateWithTagsByTagName(int idGiftCertificate, String nameTag);
+    GiftCertificateDto patchGiftCertificate(GiftCertificateDto giftCertificateDto);
 
     /**
      * Add tags to gift certificate.
      *
-     * @param idGiftCertificate the id gift certificate
-     * @param tagsDto           the tags dto
+     * @param id      the id gift certificate
+     * @param tagsDto the tags dto
      * @return the gift certificate dto
      */
-    GiftCertificateDto addTagsToGiftCertificate(int idGiftCertificate, List<TagDto> tagsDto);
+    GiftCertificateDto addTagsToGiftCertificate(Long id, List<TagDto> tagsDto);
 
     /**
      * Delete tag from gift certificate.
@@ -95,5 +72,5 @@ public interface GiftCertificateService {
      * @param idGiftCertificate the id gift certificate
      * @param idTag             the id tag
      */
-    void deleteTagFromGiftCertificate(int idGiftCertificate, int idTag);
+    void deleteTagFromGiftCertificate(Long idGiftCertificate, Long idTag);
 }

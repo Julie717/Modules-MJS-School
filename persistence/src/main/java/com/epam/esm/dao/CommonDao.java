@@ -20,10 +20,10 @@ public interface CommonDao<T> {
     /**
      * Delete entity by id from Db.
      *
-     * @param id the id
+     * @param entity the entity
      * @return the boolean
      */
-    boolean deleteById(int id);
+    void delete(T entity);
 
     /**
      * Find entity by id in Db.
@@ -31,7 +31,7 @@ public interface CommonDao<T> {
      * @param id the id
      * @return the optional
      */
-    Optional<T> findById(int id);
+    Optional<T> findById(Long id);
 
     /**
      * Find all entities in Db.

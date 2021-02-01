@@ -2,6 +2,7 @@ package com.epam.esm.model;
 
 import com.epam.esm.util.ErrorMessageReader;
 import com.epam.esm.validator.ValidationGroup;
+import com.epam.esm.validator.annotation.Different;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
@@ -11,12 +12,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Digits;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -29,22 +26,22 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GiftCertificateDto implements Serializable {
-    Integer idGiftCertificate;
+    Long id;
 
-    @NotBlank(groups = ValidationGroup.CreateValidation.class)
+    @NotBlank(groups = {ValidationGroup.CreateValidation.class, ValidationGroup.PutValidation.class})
     @Size(min = 2, max = 45, message = ErrorMessageReader.GIFT_CERTIFICATE_INCORRECT_NAME_SIZE)
-    String nameGiftCertificate;
+    String name;
 
-    @NotBlank(groups = ValidationGroup.CreateValidation.class)
+    @NotBlank(groups = {ValidationGroup.CreateValidation.class, ValidationGroup.PutValidation.class})
     @Size(min = 1, max = 1000, message = ErrorMessageReader.GIFT_CERTIFICATE_INCORRECT_DESCRIPTION_SIZE)
     String description;
 
-    @NotNull(groups = ValidationGroup.CreateValidation.class)
+    @NotNull(groups = {ValidationGroup.CreateValidation.class, ValidationGroup.PutValidation.class})
     @Positive
     @Digits(integer = 5, fraction = 2)
     BigDecimal price;
 
-    @NotNull(groups = ValidationGroup.CreateValidation.class)
+    @NotNull(groups = {ValidationGroup.CreateValidation.class, ValidationGroup.PutValidation.class})
     @Positive
     @Min(1)
     Integer duration;
@@ -55,5 +52,7 @@ public class GiftCertificateDto implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
     Timestamp lastUpdateDate;
 
+    @Different
+    @Valid
     List<TagDto> tags;
 }

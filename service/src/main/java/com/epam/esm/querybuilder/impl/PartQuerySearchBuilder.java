@@ -3,8 +3,8 @@ package com.epam.esm.querybuilder.impl;
 import com.epam.esm.querybuilder.PartQueryBuilder;
 
 public class PartQuerySearchBuilder implements PartQueryBuilder {
-    private static final String START_LIKE = " LIKE \'%";
-    private static final String END_LIKE = "%\'";
+    private static final String START_LIKE = " LIKE CONCAT('%', '";
+    private static final String END_LIKE = "', '%')";
 
     @Override
     public String build(String value, String parameterNameInDb) {

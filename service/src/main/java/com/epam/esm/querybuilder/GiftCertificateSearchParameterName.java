@@ -1,6 +1,5 @@
 package com.epam.esm.querybuilder;
 
-import com.epam.esm.dao.ColumnName;
 import com.epam.esm.querybuilder.impl.PartQuerySearchBuilder;
 import com.epam.esm.querybuilder.impl.PartQuerySortBuilder;
 import com.epam.esm.validator.CommonValidator;
@@ -16,9 +15,13 @@ import java.util.Optional;
 @AllArgsConstructor
 @Getter
 public enum GiftCertificateSearchParameterName {
-    NAME("nameGiftCertificate", ColumnName.GIFT_CERTIFICATE_NAME, new GiftCertificateNameValidator(), new PartQuerySearchBuilder()),
-    DESCRIPTION("description", ColumnName.GIFT_CERTIFICATE_DESCRIPTION, new GiftCertificateDescriptionValidator(), new PartQuerySearchBuilder()),
-    SORT("sort", null, new GiftCertificateSortValidator(), new PartQuerySortBuilder());
+    NAME("nameGiftCertificate", "gift.name",
+            new GiftCertificateNameValidator(), new PartQuerySearchBuilder()),
+    DESCRIPTION("description", "gift.description",
+            new GiftCertificateDescriptionValidator(), new PartQuerySearchBuilder()),
+    SORT("sort", null, new GiftCertificateSortValidator(), new PartQuerySortBuilder()),
+    NAME_TAG("nameTag", "tag.name",
+            new GiftCertificateNameValidator(), new PartQuerySearchBuilder());
 
     private final String parameterName;
     private final String parameterNameInDb;

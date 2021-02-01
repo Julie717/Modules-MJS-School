@@ -15,7 +15,7 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
      * @param nameGiftCertificate the name gift certificate
      * @return the optional
      */
-    Optional<GiftCertificate> findGiftCertificateByName(String nameGiftCertificate);
+    Optional<GiftCertificate> findByName(String nameGiftCertificate);
 
     /**
      * Find gift certificates by parameters in Db.
@@ -24,6 +24,9 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
      * @return the list
      */
     List<GiftCertificate> findByParameters(String queryLastPart);
+
+    List<GiftCertificate> findByTagId(Long idTag);
+    Optional<GiftCertificate> findByTagIdInGiftCertificate(Long idGiftCertificate, Long idTag);
 
     /**
      * Update parameter of a gift certificate in Db.
@@ -34,59 +37,11 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
     GiftCertificate update(GiftCertificate giftCertificate);
 
     /**
-     * Find gift certificate in Db including tags.
-     *
-     * @param idGiftCertificate the id gift certificate
-     * @return the optional
-     */
-    Optional<GiftCertificate> findGiftCertificateWithTags(int idGiftCertificate);
-
-    /**
-     * Find gift certificate in Db including tags that have a nameTag.
-     *
-     * @param idGiftCertificate the id gift certificate
-     * @param nameTag           the name tag
-     * @return the optional
-     */
-    Optional<GiftCertificate> findGiftCertificateWithTagsByTagName(int idGiftCertificate, String nameTag);
-
-    /**
-     * Add tag to gift certificate.
-     *
-     * @param idGiftCertificate the id gift certificate
-     * @param idTag             the id tag
-     */
-    void addTagToGiftCertificate(int idGiftCertificate, int idTag);
-
-    /**
-     * Check existence of gift certificate with current tag.
-     *
-     * @param idGiftCertificate the id gift certificate
-     * @param idTag             the id tag
-     * @return the boolean
-     */
-    Boolean isGiftCertificateWithTagExist(int idGiftCertificate, int idTag);
-
-    /**
-     * Find all gift certificates in Db including tags.
-     *
-     * @return the list
-     */
-    List<GiftCertificate> findAllWithTags();
-
-    /**
-     * Delete tags from gift certificate.
-     *
-     * @param idGiftCertificate the id gift certificate
-     * @return the boolean
-     */
-    boolean deleteFromGiftCertificateTags(int idGiftCertificate);
-
-    /**
      * Delete tag from gift certificate.
      *
      * @param idGiftCertificate the id gift certificate
+     * @param idTag the id tag
      * @return the boolean
      */
-    boolean deleteFromGiftCertificateTag(int idGiftCertificate, int idTag);
+    void deleteTagFromGiftCertificate(Long idGiftCertificate, Long idTag);
 }

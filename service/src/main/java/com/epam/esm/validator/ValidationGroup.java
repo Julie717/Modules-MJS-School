@@ -6,6 +6,9 @@ public class ValidationGroup {
     public interface CreateValidation extends Default {
     }
 
-    public interface UpdateValidation extends Default {
+    public interface PutValidation extends Default {
+    }
+
+    public interface PatchValidation extends Default {
     }
 }

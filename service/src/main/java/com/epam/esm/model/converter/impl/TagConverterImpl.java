@@ -12,15 +12,15 @@ import java.util.List;
 public class TagConverterImpl implements CommonConverter<Tag, TagDto> {
     @Override
     public TagDto convertTo(Tag entity) {
-        return new TagDto(entity.getIdTag(), entity.getNameTag());
+        return new TagDto(entity.getId(), entity.getName());
     }
 
     @Override
     public Tag convertFrom(TagDto entity) {
         Tag tag = new Tag();
-        tag.setNameTag(entity.getNameTag());
-        if (entity.getIdTag() != null) {
-            tag.setIdTag(entity.getIdTag());
+        tag.setName(entity.getName());
+        if (entity.getId() != null) {
+            tag.setId(entity.getId());
         }
         return tag;
     }
@@ -30,5 +30,12 @@ public class TagConverterImpl implements CommonConverter<Tag, TagDto> {
         List<TagDto> tagsDto = new ArrayList<>();
         entities.forEach(t -> tagsDto.add(convertTo(t)));
         return tagsDto;
+    }
+
+    @Override
+    public List<Tag> convertFrom(List<TagDto> entities) {
+        List<Tag> tags = new ArrayList<>();
+        entities.forEach(t -> tags.add(convertFrom(t)));
+        return tags;
     }
 }

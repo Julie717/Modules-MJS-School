@@ -18,8 +18,8 @@ public class GiftCertificateResultSetExtractor implements ResultSetExtractor<Gif
 
     public static GiftCertificate extractOneGiftCertificate(ResultSet rs) throws SQLException, DataAccessException {
         GiftCertificate giftCertificate = new GiftCertificate();
-        giftCertificate.setIdGiftCertificate(rs.getInt(ColumnName.GIFT_CERTIFICATE_ID));
-        giftCertificate.setNameGiftCertificate(rs.getString(ColumnName.GIFT_CERTIFICATE_NAME));
+        giftCertificate.setId(rs.getLong(ColumnName.GIFT_CERTIFICATE_ID));
+        giftCertificate.setName(rs.getString(ColumnName.GIFT_CERTIFICATE_NAME));
         giftCertificate.setDescription(rs.getString(ColumnName.GIFT_CERTIFICATE_DESCRIPTION));
         giftCertificate.setPrice(rs.getBigDecimal(ColumnName.GIFT_CERTIFICATE_PRICE));
         giftCertificate.setDuration(rs.getInt(ColumnName.GIFT_CERTIFICATE_DURATION));

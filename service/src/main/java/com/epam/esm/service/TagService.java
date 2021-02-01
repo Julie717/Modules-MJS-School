@@ -18,10 +18,10 @@ public interface TagService {
     /**
      * Find tag by id.
      *
-     * @param idTag the id tag
+     * @param id the id tag
      * @return the tag dto
      */
-    TagDto findById(int idTag);
+    TagDto findById(Long id);
 
     /**
      * Add tag to Db.
@@ -34,9 +34,9 @@ public interface TagService {
     /**
      * Delete tag by id from Db.
      *
-     * @param idTag the id tag
+     * @param id the id tag
      */
-    void deleteById(int idTag);
+    void deleteById(Long id);
 
     /**
      * Find tags by names in list.
