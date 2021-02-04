@@ -1,17 +1,24 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
+import com.epam.esm.dao.PurchaseDao;
 import com.epam.esm.exception.IllegalParameterException;
 import com.epam.esm.exception.ResourceAlreadyExistsException;
 import com.epam.esm.exception.ResourceNotFoundException;
-import com.epam.esm.model.*;
+import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.model.GiftCertificateDto;
+import com.epam.esm.model.Tag;
+import com.epam.esm.model.TagDto;
+import com.epam.esm.model.Purchase;
 import com.epam.esm.model.converter.impl.GiftCertificateConverterImpl;
 import com.epam.esm.model.converter.impl.TagConverterImpl;
 import com.epam.esm.querybuilder.GiftCertificateSearchBuilder;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.ErrorMessageReader;
+import com.epam.esm.util.Pagination;
 import com.epam.esm.validator.GiftCertificateSearchParameterValidator;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,25 +30,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateDao giftCertificateDao;
+    private final PurchaseDao purchaseDao;
     private final TagService tagService;
     private final GiftCertificateConverterImpl giftCertificateConverter;
     private final TagConverterImpl tagConverter;
 
-    public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao, TagService tagService,
-                                      GiftCertificateConverterImpl giftCertificateConverter,
-                                      TagConverterImpl tagConverter) {
-        this.giftCertificateDao = giftCertificateDao;
-        this.tagService = tagService;
-        this.giftCertificateConverter = giftCertificateConverter;
-        this.tagConverter = tagConverter;
-    }
-
     @Override
-    public List<GiftCertificateDto> findAll() {
-        List<GiftCertificate> giftCertificates = giftCertificateDao.findAll();
+    public List<GiftCertificateDto> findAll(Pagination pagination) {
+        List<GiftCertificate> giftCertificates = giftCertificateDao.findAll(pagination.getLimit(), pagination.getOffset());
         return giftCertificateConverter.convertTo(giftCertificates);
     }
 
@@ -54,12 +54,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDto> findByParameters(Map<String, String> parameters) {
+    public List<GiftCertificateDto> findByParameters(Map<String, String> parameters, Pagination pagination) {
         if (!GiftCertificateSearchParameterValidator.isParametersValid(parameters)) {
             throw new IllegalParameterException(ErrorMessageReader.GIFT_CERTIFICATE_INCORRECT_PARAMS);
         }
         String request = GiftCertificateSearchBuilder.buildQuery(parameters);
-        List<GiftCertificate> giftCertificates = giftCertificateDao.findByParameters(request);
+        List<GiftCertificate> giftCertificates = giftCertificateDao.findByParameters(request, pagination.getLimit(),
+                pagination.getOffset());
         if (giftCertificates.isEmpty()) {
             throw new ResourceNotFoundException(ErrorMessageReader.GIFT_CERTIFICATE_NOT_FOUND_BY_PARAMS);
         }
@@ -67,8 +68,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDto> findByTagId(Long idTag) {
-        List<GiftCertificate> giftCertificates = giftCertificateDao.findByTagId(idTag);
+    public List<GiftCertificateDto> findByTagId(Long idTag, Pagination pagination) {
+        List<GiftCertificate> giftCertificates = giftCertificateDao.findByTagId(idTag,
+                pagination.getLimit(), pagination.getOffset());
         if (giftCertificates.isEmpty()) {
             throw new ResourceNotFoundException(ErrorMessageReader.GIFT_CERTIFICATES_WITH_TAG_NOT_FOUND, idTag);
         }
@@ -90,14 +92,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ResourceAlreadyExistsException(ErrorMessageReader.GIFT_CERTIFICATE_ALREADY_EXISTS,
                     giftCertificateDto.getName());
         }
-        List<TagDto> tags = tagService.findByRangeNames(giftCertificateDto.getTags());
-        List<TagDto> newTags = receiveNewTags(tagConverter.convertFrom(tags), giftCertificateDto.getTags());
-        if (!newTags.isEmpty()) {
-            throw new IllegalParameterException(ErrorMessageReader.GIFT_CERTIFICATE_INCORRECT_PARAMS);
+        if (giftCertificateDto.getTags() != null && !giftCertificateDto.getTags().isEmpty()) {
+            List<TagDto> tags = tagService.findByRangeNames(giftCertificateDto.getTags());
+            List<TagDto> newTags = receiveNewTags(tagConverter.convertFrom(tags), giftCertificateDto.getTags());
+            if (!newTags.isEmpty()) {
+                throw new IllegalParameterException(ErrorMessageReader.GIFT_CERTIFICATE_INCORRECT_PARAMS);
+            }
+            giftCertificateDto.setTags(tags);
         }
-        giftCertificateDto.setTags(tags);
         GiftCertificate giftCertificate = giftCertificateConverter.convertFrom(giftCertificateDto);
-        addCreateAndUpdateDate(giftCertificate);
         return giftCertificateConverter.convertTo(giftCertificateDao.add(giftCertificate));
     }
 
@@ -118,7 +121,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 .anyMatch(tag -> !tag.getName().equals(t.getName()))).forEach(
                 t -> tags.add(tagConverter.convertFrom(t))
         );
-        giftCertificate.setLastUpdateDate(Timestamp.valueOf(LocalDateTime.now()));
         return giftCertificateConverter.convertTo(giftCertificateDao.update(giftCertificate));
     }
 
@@ -128,6 +130,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         GiftCertificate giftCertificate = giftCertificateDao.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException(ErrorMessageReader.RESOURCE_NOT_FOUND, id,
                         GiftCertificate.class.getSimpleName()));
+        List<Purchase> purchases = purchaseDao.findByIdGiftCertificate(id);
+        if (purchases != null && !purchases.isEmpty()) {
+            throw new ResourceAlreadyExistsException(ErrorMessageReader.GIFT_CERTIFICATES_USED, giftCertificate.getName());
+        }
         giftCertificateDao.delete(giftCertificate);
     }
 
@@ -188,7 +194,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             }
         }
         GiftCertificate newGiftCertificate = mergeCurrentAndNewGiftCertificate(currentGiftCertificate, giftCertificateDto);
-        newGiftCertificate.setLastUpdateDate(Timestamp.valueOf(LocalDateTime.now()));
         return giftCertificateConverter.convertTo(giftCertificateDao.update(newGiftCertificate));
     }
 
@@ -209,14 +214,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (newGiftCertificate.getTags() != null) {
             addNewTagsToGiftCertificate(currentGiftCertificate, newGiftCertificate.getTags());
         }
-        currentGiftCertificate.setLastUpdateDate(Timestamp.valueOf(LocalDateTime.now()));
         return currentGiftCertificate;
-    }
-
-    private void addCreateAndUpdateDate(GiftCertificate giftCertificate) {
-        Timestamp dateTimeNow = Timestamp.valueOf(LocalDateTime.now());
-        giftCertificate.setCreateDate(dateTimeNow);
-        giftCertificate.setLastUpdateDate(dateTimeNow);
     }
 
     private List<TagDto> receiveNewTags(List<Tag> currentTags, List<TagDto> tagsDto) {

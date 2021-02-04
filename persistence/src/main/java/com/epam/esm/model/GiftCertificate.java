@@ -7,20 +7,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+
 import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
 import javax.persistence.ManyToMany;
-import javax.persistence.CascadeType;
-import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.GenerationType;
+import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -58,4 +62,16 @@ public class GiftCertificate implements Serializable {
             joinColumns = {@JoinColumn(name = ColumnName.GIFT_CERTIFICATE_ID)},
             inverseJoinColumns = {@JoinColumn(name = ColumnName.TAG_ID)})
     List<Tag> tags;
+
+    @PrePersist
+    public void onPrePersist() {
+        Timestamp date = Timestamp.valueOf(LocalDateTime.now());
+        setCreateDate(date);
+        setLastUpdateDate(date);
+    }
+
+    @PreUpdate
+    public void onPreUpdate() {
+        setLastUpdateDate(Timestamp.valueOf(LocalDateTime.now()));
+    }
 }

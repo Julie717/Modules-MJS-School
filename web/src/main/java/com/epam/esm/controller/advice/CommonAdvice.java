@@ -12,7 +12,8 @@ import org.apache.logging.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -46,8 +47,14 @@ public class CommonAdvice {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, Locale locale) {
-        String errorMessage = String.format(messageSource.getMessage(ex.getMessage(), new Object[]{},
-                locale), ex.getIdResource(), ex.getNameResource());
+        String errorMessage;
+        if (ex.getNameResource() != null) {
+            errorMessage = String.format(messageSource.getMessage(ex.getMessage(), new Object[]{},
+                    locale), ex.getNameResource(), ex.getIdResource());
+        } else {
+            errorMessage = String.format(messageSource.getMessage(ex.getMessage(), new Object[]{},
+                    locale), ex.getIdResource());
+        }
         ErrorResponse errorResponse = new ErrorResponse(RESOURCE_NOT_FOUND, errorMessage);
         log.log(Level.ERROR, errorMessage);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
@@ -64,7 +71,7 @@ public class CommonAdvice {
     }
 
     @ExceptionHandler(IllegalParameterException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(IllegalParameterException ex, Locale locale) {
+    public ResponseEntity<ErrorResponse> handleIllegalParameterException(IllegalParameterException ex, Locale locale) {
         String errorMessage = messageSource.getMessage(ex.getMessage(), new Object[]{},
                 locale);
         ErrorResponse errorResponse = new ErrorResponse(ErrorCode.BAD_REQUEST_VALUE, errorMessage);
@@ -95,14 +102,14 @@ public class CommonAdvice {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-   /* @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex, Locale locale) {
         String errorMessage = messageSource.getMessage(ErrorMessageReader.INTERNAL_SERVER_ERROR,
                 new Object[]{}, locale);
         ErrorResponse response = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, errorMessage);
         log.log(Level.ERROR, errorMessage);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }*/
+    }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex, Locale locale) {
@@ -117,6 +124,20 @@ public class CommonAdvice {
                 new Object[]{}, locale))));
         response.setErrorFieldsValidationInfo(fields);
         log.log(Level.ERROR, errorMessage);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ErrorResponse> handleBindingException(BindException ex, Locale locale) {
+        String errorMessage = messageSource.getMessage(ErrorMessageReader.INCORRECT_VALUE,
+                new Object[]{}, locale);
+        List<ErrorFieldValidationInfo> errorFields = new ArrayList<>();
+        ex.getBindingResult().getFieldErrors()
+                .forEach(f -> errorFields.add(new ErrorFieldValidationInfo(f.getField(),
+                        f.getCode(), f.getRejectedValue(), messageSource.getMessage(
+                        (f.getDefaultMessage() == null) ? ErrorMessageReader.INCORRECT_VALUE : f.getDefaultMessage(),
+                        new Object[]{}, locale))));
+        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST_VALUE, errorMessage, errorFields);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 

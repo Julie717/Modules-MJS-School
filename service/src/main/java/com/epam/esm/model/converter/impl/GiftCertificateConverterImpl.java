@@ -5,20 +5,16 @@ import com.epam.esm.model.GiftCertificateDto;
 import com.epam.esm.model.Tag;
 import com.epam.esm.model.TagDto;
 import com.epam.esm.model.converter.CommonConverter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@AllArgsConstructor
 @Component
 public class GiftCertificateConverterImpl implements CommonConverter<GiftCertificate, GiftCertificateDto> {
     private final TagConverterImpl tagConverter;
-
-    @Autowired
-    public GiftCertificateConverterImpl(TagConverterImpl tagConverter) {
-        this.tagConverter = tagConverter;
-    }
 
     @Override
     public GiftCertificateDto convertTo(GiftCertificate entity) {

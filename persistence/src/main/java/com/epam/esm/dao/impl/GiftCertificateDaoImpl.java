@@ -4,7 +4,7 @@ import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.dao.Queries;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -12,16 +12,11 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @Repository
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
     private final EntityManager entityManager;
-
-    @Autowired
-    public GiftCertificateDaoImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 
     @Override
     public Optional<GiftCertificate> findById(Long id) {
@@ -29,8 +24,9 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public List<GiftCertificate> findAll() {
-        Query query = entityManager.createQuery(Queries.SELECT_ALL_GIFT_CERTIFICATES, GiftCertificate.class);
+    public List<GiftCertificate> findAll(Integer limit, Integer offset) {
+        Query query = entityManager.createQuery(Queries.SELECT_ALL_GIFT_CERTIFICATES, GiftCertificate.class)
+                .setFirstResult(offset).setMaxResults(limit);
         return query.getResultList();
     }
 
@@ -48,16 +44,18 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public List<GiftCertificate> findByParameters(String queryLastPart) {
-        Query query = entityManager.createQuery(queryLastPart, GiftCertificate.class);
-        return (List<GiftCertificate>) query.getResultStream().distinct().collect(Collectors.toList());
+    public List<GiftCertificate> findByParameters(String queryLastPart, Integer limit, Integer offset) {
+        Query query = entityManager.createQuery(queryLastPart, GiftCertificate.class)
+                .setFirstResult(offset).setMaxResults(limit);
+        return query.getResultList();
     }
 
     @Override
-    public List<GiftCertificate> findByTagId(Long idTag) {
-        Query query = entityManager.createQuery(Queries.SELECT_ALL_GIFT_CERTIFICATES_BY_TAG_ID, GiftCertificate.class);
+    public List<GiftCertificate> findByTagId(Long idTag, Integer limit, Integer offset) {
+        Query query = entityManager.createQuery(Queries.SELECT_ALL_GIFT_CERTIFICATES_BY_TAG_ID, GiftCertificate.class)
+                .setFirstResult(offset).setMaxResults(limit);
         query.setParameter(1, idTag);
-        return (List<GiftCertificate>) query.getResultStream().distinct().collect(Collectors.toList());
+        return query.getResultList();
     }
 
     @Override
@@ -77,6 +75,8 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     @Override
     public GiftCertificate add(GiftCertificate giftCertificate) {
         entityManager.persist(giftCertificate);
+        entityManager.flush();
+        entityManager.clear();
         Long id = (Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(giftCertificate);
         giftCertificate.setId(id);
         return giftCertificate;
@@ -98,6 +98,9 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     public GiftCertificate update(GiftCertificate giftCertificate) {
-        return entityManager.merge(giftCertificate);
+        GiftCertificate updatedGiftCertificate = entityManager.merge(giftCertificate);
+        entityManager.flush();
+        entityManager.clear();
+        return updatedGiftCertificate;
     }
 }

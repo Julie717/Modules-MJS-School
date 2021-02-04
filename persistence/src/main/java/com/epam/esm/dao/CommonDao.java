@@ -21,7 +21,6 @@ public interface CommonDao<T> {
      * Delete entity by id from Db.
      *
      * @param entity the entity
-     * @return the boolean
      */
     void delete(T entity);
 
@@ -38,5 +37,5 @@ public interface CommonDao<T> {
      *
      * @return the list
      */
-    List<T> findAll();
+    List<T> findAll(Integer limit, Integer offset);
 }

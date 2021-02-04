@@ -25,7 +25,7 @@ public interface TagDao extends CommonDao<Tag> {
      * @return the list
      */
     List<Tag> findTagByNameInRange(List<String> tagRangeNames);
-
+    List<Tag> findTopTag(Integer limit, Integer offset);
     /**
      * Delete tag from gift certificate.
      *

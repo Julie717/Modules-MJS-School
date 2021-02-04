@@ -2,11 +2,13 @@ package com.epam.esm.model;
 
 import com.epam.esm.util.ErrorMessageReader;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
@@ -18,10 +20,11 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Validated
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserDto implements Serializable {
+public class UserDto extends RepresentationModel<UserDto> implements Serializable {
     Long id;
 
     @NotBlank
@@ -33,5 +36,5 @@ public class UserDto implements Serializable {
     String surname;
 
     @Valid
-    List<PurchaseRequestDto> purchases;
+    List<PurchaseResponseDto> purchases;
 }

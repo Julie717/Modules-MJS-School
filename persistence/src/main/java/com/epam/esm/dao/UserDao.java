@@ -2,8 +2,8 @@ package com.epam.esm.dao;
 
 import com.epam.esm.model.User;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface UserDao extends CommonDao<User> {
-    Optional<User> findByName(String name);
+    List<User> findBySurname(String surname, Integer limit, Integer offset);
 }

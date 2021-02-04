@@ -1,6 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.model.TagDto;
+import com.epam.esm.util.Pagination;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface TagService {
      *
      * @return the list
      */
-    List<TagDto> findAll();
+    List<TagDto> findAll(Pagination pagination);
 
     /**
      * Find tag by id.
@@ -22,7 +23,7 @@ public interface TagService {
      * @return the tag dto
      */
     TagDto findById(Long id);
-
+    List<TagDto> findTopTag(Pagination pagination);
     /**
      * Add tag to Db.
      *

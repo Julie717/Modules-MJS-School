@@ -2,6 +2,7 @@ package com.epam.esm.service;
 
 import com.epam.esm.model.GiftCertificateDto;
 import com.epam.esm.model.TagDto;
+import com.epam.esm.util.Pagination;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ public interface GiftCertificateService {
      *
      * @return the list
      */
-    List<GiftCertificateDto> findAll();
+    List<GiftCertificateDto> findAll(Pagination pagination);
 
     /**
      * Find gift certificate by id.
@@ -41,9 +42,9 @@ public interface GiftCertificateService {
     void deleteById(Long id);
 
 
-    List<GiftCertificateDto> findByParameters(Map<String, String> parameters);
+    List<GiftCertificateDto> findByParameters(Map<String, String> parameters, Pagination pagination);
 
-    List<GiftCertificateDto> findByTagId(Long idTag);
+    List<GiftCertificateDto> findByTagId(Long idTag, Pagination pagination);
 
     GiftCertificateDto findGiftCertificateByTagId(Long idGiftCertificate, Long idTag);
 

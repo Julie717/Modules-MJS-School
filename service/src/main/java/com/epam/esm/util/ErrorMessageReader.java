@@ -7,6 +7,7 @@ public class ErrorMessageReader {
     public static final String GIFT_CERTIFICATE_NOT_FOUND_BY_PARAMS = "certificate.not_found_by_params";
     public static final String GIFT_CERTIFICATE_INCORRECT_PARAMS = "certificate.incorrect_params";
     public static final String GIFT_CERTIFICATES_WITH_TAG_NOT_FOUND = "certificates_with_tag.not_found";
+    public static final String GIFT_CERTIFICATES_USED = "certificate.used";
     public static final String TAG_ALREADY_EXISTS = "tag.already_exist";
     public static final String TAG_ALREADY_EXISTS_IN_GIFT_CERTIFICATE = "tag.already_exist_in_gift_certificate";
     public static final String INCORRECT_VALUE = "incorrect_value";

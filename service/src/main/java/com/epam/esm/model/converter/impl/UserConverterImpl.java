@@ -1,34 +1,35 @@
 package com.epam.esm.model.converter.impl;
 
-import com.epam.esm.model.*;
+import com.epam.esm.model.Purchase;
+import com.epam.esm.model.PurchaseResponseDto;
+import com.epam.esm.model.User;
+import com.epam.esm.model.UserDto;
 import com.epam.esm.model.converter.CommonConverter;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@AllArgsConstructor
 @Component
 public class UserConverterImpl implements CommonConverter<User, UserDto> {
-    private final PurchaseConverterImpl purchaseConverter;
-
-    public UserConverterImpl(PurchaseConverterImpl purchaseConverter) {
-        this.purchaseConverter = purchaseConverter;
-    }
+    private final PurchaseResponseConverterImpl purchaseResponseConverter;
 
     @Override
     public UserDto convertTo(User entity) {
-        List<PurchaseRequestDto> purchases = null;
-        if (entity.getPurchases() != null) {
-            purchases = purchaseConverter.convertTo(entity.getPurchases());
+        List<PurchaseResponseDto> purchases = null;
+        if (entity.getPurchases() != null && !entity.getPurchases().isEmpty()) {
+            purchases = purchaseResponseConverter.convertTo(entity.getPurchases());
         }
-        return new UserDto(entity.getId(), entity.getName(), entity.getSurname(),purchases);
+        return new UserDto(entity.getId(), entity.getName(), entity.getSurname(), purchases);
     }
 
     @Override
     public User convertFrom(UserDto entity) {
         List<Purchase> purchases = null;
-        if (entity.getPurchases() != null) {
-            purchases = purchaseConverter.convertFrom(entity.getPurchases());
+        if (entity.getPurchases() != null && !entity.getPurchases().isEmpty()) {
+            purchases = purchaseResponseConverter.convertFrom(entity.getPurchases());
         }
         return new User(entity.getId(), entity.getName(), entity.getSurname(), purchases);
     }

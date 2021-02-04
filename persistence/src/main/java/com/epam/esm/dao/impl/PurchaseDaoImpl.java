@@ -3,7 +3,7 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.Queries;
 import com.epam.esm.dao.PurchaseDao;
 import com.epam.esm.model.Purchase;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -11,18 +11,15 @@ import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @Repository
 public class PurchaseDaoImpl implements PurchaseDao {
     private final EntityManager entityManager;
 
-    @Autowired
-    public PurchaseDaoImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
     @Override
-    public List<Purchase> findAll() {
-        Query query = entityManager.createQuery(Queries.SELECT_ALL_PURCHASES, Purchase.class);
+    public List<Purchase> findAll(Integer limit, Integer offset) {
+        Query query = entityManager.createQuery(Queries.SELECT_ALL_PURCHASES, Purchase.class)
+                .setFirstResult(offset).setMaxResults(limit);
         return query.getResultList();
     }
 
@@ -32,8 +29,14 @@ public class PurchaseDaoImpl implements PurchaseDao {
     }
 
     @Override
+    public List<Purchase> findByIdGiftCertificate(Long idGiftCertificate) {
+        Query query = entityManager.createQuery(Queries.SELECT_PURCHASE_BY_ID_GIFT_CERTIFICATE, Purchase.class);
+        query.setParameter(1,idGiftCertificate);
+        return query.getResultList();
+    }
+
+    @Override
     public Purchase add(Purchase entity) {
-   //     System.out.println(entity);
         entityManager.persist(entity);
         Long id = (Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
         entity.setId(id);

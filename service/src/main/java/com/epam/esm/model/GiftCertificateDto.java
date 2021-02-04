@@ -5,27 +5,36 @@ import com.epam.esm.validator.ValidationGroup;
 import com.epam.esm.validator.annotation.Different;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 @Validated
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class GiftCertificateDto implements Serializable {
+public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> implements Serializable {
     Long id;
 
     @NotBlank(groups = {ValidationGroup.CreateValidation.class, ValidationGroup.PutValidation.class})
@@ -46,10 +55,10 @@ public class GiftCertificateDto implements Serializable {
     @Min(1)
     Integer duration;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     Timestamp createDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     Timestamp lastUpdateDate;
 
     @Different

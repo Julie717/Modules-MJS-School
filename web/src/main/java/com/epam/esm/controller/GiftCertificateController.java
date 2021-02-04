@@ -6,13 +6,28 @@ import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.GiftCertificateDto;
 import com.epam.esm.model.TagDto;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.util.HateoasLinkBuilder;
+import com.epam.esm.util.Pagination;
+import com.epam.esm.util.PaginationParser;
 import com.epam.esm.validator.ValidationGroup;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.epam.esm.validator.annotation.IncludePagination;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.util.List;
@@ -25,20 +40,11 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
  * with mapping "/giftCertificates".
  */
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/giftCertificates", produces = APPLICATION_JSON_VALUE)
 @Validated
 public class GiftCertificateController {
     private final GiftCertificateService giftCertificateService;
-
-    /**
-     * Instantiates a new Gift certificate controller.
-     *
-     * @param giftCertificateService the gift certificate service
-     */
-    @Autowired
-    public GiftCertificateController(GiftCertificateService giftCertificateService) {
-        this.giftCertificateService = giftCertificateService;
-    }
 
     /**
      * Find by id gift certificate.
@@ -50,7 +56,9 @@ public class GiftCertificateController {
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public GiftCertificateDto findById(@PathVariable @Positive Long id) {
-        return giftCertificateService.findById(id);
+        GiftCertificateDto giftCertificate = giftCertificateService.findById(id);
+        HateoasLinkBuilder.buildGiftCertificateLink(giftCertificate);
+        return giftCertificate;
     }
 
     /**
@@ -63,27 +71,34 @@ public class GiftCertificateController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> findByParameters(@RequestParam Map<String, String> parameters) {
+    public List<GiftCertificateDto> findByParameters(@NotEmpty @IncludePagination @RequestParam Map<String, String> parameters) {
         List<GiftCertificateDto> giftCertificates;
+        Pagination pagination = PaginationParser.parsePagination(parameters);
         if (parameters.isEmpty()) {
-            giftCertificates = giftCertificateService.findAll();
+            giftCertificates = giftCertificateService.findAll(pagination);
         } else {
-            giftCertificates = giftCertificateService.findByParameters(parameters);
+            giftCertificates = giftCertificateService.findByParameters(parameters, pagination);
         }
+        HateoasLinkBuilder.buildGiftCertificatesLink(giftCertificates);
         return giftCertificates;
     }
 
     @GetMapping(value = "/tags/{idTag}")
     @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> findGiftCertificatesByTag(@PathVariable @Positive Long idTag) {
-        return giftCertificateService.findByTagId(idTag);
+    public List<GiftCertificateDto> findGiftCertificatesByTag(@PathVariable @Positive Long idTag,
+                                                              @Valid @NotNull Pagination pagination) {
+        List<GiftCertificateDto> giftCertificates = giftCertificateService.findByTagId(idTag, pagination);
+        HateoasLinkBuilder.buildGiftCertificatesLink(giftCertificates);
+        return giftCertificates;
     }
 
     @GetMapping(value = "/{idGiftCertificate}/tags/{idTag}")
     @ResponseStatus(HttpStatus.OK)
     public GiftCertificateDto findGiftCertificatesByTag(@PathVariable @Positive Long idGiftCertificate,
                                                         @PathVariable @Positive Long idTag) {
-        return giftCertificateService.findGiftCertificateByTagId(idGiftCertificate, idTag);
+        GiftCertificateDto giftCertificate = giftCertificateService.findGiftCertificateByTagId(idGiftCertificate, idTag);
+        HateoasLinkBuilder.buildGiftCertificateLink(giftCertificate);
+        return giftCertificate;
     }
 
     /**
@@ -97,7 +112,9 @@ public class GiftCertificateController {
     @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificateDto addGiftCertificate(@Validated(ValidationGroup.CreateValidation.class)
                                                  @RequestBody GiftCertificateDto giftCertificateDto) {
-        return giftCertificateService.add(giftCertificateDto);
+        GiftCertificateDto giftCertificate = giftCertificateService.add(giftCertificateDto);
+        HateoasLinkBuilder.buildGiftCertificateLink(giftCertificate);
+        return giftCertificate;
     }
 
     /**
@@ -112,7 +129,9 @@ public class GiftCertificateController {
     @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificateDto addTagsToGiftCertificate(@PathVariable @Positive Long id,
                                                        @Valid @NotNull @RequestBody List<TagDto> tags) {
-        return giftCertificateService.addTagsToGiftCertificate(id, tags);
+        GiftCertificateDto giftCertificate = giftCertificateService.addTagsToGiftCertificate(id, tags);
+        HateoasLinkBuilder.buildGiftCertificateLink(giftCertificate);
+        return giftCertificate;
     }
 
     /**
@@ -157,7 +176,9 @@ public class GiftCertificateController {
                                                     @Validated(ValidationGroup.PutValidation.class)
                                                     @RequestBody GiftCertificateDto giftCertificateDto) {
         giftCertificateDto.setId(id);
-        return giftCertificateService.updateGiftCertificate(giftCertificateDto);
+        GiftCertificateDto giftCertificate = giftCertificateService.updateGiftCertificate(giftCertificateDto);
+        HateoasLinkBuilder.buildGiftCertificateLink(giftCertificate);
+        return giftCertificate;
     }
 
     @PatchMapping("/{id}")
@@ -167,6 +188,8 @@ public class GiftCertificateController {
                                                    @Validated(ValidationGroup.PatchValidation.class)
                                                    @RequestBody GiftCertificateDto giftCertificateDto) {
         giftCertificateDto.setId(id);
-        return giftCertificateService.patchGiftCertificate(giftCertificateDto);
+        GiftCertificateDto giftCertificate = giftCertificateService.patchGiftCertificate(giftCertificateDto);
+        HateoasLinkBuilder.buildGiftCertificateLink(giftCertificate);
+        return giftCertificate;
     }
 }

@@ -1,11 +1,13 @@
 package com.epam.esm.querybuilder;
 
 import com.epam.esm.querybuilder.impl.PartQuerySearchBuilder;
+import com.epam.esm.querybuilder.impl.PartQuerySearchTagBuilder;
 import com.epam.esm.querybuilder.impl.PartQuerySortBuilder;
 import com.epam.esm.validator.CommonValidator;
 import com.epam.esm.validator.impl.GiftCertificateDescriptionValidator;
 import com.epam.esm.validator.impl.GiftCertificateNameValidator;
 import com.epam.esm.validator.impl.GiftCertificateSortValidator;
+import com.epam.esm.validator.impl.TagNameValidator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,7 +23,7 @@ public enum GiftCertificateSearchParameterName {
             new GiftCertificateDescriptionValidator(), new PartQuerySearchBuilder()),
     SORT("sort", null, new GiftCertificateSortValidator(), new PartQuerySortBuilder()),
     NAME_TAG("nameTag", "tag.name",
-            new GiftCertificateNameValidator(), new PartQuerySearchBuilder());
+            new TagNameValidator(), new PartQuerySearchTagBuilder());
 
     private final String parameterName;
     private final String parameterNameInDb;

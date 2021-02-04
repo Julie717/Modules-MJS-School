@@ -4,25 +4,24 @@ import com.epam.esm.dao.Queries;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.model.Tag;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @Repository
 public class TagDaoImpl implements TagDao {
     private final EntityManager entityManager;
 
-    @Autowired
-    public TagDaoImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
     @Override
-    public List<Tag> findAll() {
-        Query query = entityManager.createQuery(Queries.SELECT_ALL_TAG, Tag.class);
+    public List<Tag> findAll(Integer limit, Integer offset) {
+        Query query = entityManager.createQuery(Queries.SELECT_ALL_TAG, Tag.class)
+                .setFirstResult(offset).setMaxResults(limit);
         return query.getResultList();
     }
 
@@ -49,6 +48,13 @@ public class TagDaoImpl implements TagDao {
     public List<Tag> findTagByNameInRange(List<String> tagRangeNames) {
         Query query = entityManager.createQuery(Queries.SELECT_TAG_BY_NAME_IN_RANGE, Tag.class)
                 .setParameter(1, tagRangeNames);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Tag> findTopTag(Integer limit, Integer offset) {
+        Query query = entityManager.createNativeQuery(Queries.SELECT_TOP_TAG, Tag.class)
+                .setFirstResult(offset).setMaxResults(limit);
         return query.getResultList();
     }
 

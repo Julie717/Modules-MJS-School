@@ -23,9 +23,10 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
      * @param queryLastPart the query last part
      * @return the list
      */
-    List<GiftCertificate> findByParameters(String queryLastPart);
+    List<GiftCertificate> findByParameters(String queryLastPart, Integer limit, Integer offset);
 
-    List<GiftCertificate> findByTagId(Long idTag);
+    List<GiftCertificate> findByTagId(Long idTag, Integer limit, Integer offset);
+
     Optional<GiftCertificate> findByTagIdInGiftCertificate(Long idGiftCertificate, Long idTag);
 
     /**
@@ -40,8 +41,7 @@ public interface GiftCertificateDao extends CommonDao<GiftCertificate> {
      * Delete tag from gift certificate.
      *
      * @param idGiftCertificate the id gift certificate
-     * @param idTag the id tag
-     * @return the boolean
+     * @param idTag             the id tag
      */
     void deleteTagFromGiftCertificate(Long idGiftCertificate, Long idTag);
 }

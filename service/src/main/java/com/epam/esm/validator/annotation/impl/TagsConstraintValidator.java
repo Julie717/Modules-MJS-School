@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 public class TagsConstraintValidator implements ConstraintValidator<Different, List<TagDto>> {
     @Override
     public void initialize(Different constraintAnnotation) {
-
     }
 
     @Override
@@ -22,10 +21,10 @@ public class TagsConstraintValidator implements ConstraintValidator<Different, L
         boolean isValid = true;
         if (value != null && !value.isEmpty()) {
             Map<Long, Long> ids = value.stream().filter(v -> v.getId() != null)
-                    .collect(Collectors.groupingBy(e -> e.getId(), Collectors.counting()));
+                    .collect(Collectors.groupingBy(TagDto::getId, Collectors.counting()));
             Map<String, Long> names = value.stream()
                     .filter(v -> v.getName() == null || v.getName().isEmpty())
-                    .collect(Collectors.groupingBy(e -> e.getName(), Collectors.counting()));
+                    .collect(Collectors.groupingBy(TagDto::getName, Collectors.counting()));
             isValid = ids.entrySet().stream().allMatch(id -> id.getValue() == 1) &&
                     names.entrySet().stream().allMatch(name -> name.getValue() == 1);
         }

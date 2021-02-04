@@ -8,28 +8,23 @@ import com.epam.esm.model.TagDto;
 import com.epam.esm.model.converter.impl.TagConverterImpl;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.ErrorMessageReader;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.epam.esm.util.Pagination;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @Service
 public class TagServiceImpl implements TagService {
     private final TagDao tagDao;
     private final TagConverterImpl tagConverter;
 
-    @Autowired
-
-    public TagServiceImpl(TagDao tagDao, TagConverterImpl tagConverter) {
-        this.tagDao = tagDao;
-        this.tagConverter = tagConverter;
-    }
-
     @Override
-    public List<TagDto> findAll() {
-        List<Tag> tags = tagDao.findAll();
+    public List<TagDto> findAll(Pagination pagination) {
+        List<Tag> tags = tagDao.findAll(pagination.getLimit(),pagination.getOffset());
         return tagConverter.convertTo(tags);
     }
 
@@ -43,8 +38,13 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagDto> findByRangeNames(List<TagDto> tagsDto) {
-        List<String> tagNames = tagsDto.stream().map(tag -> tag.getName()).collect(Collectors.toList());
+        List<String> tagNames = tagsDto.stream().map(TagDto::getName).collect(Collectors.toList());
         return tagConverter.convertTo(tagDao.findTagByNameInRange(tagNames));
+    }
+
+    public List<TagDto> findTopTag(Pagination pagination){
+        List<Tag> tags = tagDao.findTopTag(pagination.getLimit(),pagination.getOffset());
+        return tagConverter.convertTo(tags);
     }
 
     @Override

@@ -22,9 +22,10 @@ allprojects {
     }
 
     dependencies {
-        implementation 'org.springframework.boot:spring-boot-starter'
+        implementation ("org.springframework.boot:spring-boot-starter")
         implementation("org.springframework.boot:spring-boot-starter-web")
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        implementation("org.springframework.boot:spring-boot-starter-hateoas")
+        testImplementation ("org.springframework.boot:spring-boot-starter-test")
         implementation("org.projectlombok:lombok:${lombokVersion}")
         annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
         implementation("javax.servlet:javax.servlet-api:${servletVersion}")
@@ -37,29 +38,3 @@ allprojects {
     bootJar { enabled = false }
     jar { enabled = true }
 }
-//  dependencies {
-/* implementation("org.springframework:spring-core:${springVersion}")
- implementation("org.springframework:spring-jdbc:${springVersion}")
- implementation("org.springframework:spring-context:${springVersion}")
- implementation("org.springframework:spring-webmvc:${springVersion}")
-implementation 'org.springframework.boot:spring-boot-starter'
-testImplementation 'org.springframework.boot:spring-boot-starter-test'
-// implementation("org.springframework.boot:spring-boot-starter-web:1.1.4.RELEASE")
-//   implementation("org.springframework.boot:spring-boot-starter-jdbc:1.1.4.RELEASE")
-//    implementation("org.springframework.boot:spring-boot-starter-actuator:1.1.4.RELEASE")
-//     implementation("org.springframework.boot:spring-boot-starter-log4j:1.1.4.RELEASE")
-implementation("javax.servlet:javax.servlet-api:${servletVersion}")
-
-implementation("javax.validation:validation-api:${javaxValidationVersion}")
-implementation("org.hibernate:hibernate-validator:${hibernateValidatorVersion}")
-//    implementation("org.apache.logging.log4j:log4j-core:${log4jVersion}")
-//   implementation("org.apache.logging.log4j:log4j-api:${log4jVersion}")
-//  implementation("org.codehaus.jackson:jackson-mapper-asl:${jacksonMapperVersion}")
-/*  implementation("com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
-implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
-implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonKotlinVersion}")*/
-//    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
-//   testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine')
-//    testImplementation("org.junit.jupiter:junit-jupiter-params:${junitVersion}")
-//   implementation("org.slf4j:slf4j-simple:${slf4jVersion}")
-//   }
