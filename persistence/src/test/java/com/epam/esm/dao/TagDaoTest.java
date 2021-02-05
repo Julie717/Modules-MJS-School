@@ -1,28 +1,74 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.model.Tag;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest
 public class TagDaoTest {
-   /* private EmbeddedDatabase dataSource;
+    @Autowired
     private TagDao tagDao;
 
-    @BeforeEach
-    void setUp() {
-        dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
-                .addScript("classpath:script.sql").addScript("classpath:script-inserts.sql").build();
-        tagDao = new TagDaoImpl(new JdbcTemplate(dataSource), new TagResultSetExtractor(),
-                new ListTagResultSetExtractor());
+    @Test
+    void findAllTest() {
+        List<Tag> expected = new ArrayList<>();
+        expected.add(new Tag(1L, "gift"));
+        expected.add(new Tag(2L, "sport"));
+        expected.add(new Tag(3L, "jumping"));
+        expected.add(new Tag(4L, "riding"));
+        expected.add(new Tag(5L, "wonderful gift"));
+        expected.add(new Tag(6L, "relax"));
+        expected.add(new Tag(7L, "make you fun"));
+        Integer limit = 50;
+        Integer offset = 0;
+
+        List<Tag> actual = tagDao.findAll(limit, offset);
+
+        assertEquals(expected, actual);
     }
 
-    @AfterEach
-    void tearDown() {
-        dataSource.shutdown();
-        tagDao = null;
+    @Test
+    void findAllFromOffsetPositionTest() {
+        List<Tag> expected = new ArrayList<>();
+        expected.add(new Tag(4L, "riding"));
+        expected.add(new Tag(5L, "wonderful gift"));
+        Integer limit = 2;
+        Integer offset = 3;
+
+        List<Tag> actual = tagDao.findAll(limit, offset);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void findByIdTestPositive() {
+        Long id = 2L;
+
+        Optional<Tag> actual = tagDao.findById(id);
+
+        Tag tag = new Tag(2L, "sport");
+        Optional<Tag> expected = Optional.of(tag);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void findByIdTestNotFound() {
+        Long id = 25L;
+
+        Optional<Tag> actual = tagDao.findById(id);
+
+        Optional<Tag> expected = Optional.empty();
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -31,7 +77,7 @@ public class TagDaoTest {
 
         Optional<Tag> actual = tagDao.findTagByName(name);
 
-        Tag tag = new Tag(1, "gift");
+        Tag tag = new Tag(1L, "gift");
         Optional<Tag> expected = Optional.of(tag);
         assertEquals(expected, actual);
     }
@@ -47,6 +93,49 @@ public class TagDaoTest {
     }
 
     @Test
+    void findTagByNameInRangePositive() {
+        List<Tag> expected = new ArrayList<>();
+        expected.add(new Tag(1L, "gift"));
+        expected.add(new Tag(3L, "jumping"));
+        expected.add(new Tag(6L, "relax"));
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add("gift");
+        tagNames.add("skating");
+        tagNames.add("jumping");
+        tagNames.add("relax");
+        tagNames.add("fitness");
+
+        List<Tag> actual = tagDao.findTagByNameInRange(tagNames);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void findTagByNameInRangeNotFound() {
+        List<Tag> expected = new ArrayList<>();
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add("skating");
+        tagNames.add("fitness");
+
+        List<Tag> actual = tagDao.findTagByNameInRange(tagNames);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void findTopTagTest() {
+        List<Tag> expected = new ArrayList<>();
+        expected.add(new Tag(1L, "gift"));
+        Integer limit = 10;
+        Integer offset = 0;
+
+        List<Tag> actual = tagDao.findTopTag(limit, offset);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Transactional
     void addTest() {
         String name = "funny";
         Tag tag = new Tag();
@@ -55,104 +144,28 @@ public class TagDaoTest {
         Tag actual = tagDao.add(tag);
 
         Tag expected = new Tag();
-        expected.setId(8);
+        expected.setId(8L);
         expected.setName(name);
         assertEquals(expected, actual);
     }
 
     @Test
-    void deleteByIdTestPositive() {
-        Long id = 1;
-
-        boolean actual = tagDao.deleteById(id);
-
-        assertTrue(actual);
-    }
-
-    @Test
-    void deleteByIdTestNegative() {
-        Long id = 25;
-
-        boolean actual = tagDao.deleteById(id);
-
-        assertFalse(actual);
-    }
-
-    @Test
-    void findByIdTestPositive() {
-        Long id = 2;
-
-        Optional<Tag> actual = tagDao.findById(id);
-
-        Tag tag = new Tag(2, "sport");
-        Optional<Tag> expected = Optional.of(tag);
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void findByIdTestNotFound() {
-        Long id = 25;
-
-        Optional<Tag> actual = tagDao.findById(id);
-
-        Optional<Tag> expected = Optional.empty();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void findAllTest() {
-        List<Tag> expected = new ArrayList<>();
-        expected.add(new Tag(1, "gift"));
-        expected.add(new Tag(2, "sport"));
-        expected.add(new Tag(3, "jumping"));
-        expected.add(new Tag(4, "riding"));
-        expected.add(new Tag(5, "wonderful gift"));
-        expected.add(new Tag(6, "relax"));
-        expected.add(new Tag(7, "make you fun"));
-
-        List<Tag> actual = tagDao.findAll();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void findTagByNameInRangePositive() {
-        List<Tag> expected = new ArrayList<>();
-        expected.add(new Tag(1, "gift"));
-        expected.add(new Tag(3, "jumping"));
-        expected.add(new Tag(6, "relax"));
-        String tagRangeNames = "('gift', 'skating', 'jumping', 'relax', 'fitness')";
-
-        List<Tag> actual = tagDao.findTagByNameInRange(tagRangeNames);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void findTagByNameInRangeNotFound() {
-        List<Tag> expected = new ArrayList<>();
-        String tagRangeNames = "('skating', 'fitness')";
-
-        List<Tag> actual = tagDao.findTagByNameInRange(tagRangeNames);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
+    @Transactional
     void deleteFromGiftCertificateTagPositive() {
-        Long id = 4;
+        Long id = 4L;
 
-        boolean actual = tagDao.deleteFromGiftCertificateTag(id);
+        boolean actual = tagDao.deleteTagFromGiftCertificates(id);
 
         assertTrue(actual);
     }
 
     @Test
+    @Transactional
     void deleteFromGiftCertificateTagNegative() {
-        Long id = 44;
+        Long id = 44L;
 
-        boolean actual = tagDao.deleteFromGiftCertificateTag(id);
+        boolean actual = tagDao.deleteTagFromGiftCertificates(id);
 
         assertFalse(actual);
-    }*/
+    }
 }

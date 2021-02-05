@@ -9,14 +9,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GiftCertificateSearchBuilderTest {
 
- /*   @Test
+    @Test
     public void buildQueryTestFull() {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("nameGiftCertificate", "gift");
         parameters.put("description", "beautiful");
         parameters.put("sort", "nameGiftCertificate,-createDate");
-        String expected = " WHERE name_gift_certificate LIKE '%gift%' AND description LIKE '%beautiful%' " +
-                "ORDER BY name_gift_certificate ASC, create_date DESC";
+        String expected = "FROM GiftCertificate gift JOIN FETCH gift.tags tag " +
+                "WHERE gift.name LIKE CONCAT('%', 'gift', '%') AND gift.description LIKE CONCAT('%', 'beautiful', '%') " +
+                "ORDER BY gift.name ASC, gift.createDate DESC";
 
         String actual = GiftCertificateSearchBuilder.buildQuery(parameters);
 
@@ -27,7 +28,8 @@ public class GiftCertificateSearchBuilderTest {
     public void buildQueryTestOnlySort() {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("sort", "createDate,-nameGiftCertificate");
-        String expected = " ORDER BY create_date ASC, name_gift_certificate DESC";
+        String expected = "FROM GiftCertificate gift JOIN FETCH gift.tags tag " +
+                "ORDER BY gift.createDate ASC, gift.name DESC";
 
         String actual = GiftCertificateSearchBuilder.buildQuery(parameters);
 
@@ -38,10 +40,11 @@ public class GiftCertificateSearchBuilderTest {
     public void buildQueryTestOnlySearch() {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("description", "beautiful gift");
-        String expected = " WHERE description LIKE '%beautiful gift%' ";
+        String expected = "FROM GiftCertificate gift JOIN FETCH gift.tags tag " +
+                "WHERE gift.description LIKE CONCAT('%', 'beautiful gift', '%') ";
 
         String actual = GiftCertificateSearchBuilder.buildQuery(parameters);
 
         assertEquals(expected, actual);
-    }*/
+    }
 }

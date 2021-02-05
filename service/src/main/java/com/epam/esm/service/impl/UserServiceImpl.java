@@ -10,7 +10,6 @@ import com.epam.esm.util.ErrorMessageReader;
 import com.epam.esm.util.Pagination;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

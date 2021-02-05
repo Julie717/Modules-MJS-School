@@ -39,10 +39,10 @@ public class GiftCertificate implements Serializable {
     @Column(name = ColumnName.GIFT_CERTIFICATE_ID)
     Long id;
 
-    @Column(name = ColumnName.GIFT_CERTIFICATE_NAME)
+    @Column(name = ColumnName.GIFT_CERTIFICATE_NAME,length = 45)
     String name;
 
-    @Column(name = ColumnName.GIFT_CERTIFICATE_DESCRIPTION)
+    @Column(name = ColumnName.GIFT_CERTIFICATE_DESCRIPTION, length = 1000)
     String description;
 
     @Column(name = ColumnName.GIFT_CERTIFICATE_PRICE)

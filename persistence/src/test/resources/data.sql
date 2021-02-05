@@ -29,3 +29,47 @@ INSERT INTO gift_certificate_tag (id_gift_certificate, id_tag) VALUES
 (4, 3),
 (4, 6),
 (4, 7);
+
+INSERT INTO user (id_user, surname, name) VALUES
+(1, 'Ivanov', 'Ivan'),
+(2, 'Petrov', 'Mihail'),
+(3, 'Sokolov', 'Sergey');
+
+INSERT INTO purchase (id_purchase, purchase_date,id_user,cost) VALUES
+(1, '2021-01-10 10:29:18',1,110),
+(2, '2021-01-11 11:34:10',3,80),
+(3, '2021-01-11 14:38:17',2,20),
+(4, '2021-01-12 18:54:28',1,10),
+(5, '2021-01-12 19:05:18',2,100),
+(6, '2021-01-12 20:14:18',1,100),
+(7, '2021-01-14 11:10:07',3,30);
+
+INSERT INTO purchase_gift_certificate (id_purchase, id_gift_certificate) VALUES
+(1, 1),
+(1, 3),
+(2, 2),
+(3, 4),
+(4, 1),
+(5, 2),
+(5, 4),
+(6, 3),
+(7, 1),
+(7, 4);
+
+CREATE VIEW user_purchases_cost AS
+ SELECT user.id_user, SUM(cost) AS full_sum
+  FROM user
+  JOIN purchase
+  ON(user.id_user=purchase.id_user)
+  GROUP BY user.id_user;
+
+CREATE VIEW user_tags AS
+ SELECT id_user, tag.id_tag, name_tag, COUNT(tag.id_tag) AS count_tag
+  FROM tag
+  JOIN gift_certificate_tag
+  ON(tag.id_tag=gift_certificate_tag.id_tag)
+  JOIN purchase_gift_certificate
+  ON (gift_certificate_tag.id_gift_certificate=purchase_gift_certificate.id_gift_certificate)
+  JOIN purchase
+  ON(purchase_gift_certificate.id_purchase=purchase.id_purchase)
+  GROUP BY tag.id_tag, id_user;

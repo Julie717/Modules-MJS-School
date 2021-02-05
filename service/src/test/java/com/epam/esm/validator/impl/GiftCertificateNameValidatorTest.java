@@ -19,7 +19,7 @@ public class GiftCertificateNameValidatorTest {
     public static Object[][] data() {
         return new Object[][]{
                 {"", false},
-                {"r", false},
+                {"r", true},
                 {"yn", true},
                 {"4 gifts", true},
                 {"gift", true},

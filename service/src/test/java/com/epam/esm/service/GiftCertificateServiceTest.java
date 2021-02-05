@@ -1,43 +1,9 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.GiftCertificateDao;
-import com.epam.esm.exception.IllegalParameterException;
-import com.epam.esm.exception.ResourceAlreadyExistsException;
-import com.epam.esm.exception.ResourceNotFoundException;
-import com.epam.esm.model.GiftCertificate;
-import com.epam.esm.model.GiftCertificateDto;
-import com.epam.esm.model.Tag;
-import com.epam.esm.model.TagDto;
-import com.epam.esm.model.converter.impl.GiftCertificateConverterImpl;
-import com.epam.esm.model.converter.impl.TagConverterImpl;
-import com.epam.esm.service.impl.GiftCertificateServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.InjectMocks;
-import org.mockito.Spy;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Map;
-import java.util.HashMap;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class GiftCertificateServiceTest {

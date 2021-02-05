@@ -30,11 +30,15 @@ public class GiftCertificateSearchParameterValidatorTest {
         parameters3.put("description", "beautiful");
         parameters3.put("nameGiftCertificate", "");
         Map<String, String> parameters4 = new HashMap<>();
+        Map<String, String> parameters5 = new HashMap<>();
+        parameters5.put("nameTag", "beautiful,gift");
+        parameters5.put("nameGiftCertificate", "a");
         return new Object[][]{
                 {parameters1, true},
                 {parameters2, false},
                 {parameters3, false},
-                {parameters4, false}
+                {parameters4, false},
+                {parameters5, true}
         };
     }
 }

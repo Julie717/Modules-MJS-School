@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PartQuerySearchBuilderTest {
-   /* PartQuerySearchBuilder partQuerySearchBuilder = new PartQuerySearchBuilder();
+    PartQuerySearchBuilder partQuerySearchBuilder = new PartQuerySearchBuilder();
 
     @ParameterizedTest
     @MethodSource("data")
@@ -18,9 +18,9 @@ public class PartQuerySearchBuilderTest {
 
     public static Object[][] data() {
         return new Object[][]{
-                {"gift", "name_gift_certificate", "name_gift_certificate LIKE '%gift%'"},
-                {"beautiful", "description", "description LIKE '%beautiful%'"},
-                {"4 gifts", "description", "description LIKE '%4 gifts%'"}
+                {"gift", "gift.name", "gift.name LIKE CONCAT('%', 'gift', '%')"},
+                {"beautiful", "gift.description", "gift.description LIKE CONCAT('%', 'beautiful', '%')"},
+                {"4 gifts", "gift.description", "gift.description LIKE CONCAT('%', '4 gifts', '%')"}
         };
-    }*/
+    }
 }

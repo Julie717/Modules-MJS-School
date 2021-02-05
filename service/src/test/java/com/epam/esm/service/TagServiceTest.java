@@ -1,29 +1,8 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.TagDao;
-import com.epam.esm.exception.ResourceAlreadyExistsException;
-import com.epam.esm.exception.ResourceNotFoundException;
-import com.epam.esm.model.Tag;
-import com.epam.esm.model.TagDto;
-import com.epam.esm.model.converter.impl.TagConverterImpl;
-import com.epam.esm.service.impl.TagServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.InjectMocks;
-import org.mockito.Spy;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class TagServiceTest {

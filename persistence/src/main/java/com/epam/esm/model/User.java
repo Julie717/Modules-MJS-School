@@ -29,10 +29,10 @@ public class User implements Serializable {
     @Column(name = ColumnName.USER_ID)
     Long id;
 
-    @Column(name = ColumnName.USER_NAME)
+    @Column(name = ColumnName.USER_NAME, length = 20)
     String name;
 
-    @Column(name = ColumnName.USER_SURNAME)
+    @Column(name = ColumnName.USER_SURNAME, length = 50)
     String surname;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)

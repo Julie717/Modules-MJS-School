@@ -27,6 +27,6 @@ public class Tag implements Serializable {
     @Column(name = ColumnName.TAG_ID)
     Long id;
 
-    @Column(name = ColumnName.TAG_NAME)
+    @Column(name = ColumnName.TAG_NAME,length = 45)
     String name;
 }
