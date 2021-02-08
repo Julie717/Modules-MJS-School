@@ -1,26 +1,7 @@
-apply plugin: 'war'
-//apply plugin: 'com.bmuschko.tomcat'
-/*buildscript {
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.bmuschko:gradle-tomcat-plugin:2.5'
-    }
-}*/
-
-/*def tomcatVersion = '8.0.42'*/
-
 dependencies {
     implementation project(":service")
-  /*  tomcat "org.apache.tomcat:tomcat-catalina:${tomcatVersion}",
-            "org.apache.tomcat:tomcat-coyote:${tomcatVersion}",
-            "org.apache.tomcat:tomcat-jasper:${tomcatVersion}"*/
 }
 
-/*tomcat {
-    httpProtocol = 'org.apache.coyote.http11.Http11Nio2Protocol'
-    ajpProtocol = 'org.apache.coyote.ajp.AjpNio2Protocol'
-    contextPath = '/'
-}*/
+bootJar {
+    mainClass = 'com.epam.esm.GiftCertificatesApplication'
+}

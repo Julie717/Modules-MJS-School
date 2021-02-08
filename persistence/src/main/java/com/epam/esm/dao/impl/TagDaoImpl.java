@@ -45,9 +45,9 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public List<Tag> findTagByNameInRange(List<String> tagRangeNames) {
+    public List<Tag> findTagByNameInRange(List<String> tagNames) {
         Query query = entityManager.createQuery(Queries.SELECT_TAG_BY_NAME_IN_RANGE, Tag.class)
-                .setParameter(1, tagRangeNames);
+                .setParameter(1, tagNames);
         return query.getResultList();
     }
 

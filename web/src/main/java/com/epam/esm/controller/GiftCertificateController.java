@@ -47,10 +47,10 @@ public class GiftCertificateController {
     private final GiftCertificateService giftCertificateService;
 
     /**
-     * Find by id gift certificate.
+     * Find gift certificate by id.
      *
-     * @param id the id
-     * @return the gift certificate dto
+     * @param id is the id of gift certificate
+     * @return the gift certificate DTO
      * @throws ResourceNotFoundException if gift certificate isn't found
      */
     @GetMapping(value = "/{id}")
@@ -62,10 +62,10 @@ public class GiftCertificateController {
     }
 
     /**
-     * Find by parameters gift certificates.
+     * Find gift certificates by parameters.
      *
-     * @param parameters the parameters
-     * @return the list
+     * @param parameters are the parameters for searching
+     * @return the list of gift certificates
      * @throws IllegalParameterException if search parameters aren't correct
      * @throws ResourceNotFoundException if gift certificates with such parameters aren't found
      */
@@ -83,6 +83,13 @@ public class GiftCertificateController {
         return giftCertificates;
     }
 
+    /**
+     * Find gift certificates by tag id.
+     *
+     * @param idTag      is the id of tag
+     * @param pagination contains limit and offset for search
+     * @return the list of gift certificate DTO
+     */
     @GetMapping(value = "/tags/{idTag}")
     @ResponseStatus(HttpStatus.OK)
     public List<GiftCertificateDto> findGiftCertificatesByTag(@PathVariable @Positive Long idTag,
@@ -92,6 +99,13 @@ public class GiftCertificateController {
         return giftCertificates;
     }
 
+    /**
+     * Find gift certificates with id = idGiftCertificate by tag id .
+     *
+     * @param idGiftCertificate is the id of gift certificate
+     * @param idTag             is the id of tag
+     * @return the gift certificate DTO
+     */
     @GetMapping(value = "/{idGiftCertificate}/tags/{idTag}")
     @ResponseStatus(HttpStatus.OK)
     public GiftCertificateDto findGiftCertificatesByTag(@PathVariable @Positive Long idGiftCertificate,
@@ -102,10 +116,10 @@ public class GiftCertificateController {
     }
 
     /**
-     * Add gift certificate to Db.
+     * Add gift certificate.
      *
-     * @param giftCertificateDto the gift certificate dto
-     * @return the gift certificate dto
+     * @param giftCertificateDto is the gift certificate DTO that should be added
+     * @return the gift certificate DTO
      * @throws ResourceAlreadyExistsException if gift certificate with such name already exists in DB
      */
     @PostMapping
@@ -118,11 +132,11 @@ public class GiftCertificateController {
     }
 
     /**
-     * Add tags to gift certificate gift certificate dto.
+     * Add tags to gift certificate.
      *
-     * @param id   the id
+     * @param id   is the id of gift certificate
      * @param tags the tags
-     * @return the gift certificate dto
+     * @return the gift certificate DTO
      * @throws ResourceNotFoundException if gift certificate isn't found
      */
     @PostMapping(value = "/{id}/tags")
@@ -135,9 +149,9 @@ public class GiftCertificateController {
     }
 
     /**
-     * Delete gift certificate FROM Db.
+     * Delete gift certificate.
      *
-     * @param id the id
+     * @param id is the id of gift certificate
      * @throws ResourceNotFoundException if gift certificate with such id isn't found
      */
     @DeleteMapping(value = "/{id}")
@@ -149,8 +163,8 @@ public class GiftCertificateController {
     /**
      * Delete tag from gift certificate.
      *
-     * @param idGiftCertificate the id gift certificate
-     * @param idTag             the id tag
+     * @param idGiftCertificate is the id of gift certificate
+     * @param idTag             is the id of tag
      * @throws ResourceNotFoundException if gift certificate with such tag isn't found
      */
     @DeleteMapping(value = "/{idGiftCertificate}/tags/{idTag}")
@@ -161,11 +175,11 @@ public class GiftCertificateController {
     }
 
     /**
-     * Update gift certificate parameters.
+     * Update all parameters of gift certificate.
      *
-     * @param id                 the id
-     * @param giftCertificateDto the gift certificate dto
-     * @return the gift certificate dto
+     * @param id                 is the id of gift certificate
+     * @param giftCertificateDto is the gift certificate DTO with new parameters
+     * @return the gift certificate DTO with new parameters
      * @throws ResourceNotFoundException      if gift certificate with such id isn't found
      * @throws ResourceAlreadyExistsException if gift certificate with updated name exists in DB
      */
@@ -181,6 +195,15 @@ public class GiftCertificateController {
         return giftCertificate;
     }
 
+    /**
+     * Update some parameters of gift certificate.
+     *
+     * @param id                 is the id of gift certificate
+     * @param giftCertificateDto is the gift certificate DTO with new parameters
+     * @return the gift certificate DTO with new parameters
+     * @throws ResourceNotFoundException      if gift certificate with such id isn't found
+     * @throws ResourceAlreadyExistsException if gift certificate with updated name exists in DB
+     */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public GiftCertificateDto patchGiftCertificate(@PathVariable

@@ -8,7 +8,6 @@ version = '1.0'
 
 allprojects {
     apply plugin: 'java'
-    apply plugin: 'application'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
 
@@ -35,6 +34,12 @@ allprojects {
     test {
         useJUnitPlatform()
     }
-    bootJar { enabled = false }
-    jar { enabled = true }
+}
+
+bootJar {
+    enabled = false
+}
+
+bootRun {
+    enabled = false
 }

@@ -12,38 +12,47 @@ public interface TagService {
     /**
      * Find all tags.
      *
-     * @return the list
+     * @param pagination contains limit and offset for search
+     * @return the list of tags
      */
     List<TagDto> findAll(Pagination pagination);
 
     /**
      * Find tag by id.
      *
-     * @param id the id tag
-     * @return the tag dto
+     * @param id is the id of tag
+     * @return the tag DTO
      */
     TagDto findById(Long id);
+
+    /**
+     * Find the most widely used tag of a user with the highest cost of all orders.
+     *
+     * @param pagination contains limit and offset for search
+     * @return the list of tag DTO
+     */
     List<TagDto> findTopTag(Pagination pagination);
+
     /**
      * Add tag to Db.
      *
-     * @param tagDto the tag dto
-     * @return the tag dto
+     * @param tagDto is the tag DTO that should be added
+     * @return is the tag DTO that was added
      */
     TagDto add(TagDto tagDto);
 
     /**
      * Delete tag by id from Db.
      *
-     * @param id the id tag
+     * @param id is the id of tag
      */
     void deleteById(Long id);
 
     /**
-     * Find tags by names in list.
+     * Find tags by names.
      *
-     * @param tagsDto the tags dto
-     * @return the list
+     * @param tagsDto is the tags DTO that contains names for searching
+     * @return the list of tag DTO
      */
     List<TagDto> findByRangeNames(List<TagDto> tagsDto);
 }

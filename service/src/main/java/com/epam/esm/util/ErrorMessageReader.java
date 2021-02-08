@@ -4,6 +4,7 @@ public class ErrorMessageReader {
 
     public static final String GIFT_CERTIFICATE_ALREADY_EXISTS = "certificate.already_exist";
     public static final String RESOURCE_NOT_FOUND = "resource.not_found";
+    public static final String RESOURCES_NOT_FOUND = "resources.not_found";
     public static final String GIFT_CERTIFICATE_NOT_FOUND_BY_PARAMS = "certificate.not_found_by_params";
     public static final String GIFT_CERTIFICATE_INCORRECT_PARAMS = "certificate.incorrect_params";
     public static final String GIFT_CERTIFICATES_WITH_TAG_NOT_FOUND = "certificates_with_tag.not_found";

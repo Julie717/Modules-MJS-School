@@ -12,30 +12,32 @@ public interface CommonDao<T> {
     /**
      * Add entity to Db.
      *
-     * @param entity the entity
-     * @return the t
+     * @param entity is the entity that should add to Db
+     * @return the entity that was added to Db
      */
     T add(T entity);
 
     /**
-     * Delete entity by id from Db.
+     * Delete entity from Db.
      *
-     * @param entity the entity
+     * @param entity is the entity that should delete from Db
      */
     void delete(T entity);
 
     /**
      * Find entity by id in Db.
      *
-     * @param id the id
-     * @return the optional
+     * @param id is the entity's id that should find in Db
+     * @return the optional of entity that was found in Db
      */
     Optional<T> findById(Long id);
 
     /**
      * Find all entities in Db.
      *
-     * @return the list
+     * @param limit is the maximum amount of entities that can be found
+     * @param offset is the number of entity from which starts search
+     * @return the list of entities that was found
      */
     List<T> findAll(Integer limit, Integer offset);
 }

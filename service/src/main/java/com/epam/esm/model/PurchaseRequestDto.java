@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.io.Serializable;
 import java.util.List;
 
@@ -20,6 +21,8 @@ import java.util.List;
 @Validated
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PurchaseRequestDto implements Serializable {
+    @NotNull
+    @Positive
     Long idUser;
 
     @NotEmpty

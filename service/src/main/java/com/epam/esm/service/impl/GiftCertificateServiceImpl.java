@@ -117,6 +117,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
         List<Tag> tags = giftCertificate.getTags();
         addNewTagsToGiftCertificate(giftCertificate, tagsDto);
+        System.out.println(giftCertificate);
         tagsDto.stream().filter(t -> tags.stream()
                 .anyMatch(tag -> !tag.getName().equals(t.getName()))).forEach(
                 t -> tags.add(tagConverter.convertFrom(t))
@@ -180,9 +181,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public GiftCertificateDto patchGiftCertificate(GiftCertificateDto giftCertificateDto) {
+        //Check existence of certificate with this id
         GiftCertificate currentGiftCertificate = giftCertificateDao.findById(giftCertificateDto.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessageReader.RESOURCE_NOT_FOUND,
                         giftCertificateDto.getId(), GiftCertificate.class.getSimpleName()));
+        //Check existence of certificate with new name. If there are found any certificate with the same name,
+        //certificate won't be added
         if (giftCertificateDto.getName() != null && !giftCertificateDto.getName().isEmpty()) {
             Optional<GiftCertificate> giftCertificateWithNewNameInDB = giftCertificateDao
                     .findByName(giftCertificateDto.getName());
@@ -244,13 +248,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     private boolean checkTags(List<TagDto> newTags) {
-        List<TagDto> tags = tagService.findByRangeNames(newTags);
-        boolean isCorrect = newTags.stream().allMatch(t ->
-                tags.stream().anyMatch(tag -> tag.getId().equals(t.getId())));
-        if (isCorrect) {
+        boolean isCorrect = true;
+        if (newTags != null) {
+            List<TagDto> tags = tagService.findByRangeNames(newTags);
             isCorrect = newTags.stream().allMatch(t ->
-                    tags.stream()
-                            .noneMatch(tag -> tag.getName().equals(t.getName()) && !tag.getId().equals(t.getId())));
+                    tags.stream().anyMatch(tag -> tag.getId().equals(t.getId())));
+            if (isCorrect) {
+                isCorrect = newTags.stream().allMatch(t ->
+                        tags.stream()
+                                .noneMatch(tag -> tag.getName().equals(t.getName()) && !tag.getId().equals(t.getId())));
+            }
         }
         return isCorrect;
     }

@@ -39,6 +39,7 @@ public class TagController {
     /**
      * Find all tags.
      *
+     * @param pagination contains limit and offset for search
      * @return the list
      */
     @GetMapping
@@ -50,10 +51,10 @@ public class TagController {
     }
 
     /**
-     * Find by id tag.
+     * Find tag by id.
      *
-     * @param id the id
-     * @return the tag dto
+     * @param id is the id of tag
+     * @return the tag DTO
      * @throws ResourceNotFoundException if tag isn't found
      */
     @GetMapping("/{id}")
@@ -64,6 +65,12 @@ public class TagController {
         return tag;
     }
 
+    /**
+     * Find the most widely used tag of a user with the highest cost of all orders.
+     *
+     * @param pagination contains limit and offset for search
+     * @return the list of tag DTO
+     */
     @GetMapping("/top")
     @ResponseStatus(HttpStatus.OK)
     public List<TagDto> findTopTag(@NotNull @Valid Pagination pagination) {
@@ -73,10 +80,10 @@ public class TagController {
     }
 
     /**
-     * Add tag to Db.
+     * Add tag.
      *
-     * @param tagDto the tag dto
-     * @return the tag dto
+     * @param tagDto is the tag dto that should be added
+     * @return the tag DTO
      * @throws ResourceAlreadyExistsException if tag with such name already exists
      */
     @PostMapping
@@ -88,9 +95,9 @@ public class TagController {
     }
 
     /**
-     * Delete tag from Db.
+     * Delete tag.
      *
-     * @param id the id
+     * @param id is the id of tag
      * @throws ResourceNotFoundException if tag with such id isn't found
      */
     @DeleteMapping("/{id}")

@@ -55,14 +55,4 @@ public class UserController {
         HateoasLinkBuilder.buildUserLink(user);
         return user;
     }
-
-    @PostMapping("/{idUser}/purchases")
-    @ResponseStatus(HttpStatus.OK)
-    public PurchaseResponseDto makePurchase(@PathVariable @Positive Long idUser,
-                                            @RequestBody PurchaseRequestDto purchaseDto) {
-        purchaseDto.setIdUser(idUser);
-        PurchaseResponseDto purchase = purchaseService.makePurchase(purchaseDto);
-        HateoasLinkBuilder.buildPurchaseLink(purchase);
-        return purchase;
-    }
 }

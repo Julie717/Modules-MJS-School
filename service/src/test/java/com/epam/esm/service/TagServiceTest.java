@@ -1,30 +1,52 @@
 package com.epam.esm.service;
 
+import com.epam.esm.dao.TagDao;
+import com.epam.esm.exception.ResourceAlreadyExistsException;
+import com.epam.esm.exception.ResourceNotFoundException;
+import com.epam.esm.model.Tag;
+import com.epam.esm.model.TagDto;
+import com.epam.esm.model.converter.impl.TagConverterImpl;
+import com.epam.esm.service.impl.TagServiceImpl;
+import com.epam.esm.util.Pagination;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 public class TagServiceTest {
-  /*  @InjectMocks
+    @InjectMocks
     private TagServiceImpl tagService;
+
     @Mock
     private TagDao tagDao;
+
     @Spy
     private final TagConverterImpl tagConverter = new TagConverterImpl();
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void findAllTestEmptyList() {
         List<Tag> tags = new ArrayList<>();
-        Mockito.when(tagDao.findAll()).thenReturn(tags);
+        Integer limit = 10;
+        Integer offset = 2;
+        Mockito.when(tagDao.findAll(10, 2)).thenReturn(tags);
+        Pagination pagination = new Pagination(limit, offset);
         List<TagDto> tagsDto = new ArrayList<>();
 
-        List<TagDto> actual = tagService.findAll();
+        List<TagDto> actual = tagService.findAll(pagination);
 
         verify(tagConverter).convertTo(tags);
         assertEquals(tagsDto, actual);
@@ -32,17 +54,20 @@ public class TagServiceTest {
 
     @Test
     void findAllTestPositive() {
+        Integer limit = 3;
+        Integer offset = 0;
         List<Tag> tags = new ArrayList<>();
-        tags.add(new Tag(1, "gift"));
-        tags.add(new Tag(2, "sport"));
-        tags.add(new Tag(3, "jumping"));
-        Mockito.when(tagDao.findAll()).thenReturn(tags);
+        tags.add(new Tag(1L, "gift"));
+        tags.add(new Tag(2L, "sport"));
+        tags.add(new Tag(3L, "jumping"));
+        Mockito.when(tagDao.findAll(limit, offset)).thenReturn(tags);
+        Pagination pagination = new Pagination(limit, offset);
         List<TagDto> tagsDto = new ArrayList<>();
-        tagsDto.add(new TagDto(1, "gift"));
-        tagsDto.add(new TagDto(2, "sport"));
-        tagsDto.add(new TagDto(3, "jumping"));
+        tagsDto.add(new TagDto(1L, "gift"));
+        tagsDto.add(new TagDto(2L, "sport"));
+        tagsDto.add(new TagDto(3L, "jumping"));
 
-        List<TagDto> actual = tagService.findAll();
+        List<TagDto> actual = tagService.findAll(pagination);
 
         verify(tagConverter, times(1)).convertTo(tags);
         assertEquals(tagsDto, actual);
@@ -50,10 +75,10 @@ public class TagServiceTest {
 
     @Test
     void findByIdTestPositive() {
-        Long id = 2;
-        Optional<Tag> tag = Optional.of(new Tag(2, "sport"));
+        Long id = 2L;
+        Optional<Tag> tag = Optional.of(new Tag(2L, "sport"));
         Mockito.when(tagDao.findById(id)).thenReturn(tag);
-        TagDto expected = new TagDto(2, "sport");
+        TagDto expected = new TagDto(2L, "sport");
 
         TagDto actual = tagService.findById(id);
 
@@ -62,22 +87,81 @@ public class TagServiceTest {
 
     @Test
     void findByIdTestNegative() {
-        Long id = 25;
+        Long id = 25L;
         Mockito.when(tagDao.findById(id)).thenReturn(Optional.empty());
+
         assertThrows(ResourceNotFoundException.class, () -> tagService.findById(id));
+    }
+
+    @Test
+    void findByRangeNamesTestPositive() {
+        List<TagDto> tagsDto = new ArrayList<>();
+        tagsDto.add(new TagDto(null, "gift"));
+        tagsDto.add(new TagDto(null, "sport"));
+        tagsDto.add(new TagDto(null, "jumping"));
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add("gift");
+        tagNames.add("sport");
+        tagNames.add("jumping");
+        List<Tag> tags = new ArrayList<>();
+        tags.add(new Tag(1L, "gift"));
+        tags.add(new Tag(8L, "jumping"));
+        Mockito.when(tagDao.findTagByNameInRange(tagNames)).thenReturn(tags);
+
+        List<TagDto> actual = tagService.findByRangeNames(tagsDto);
+
+        List<TagDto> expected = new ArrayList<>();
+        expected.add(new TagDto(1L, "gift"));
+        expected.add(new TagDto(8L, "jumping"));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void findByRangeNamesTestEmpty() {
+        List<TagDto> tagsDto = new ArrayList<>();
+        tagsDto.add(new TagDto(null, "gift"));
+        tagsDto.add(new TagDto(null, "sport"));
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add("gift");
+        tagNames.add("sport");
+        List<Tag> tags = new ArrayList<>();
+        Mockito.when(tagDao.findTagByNameInRange(tagNames)).thenReturn(tags);
+
+        List<TagDto> actual = tagService.findByRangeNames(tagsDto);
+
+        List<TagDto> expected = new ArrayList<>();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void  findTopTagTest() {
+        List<Tag> tags = new ArrayList<>();
+        tags.add(new Tag(1L, "gift"));
+        tags.add(new Tag(8L, "jumping"));
+        Integer limit = 3;
+        Integer offset = 0;
+        Pagination pagination = new Pagination(limit, offset);
+        Mockito.when(tagDao.findTopTag(limit,offset)).thenReturn(tags);
+
+        List<TagDto> actual = tagService.findTopTag(pagination);
+
+        List<TagDto> expected = new ArrayList<>();
+        expected.add(new TagDto(1L, "gift"));
+        expected.add(new TagDto(8L, "jumping"));
+        assertEquals(expected, actual);
     }
 
     @Test
     void addTestPositive() {
         Tag tag = new Tag(null, "jumping");
         Mockito.when(tagDao.findTagByName(tag.getName())).thenReturn(Optional.empty());
-        Tag tagWithId = new Tag(3, "jumping");
+        Tag tagWithId = new Tag(3L, "jumping");
         Mockito.when(tagDao.add(tag)).thenReturn(tagWithId);
         TagDto tagDto = new TagDto(null, "jumping");
 
         TagDto actual = tagService.add(tagDto);
 
-        TagDto expected = new TagDto(3, "jumping");
+        TagDto expected = new TagDto(3L, "jumping");
         assertEquals(expected, actual);
     }
 
@@ -89,57 +173,4 @@ public class TagServiceTest {
 
         assertThrows(ResourceAlreadyExistsException.class, () -> tagService.add(tagDto));
     }
-
-    @Test
-    void deleteByIdTestPositive() {
-        Long id = 8;
-        Mockito.when(tagDao.findById(id)).thenReturn(Optional.of(new Tag()));
-        Mockito.when(tagDao.deleteFromGiftCertificateTag(id)).thenReturn(true);
-        Mockito.when(tagDao.deleteById(id)).thenReturn(true);
-
-        assertDoesNotThrow(() -> tagService.deleteById(id));
-    }
-
-    @Test
-    void deleteByIdTestNegative() {
-        Long id = 8;
-        Mockito.when(tagDao.findById(id)).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class, () -> tagService.deleteById(id));
-    }
-
-    @Test
-    void findByRangeNamesTestPositive() {
-        List<TagDto> tagsDto = new ArrayList<>();
-        tagsDto.add(new TagDto(null, "gift"));
-        tagsDto.add(new TagDto(null, "sport"));
-        tagsDto.add(new TagDto(null, "jumping"));
-        String tagsNameForQuery = "('gift', 'sport', 'jumping')";
-        List<Tag> tags = new ArrayList<>();
-        tags.add(new Tag(1, "gift"));
-        tags.add(new Tag(8, "jumping"));
-        Mockito.when(tagDao.findTagByNameInRange(tagsNameForQuery)).thenReturn(tags);
-
-        List<TagDto> actual = tagService.findByRangeNames(tagsDto);
-
-        List<TagDto> expected = new ArrayList<>();
-        expected.add(new TagDto(1, "gift"));
-        expected.add(new TagDto(8, "jumping"));
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void findByRangeNamesTestEmpty() {
-        List<TagDto> tagsDto = new ArrayList<>();
-        tagsDto.add(new TagDto(null, "gift"));
-        tagsDto.add(new TagDto(null, "sport"));
-        String tagsNameForQuery = "('gift', 'sport')";
-        List<Tag> tags = new ArrayList<>();
-        Mockito.when(tagDao.findTagByNameInRange(tagsNameForQuery)).thenReturn(tags);
-
-        List<TagDto> actual = tagService.findByRangeNames(tagsDto);
-
-        List<TagDto> expected = new ArrayList<>();
-        assertEquals(expected, actual);
-    }*/
 }
