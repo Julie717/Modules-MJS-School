@@ -1,11 +1,16 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.config.DaoConfigTest;
+import com.epam.esm.dao.impl.PurchaseDaoImpl;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Purchase;
 import com.epam.esm.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -15,7 +20,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(classes = PurchaseDaoImpl.class)
+@ContextConfiguration(classes = DaoConfigTest.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 public class PurchaseDaoTest {
     @Autowired
     private PurchaseDao purchaseDao;
@@ -37,7 +45,7 @@ public class PurchaseDaoTest {
 
         BigDecimal actualCost = purchaseDao.findById(id).get().getCost();
 
-        BigDecimal expectedCost = BigDecimal.valueOf(20).setScale(2);
+        BigDecimal expectedCost = BigDecimal.valueOf(20);
         assertEquals(expectedCost, actualCost);
     }
 

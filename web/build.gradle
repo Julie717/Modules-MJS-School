@@ -1,5 +1,6 @@
 dependencies {
     implementation project(":service")
+    testImplementation( 'org.hibernate:hibernate-entitymanager:5.0.12.Final')
 }
 
 bootJar {

@@ -1,10 +1,15 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.config.DaoConfigTest;
+import com.epam.esm.dao.impl.GiftCertificateDaoImpl;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -16,7 +21,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(classes = GiftCertificateDaoImpl.class)
+@ContextConfiguration(classes = DaoConfigTest.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 public class GiftCertificateDaoTest {
     @Autowired
     private GiftCertificateDao giftCertificateDao;
@@ -30,7 +38,7 @@ public class GiftCertificateDaoTest {
         tags.add(new Tag(6L, "relax"));
         tags.add(new Tag(7L, "make you fun"));
         GiftCertificate giftCertificate = new GiftCertificate(4L, "Trampoline jumping",
-                "Trampoline jumping can be fun.", BigDecimal.valueOf(20).setScale(2), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
+                "Trampoline jumping can be fun.", BigDecimal.valueOf(20), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
                 Timestamp.valueOf("2021-01-12 11:34:18"), tags);
         Optional<GiftCertificate> expected = Optional.of(giftCertificate);
 
@@ -58,7 +66,7 @@ public class GiftCertificateDaoTest {
         tags.add(new Tag(7L, "make you fun"));
         expected.add(new GiftCertificate(1L, "Skating", "Ice skating is a sport in which people slide " +
                 "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10).setScale(2),
+                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
                 30, Timestamp.valueOf("2021-01-10 12:15:37"),
                 Timestamp.valueOf("2021-01-10 12:15:37"), tags));
         tags = new ArrayList<>();
@@ -69,7 +77,7 @@ public class GiftCertificateDaoTest {
                 "well-being and, more specifically, the ability to perform aspects of sports, " +
                 "occupations and daily activities. Physical fitness is generally achieved through" +
                 " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
-                BigDecimal.valueOf(80).setScale(2), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
+                BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
                 Timestamp.valueOf("2021-01-11 10:30:01"), tags));
         tags = new ArrayList<>();
         tags.add(new Tag(1L, "gift"));
@@ -78,7 +86,7 @@ public class GiftCertificateDaoTest {
         tags.add(new Tag(6L, "relax"));
         expected.add(new GiftCertificate(3L, "Horseback riding", "Horseback riding is the activity of " +
                 "riding a horse, especially for enjoyment or as a form of exercise.",
-                BigDecimal.valueOf(100).setScale(2), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
+                BigDecimal.valueOf(100), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
                 Timestamp.valueOf("2021-01-12 11:34:18"), tags));
         tags = new ArrayList<>();
         tags.add(new Tag(2L, "sport"));
@@ -86,7 +94,7 @@ public class GiftCertificateDaoTest {
         tags.add(new Tag(6L, "relax"));
         tags.add(new Tag(7L, "make you fun"));
         expected.add(new GiftCertificate(4L, "Trampoline jumping",
-                "Trampoline jumping can be fun.", BigDecimal.valueOf(20).setScale(2), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
+                "Trampoline jumping can be fun.", BigDecimal.valueOf(20), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
                 Timestamp.valueOf("2021-01-12 11:34:18"), tags));
         Integer limit = 10;
         Integer offset = 0;
@@ -107,7 +115,7 @@ public class GiftCertificateDaoTest {
                 "well-being and, more specifically, the ability to perform aspects of sports, " +
                 "occupations and daily activities. Physical fitness is generally achieved through" +
                 " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
-                BigDecimal.valueOf(80).setScale(2), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
+                BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
                 Timestamp.valueOf("2021-01-11 10:30:01"), tags));
         tags = new ArrayList<>();
         tags.add(new Tag(1L, "gift"));
@@ -116,7 +124,7 @@ public class GiftCertificateDaoTest {
         tags.add(new Tag(6L, "relax"));
         expected.add(new GiftCertificate(3L, "Horseback riding", "Horseback riding is the activity of " +
                 "riding a horse, especially for enjoyment or as a form of exercise.",
-                BigDecimal.valueOf(100).setScale(2), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
+                BigDecimal.valueOf(100), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
                 Timestamp.valueOf("2021-01-12 11:34:18"), tags));
         Integer limit = 2;
         Integer offset = 1;
@@ -136,7 +144,7 @@ public class GiftCertificateDaoTest {
         tags.add(new Tag(6L, "relax"));
         GiftCertificate giftCertificate = new GiftCertificate(3L, "Horseback riding", "Horseback riding is the activity of " +
                 "riding a horse, especially for enjoyment or as a form of exercise.",
-                BigDecimal.valueOf(100).setScale(2), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
+                BigDecimal.valueOf(100), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
                 Timestamp.valueOf("2021-01-12 11:34:18"), tags);
         Optional<GiftCertificate> expected = Optional.of(giftCertificate);
 
@@ -173,7 +181,7 @@ public class GiftCertificateDaoTest {
         tags.add(new Tag(6L, "relax"));
         expected.add(new GiftCertificate(3L, "Horseback riding", "Horseback riding is the activity of " +
                 "riding a horse, especially for enjoyment or as a form of exercise.",
-                BigDecimal.valueOf(100).setScale(2), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
+                BigDecimal.valueOf(100), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
                 Timestamp.valueOf("2021-01-12 11:34:18"), tags));
         tags = new ArrayList<>();
         tags.add(new Tag(1L, "gift"));
@@ -181,7 +189,7 @@ public class GiftCertificateDaoTest {
         tags.add(new Tag(7L, "make you fun"));
         expected.add(new GiftCertificate(1L, "Skating", "Ice skating is a sport in which people slide " +
                 "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10).setScale(2),
+                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
                 30, Timestamp.valueOf("2021-01-10 12:15:37"),
                 Timestamp.valueOf("2021-01-10 12:15:37"), tags));
         assertEquals(expected, actual);
@@ -204,7 +212,7 @@ public class GiftCertificateDaoTest {
         tags.add(new Tag(6L, "relax"));
         expected.add(new GiftCertificate(3L, "Horseback riding", "Horseback riding is the activity of " +
                 "riding a horse, especially for enjoyment or as a form of exercise.",
-                BigDecimal.valueOf(100).setScale(2), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
+                BigDecimal.valueOf(100), 30, Timestamp.valueOf("2021-01-12 11:34:18"),
                 Timestamp.valueOf("2021-01-12 11:34:18"), tags));
         tags = new ArrayList<>();
         tags.add(new Tag(5L, "wonderful gift"));
@@ -213,7 +221,7 @@ public class GiftCertificateDaoTest {
                 "well-being and, more specifically, the ability to perform aspects of sports, " +
                 "occupations and daily activities. Physical fitness is generally achieved through" +
                 " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
-                BigDecimal.valueOf(80).setScale(2), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
+                BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
                 Timestamp.valueOf("2021-01-11 10:30:01"), tags));
 
         assertEquals(expected, actual);
@@ -232,7 +240,7 @@ public class GiftCertificateDaoTest {
         tags.add(new Tag(2L, "sport"));
         expected.add(new GiftCertificate(1L, "Skating", "Ice skating is a sport in which people slide " +
                 "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10).setScale(2),
+                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
                 30, Timestamp.valueOf("2021-01-10 12:15:37"),
                 Timestamp.valueOf("2021-01-10 12:15:37"), tags));
         assertEquals(expected, actual);
@@ -261,7 +269,7 @@ public class GiftCertificateDaoTest {
         tags.add(new Tag(2L, "sport"));
         Optional<GiftCertificate> expected = Optional.of(new GiftCertificate(1L, "Skating", "Ice skating is a sport in which people slide " +
                 "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10).setScale(2),
+                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
                 30, Timestamp.valueOf("2021-01-10 12:15:37"),
                 Timestamp.valueOf("2021-01-10 12:15:37"), tags));
         assertEquals(expected, actual);

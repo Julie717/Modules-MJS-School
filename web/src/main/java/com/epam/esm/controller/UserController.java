@@ -1,9 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.model.PurchaseRequestDto;
-import com.epam.esm.model.PurchaseResponseDto;
 import com.epam.esm.model.UserDto;
-import com.epam.esm.service.PurchaseService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.util.HateoasLinkBuilder;
 import com.epam.esm.util.Pagination;
@@ -15,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -32,7 +27,6 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 @Validated
 public class UserController {
     private final UserService userService;
-    private final PurchaseService purchaseService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
