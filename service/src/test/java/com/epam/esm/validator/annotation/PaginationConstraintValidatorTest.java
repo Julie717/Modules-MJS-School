@@ -17,6 +17,7 @@ public class PaginationConstraintValidatorTest {
     @MethodSource("data")
     public void isValidTest(Map<String, String> parameters, boolean expected) {
         ConstraintValidatorContext context = null;
+
         boolean actual = paginationValidator.isValid(parameters, context);
 
         assertEquals(expected, actual);

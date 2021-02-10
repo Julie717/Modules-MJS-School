@@ -62,7 +62,6 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchase.setUser(user);
         purchase.setGiftCertificates(giftCertificates);
         purchase.setCost(countCost(giftCertificates));
-        purchase.setPurchaseDate(Timestamp.valueOf(LocalDateTime.now()));
         purchase = purchaseDao.add(purchase);
         return purchaseResponseConverter.convertTo(purchase);
     }

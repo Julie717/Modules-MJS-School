@@ -17,6 +17,8 @@ public class Queries {
     public static final String SELECT_ALL_PURCHASES = "FROM Purchase";
     public static final String SELECT_PURCHASE_BY_ID_GIFT_CERTIFICATE = "FROM Purchase p JOIN FETCH p.giftCertificates g " +
             "WHERE g.id = ?1 ";
+    public static final String SELECT_PURCHASE_BY_ID= "FROM Purchase p JOIN FETCH p.giftCertificates g " +
+            "WHERE p.id = ?1 ";
     public static final String SELECT_TOP_TAG = "SELECT id_tag, name_tag " +
             "FROM user_tags " +
             "WHERE count_tag= " +

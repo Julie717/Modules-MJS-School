@@ -1,5 +1,6 @@
 package com.epam.esm.model;
 
+import com.epam.esm.validator.annotation.Different;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,5 +28,6 @@ public class PurchaseRequestDto implements Serializable {
 
     @NotEmpty
     @NotNull
-    List<Long> idGiftCertificates;
+    @Different
+    List<@Positive Long> idGiftCertificates;
 }

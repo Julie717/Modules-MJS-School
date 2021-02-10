@@ -10,6 +10,7 @@ import com.epam.esm.util.HateoasLinkBuilder;
 import com.epam.esm.util.Pagination;
 import com.epam.esm.util.PaginationParser;
 import com.epam.esm.validator.ValidationGroup;
+import com.epam.esm.validator.annotation.Different;
 import com.epam.esm.validator.annotation.IncludePagination;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -142,7 +143,7 @@ public class GiftCertificateController {
     @PostMapping(value = "/{id}/tags")
     @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificateDto addTagsToGiftCertificate(@PathVariable @Positive Long id,
-                                                       @Valid @NotNull @RequestBody List<TagDto> tags) {
+                                                       @Valid @Different @NotNull @RequestBody List<TagDto> tags) {
         GiftCertificateDto giftCertificate = giftCertificateService.addTagsToGiftCertificate(id, tags);
         HateoasLinkBuilder.buildGiftCertificateLink(giftCertificate);
         return giftCertificate;

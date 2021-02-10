@@ -64,7 +64,7 @@ public class PurchaseController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public PurchaseResponseDto makePurchase(@RequestBody PurchaseRequestDto purchaseDto) {
+    public PurchaseResponseDto makePurchase(@RequestBody @Valid PurchaseRequestDto purchaseDto) {
         PurchaseResponseDto purchase = purchaseService.makePurchase(purchaseDto);
         HateoasLinkBuilder.buildPurchaseLink(purchase);
         return purchase;

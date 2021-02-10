@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-public class TagsConstraintValidator implements ConstraintValidator<Different, List<TagDto>> {
+public class DifferentTagsConstraintValidator implements ConstraintValidator<Different, List<TagDto>> {
     @Override
     public void initialize(Different constraintAnnotation) {
     }

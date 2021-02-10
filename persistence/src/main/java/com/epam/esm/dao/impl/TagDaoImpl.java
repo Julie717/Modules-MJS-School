@@ -32,7 +32,6 @@ public class TagDaoImpl implements TagDao {
         return Optional.ofNullable(entityManager.find(Tag.class, id));
     }
 
-
     @Override
     public Optional<Tag> findTagByName(String name) {
         Optional<Tag> tag;
