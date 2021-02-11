@@ -13,12 +13,12 @@ public class Queries {
     public static final String DELETE_TAGS_FROM_GIFT_CERTIFICATE_TAG = "DELETE FROM gift_certificate_tag " +
             "WHERE id_tag = ?";
     public static final String SELECT_ALL_USERS = "FROM User";
-    public static final String SELECT_USER_BY_SURNAME = "FROM User u WHERE u.surname LIKE CONCAT('%',"+ "?1"+",'%')";
+    public static final String SELECT_USER_BY_SURNAME = "FROM User u WHERE u.surname LIKE CONCAT('%'," + "?1" + ",'%')";
     public static final String SELECT_ALL_PURCHASES = "FROM Purchase";
     public static final String SELECT_PURCHASE_BY_ID_GIFT_CERTIFICATE = "FROM Purchase p JOIN FETCH p.giftCertificates g " +
             "WHERE g.id = ?1 ";
-    public static final String SELECT_PURCHASE_BY_ID= "FROM Purchase p JOIN FETCH p.giftCertificates g " +
-            "WHERE p.id = ?1 ";
+
+
     public static final String SELECT_TOP_TAG = "SELECT id_tag, name_tag " +
             "FROM user_tags " +
             "WHERE count_tag= " +
@@ -26,11 +26,11 @@ public class Queries {
             "     FROM user_tags n" +
             "     WHERE  id_user IN ( " +
             "                       SELECT id_user " +
-            "                       FROM user_purchases_cost " +
-            "                       WHERE full_sum = ( " +
+            "                       FROM user_purchases_cost "  //this is predefined view
+            + "                       WHERE full_sum = ( " +
             "                                         SELECT MAX(full_sum)  " +
-            "                                         FROM user_purchases_cost " +
-            "                                         ) " +
+            "                                         FROM user_purchases_cost "  //this is predefined view
+            + "                                         ) " +
             "                       ) " +
             " )";
 

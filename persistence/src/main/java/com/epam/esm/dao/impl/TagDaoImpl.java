@@ -5,6 +5,8 @@ import com.epam.esm.dao.TagDao;
 import com.epam.esm.model.Tag;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Level;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -16,6 +18,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @Repository
+@Log4j2
 public class TagDaoImpl implements TagDao {
     @PersistenceContext
     private final EntityManager entityManager;
@@ -40,6 +43,7 @@ public class TagDaoImpl implements TagDao {
             query.setParameter(1, name);
             tag = Optional.ofNullable((Tag) query.getSingleResult());
         } catch (NoResultException ex) {
+            log.log(Level.ERROR, ex.getMessage());
             tag = Optional.empty();
         }
         return tag;
@@ -62,9 +66,6 @@ public class TagDaoImpl implements TagDao {
     @Override
     public Tag add(Tag tag) {
         entityManager.persist(tag);
-        entityManager.flush();
-        Long id = (Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(tag);
-        tag.setId(id);
         return tag;
     }
 

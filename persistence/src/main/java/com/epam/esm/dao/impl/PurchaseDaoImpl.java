@@ -29,16 +29,6 @@ public class PurchaseDaoImpl implements PurchaseDao {
 
     @Override
     public Optional<Purchase> findById(Long id) {
-       /* Optional<Purchase> purchase;
-        try {
-            Query query = entityManager.createQuery(Queries.SELECT_PURCHASE_BY_ID);
-            query.setParameter(1, id);
-            purchase = Optional.ofNullable((Purchase) query.getSingleResult());
-        } catch (NoResultException ex) {
-            purchase = Optional.empty();
-        }
-        return purchase;
-*/
        return Optional.ofNullable(entityManager.find(Purchase.class, id));
     }
 
@@ -52,8 +42,6 @@ public class PurchaseDaoImpl implements PurchaseDao {
     @Override
     public Purchase add(Purchase entity) {
         entityManager.persist(entity);
-        Long id = (Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
-        entity.setId(id);
         return entity;
     }
 

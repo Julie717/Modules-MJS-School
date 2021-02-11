@@ -5,6 +5,8 @@ import com.epam.esm.dao.Queries;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Level;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -16,6 +18,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @Repository
+@Log4j2
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
     @PersistenceContext
     private final EntityManager entityManager;
@@ -40,6 +43,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             query.setParameter(1, name);
             giftCertificate = Optional.ofNullable((GiftCertificate) query.getSingleResult());
         } catch (NoResultException ex) {
+            log.log(Level.ERROR, ex.getMessage());
             giftCertificate = Optional.empty();
         }
         return giftCertificate;
@@ -69,6 +73,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             query.setParameter(2, idTag);
             giftCertificate = Optional.ofNullable((GiftCertificate) query.getSingleResult());
         } catch (NoResultException ex) {
+            log.log(Level.ERROR, ex.getMessage());
             giftCertificate = Optional.empty();
         }
         return giftCertificate;
@@ -77,10 +82,6 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     @Override
     public GiftCertificate add(GiftCertificate giftCertificate) {
         entityManager.persist(giftCertificate);
-        entityManager.flush();
-        entityManager.clear();
-        Long id = (Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(giftCertificate);
-        giftCertificate.setId(id);
         return giftCertificate;
     }
 
@@ -94,15 +95,10 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         GiftCertificate giftCertificate = entityManager.find(GiftCertificate.class, idGiftCertificate);
         Tag tag = giftCertificate.getTags().stream().filter(t -> t.getId().equals(idTag)).findFirst().get();
         giftCertificate.getTags().remove(tag);
-        entityManager.flush();
-        entityManager.clear();
     }
 
     @Override
     public GiftCertificate update(GiftCertificate giftCertificate) {
-        GiftCertificate updatedGiftCertificate = entityManager.merge(giftCertificate);
-        entityManager.flush();
-        entityManager.clear();
-        return updatedGiftCertificate;
+        return entityManager.merge(giftCertificate);
     }
 }

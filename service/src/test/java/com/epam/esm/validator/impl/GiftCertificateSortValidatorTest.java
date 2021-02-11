@@ -1,12 +1,26 @@
 package com.epam.esm.validator.impl;
 
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GiftCertificateSortValidatorTest {
     GiftCertificateSortValidator sortValidator = new GiftCertificateSortValidator();
+
+    public static Stream<Arguments> data() {
+        return Stream.of(
+                Arguments.of("", false),
+                Arguments.of("nameGiftCertificate,-createDate", true),
+                Arguments.of("-nameGiftCertificate", true),
+                Arguments.of("createDate", true),
+                Arguments.of("gift", false),
+                Arguments.of("nameGiftCertificate,-createDate,lastUpdate", false)
+        );
+    }
 
     @ParameterizedTest
     @MethodSource("data")
@@ -14,16 +28,5 @@ public class GiftCertificateSortValidatorTest {
         boolean actual = sortValidator.isValid(sort);
 
         assertEquals(expected, actual);
-    }
-
-    public static Object[][] data() {
-        return new Object[][]{
-                {"", false},
-                {"nameGiftCertificate,-createDate", true},
-                {"-nameGiftCertificate", true},
-                {"createDate", true},
-                {"gift", false},
-                {"nameGiftCertificate,-createDate,lastUpdate",false}
-        };
     }
 }

@@ -1,24 +1,18 @@
 package com.epam.esm.validator;
 
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GiftCertificateSearchParameterValidatorTest {
 
-    @ParameterizedTest
-    @MethodSource("data")
-    public void isParametersValidTest(Map<String, String> parameters, boolean expected) {
-        boolean actual = GiftCertificateSearchParameterValidator.isParametersValid(parameters);
-
-        assertEquals(expected, actual);
-    }
-
-    public static Object[][] data() {
+    public static Stream<Arguments> data() {
         Map<String, String> parameters1 = new HashMap<>();
         parameters1.put("nameGiftCertificate", "gift");
         parameters1.put("description", "beautiful");
@@ -33,12 +27,20 @@ public class GiftCertificateSearchParameterValidatorTest {
         Map<String, String> parameters5 = new HashMap<>();
         parameters5.put("nameTag", "beautiful,gift");
         parameters5.put("nameGiftCertificate", "a");
-        return new Object[][]{
-                {parameters1, true},
-                {parameters2, false},
-                {parameters3, false},
-                {parameters4, false},
-                {parameters5, true}
-        };
+        return Stream.of(
+                Arguments.of(parameters1, true),
+                Arguments.of(parameters2, false),
+                Arguments.of(parameters3, false),
+                Arguments.of(parameters4, false),
+                Arguments.of(parameters5, true)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("data")
+    public void isParametersValidTest(Map<String, String> parameters, boolean expected) {
+        boolean actual = GiftCertificateSearchParameterValidator.isParametersValid(parameters);
+
+        assertEquals(expected, actual);
     }
 }

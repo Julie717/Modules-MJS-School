@@ -21,6 +21,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.validation.ConstraintViolation;
@@ -135,8 +136,7 @@ public class CommonAdvice {
         List<ErrorFieldValidationInfo> errorFields = new ArrayList<>();
         ex.getBindingResult().getFieldErrors()
                 .forEach(f -> errorFields.add(new ErrorFieldValidationInfo(f.getField(),
-                        f.getCode(), f.getRejectedValue(), messageSource.getMessage(
-                        (f.getDefaultMessage() == null) ? ErrorMessageReader.INCORRECT_VALUE : f.getDefaultMessage(),
+                        f.getCode(), f.getRejectedValue(), messageSource.getMessage(ErrorMessageReader.INCORRECT_VALUE,
                         new Object[]{}, locale))));
         ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST_VALUE, errorMessage, errorFields);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -174,6 +174,15 @@ public class CommonAdvice {
         String errorMessage = messageSource.getMessage(ErrorMessageReader.BAD_REQUEST_PARAM_ABSENT, new Object[]{},
                 locale);
         ErrorResponse errorResponse = new ErrorResponse(ErrorCode.BAD_REQUEST_PARAM_ABSENT, errorMessage);
+        log.log(Level.ERROR, errorMessage);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, Locale locale) {
+        String errorMessage = messageSource.getMessage(ErrorMessageReader.INCORRECT_VALUE, new Object[]{},
+                locale);
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.BAD_REQUEST_VALUE, errorMessage);
         log.log(Level.ERROR, errorMessage);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }

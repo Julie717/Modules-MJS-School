@@ -2,28 +2,20 @@ package com.epam.esm.validator.annotation;
 
 import com.epam.esm.validator.annotation.impl.PaginationConstraintValidator;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.validation.ConstraintValidatorContext;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PaginationConstraintValidatorTest {
     PaginationConstraintValidator paginationValidator = new PaginationConstraintValidator();
 
-    @ParameterizedTest
-    @MethodSource("data")
-    public void isValidTest(Map<String, String> parameters, boolean expected) {
-        ConstraintValidatorContext context = null;
-
-        boolean actual = paginationValidator.isValid(parameters, context);
-
-        assertEquals(expected, actual);
-    }
-
-    public static Object[][] data() {
+    public static Stream<Arguments> data() {
         Map<String, String> parameters1 = new HashMap<>();
         parameters1.put("limit", "5");
         parameters1.put("offset", "4");
@@ -40,14 +32,24 @@ public class PaginationConstraintValidatorTest {
         parameters6.put("offset", "10d");
         Map<String, String> parameters7 = new HashMap<>();
         parameters7.put("limit", "max");
-        return new Object[][]{
-                {parameters1, true},
-                {parameters2, true},
-                {parameters3, true},
-                {parameters4, false},
-                {parameters5, false},
-                {parameters6, false},
-                {parameters7, false}
-        };
+        return Stream.of(
+                Arguments.of(parameters1, true),
+                Arguments.of(parameters2, true),
+                Arguments.of(parameters3, true),
+                Arguments.of(parameters4, false),
+                Arguments.of(parameters5, false),
+                Arguments.of(parameters6, false),
+                Arguments.of(parameters7, false)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("data")
+    public void isValidTest(Map<String, String> parameters, boolean expected) {
+        ConstraintValidatorContext context = null;
+
+        boolean actual = paginationValidator.isValid(parameters, context);
+
+        assertEquals(expected, actual);
     }
 }

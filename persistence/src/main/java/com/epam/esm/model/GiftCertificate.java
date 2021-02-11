@@ -57,7 +57,7 @@ public class GiftCertificate implements Serializable {
     @Column(name = ColumnName.GIFT_CERTIFICATE_LAST_UPDATE_DATE)
     Timestamp lastUpdateDate;
 
-    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable(name = "gift_certificate_tag",
             joinColumns = {@JoinColumn(name = ColumnName.GIFT_CERTIFICATE_ID)},
             inverseJoinColumns = {@JoinColumn(name = ColumnName.TAG_ID)})
