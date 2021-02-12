@@ -32,7 +32,7 @@ public class PurchaseResponseDto extends RepresentationModel<PurchaseResponseDto
     @Digits(integer = 5, fraction = 2)
     BigDecimal cost;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
+    @JsonFormat(timezone = "Europe/Minsk", pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     Timestamp purchaseDate;
 
     Long idUser;

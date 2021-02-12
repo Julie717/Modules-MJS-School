@@ -55,10 +55,10 @@ public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> 
     @Min(1)
     Integer duration;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(timezone = "Europe/Minsk", pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     Timestamp createDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(timezone = "Europe/Minsk", pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     Timestamp lastUpdateDate;
 
     @Different
