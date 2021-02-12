@@ -109,7 +109,6 @@ public class CommonAdvice {
                 new Object[]{}, locale);
         ErrorResponse response = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, errorMessage);
         log.log(Level.ERROR, errorMessage);
-        System.out.println(ex);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
