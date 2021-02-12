@@ -143,7 +143,7 @@ public class GiftCertificateController {
     @PostMapping(value = "/{id}/tags")
     @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificateDto addTagsToGiftCertificate(@PathVariable @Positive Long id,
-                                                       @Valid @Different @NotNull @RequestBody List<TagDto> tags) {
+                                                       @Valid @Different @NotNull @NotEmpty @RequestBody List<TagDto> tags) {
         GiftCertificateDto giftCertificate = giftCertificateService.addTagsToGiftCertificate(id, tags);
         HateoasLinkBuilder.buildGiftCertificateLink(giftCertificate);
         return giftCertificate;

@@ -2,13 +2,11 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.Queries;
 import com.epam.esm.dao.PurchaseDao;
-import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Purchase;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
@@ -29,13 +27,13 @@ public class PurchaseDaoImpl implements PurchaseDao {
 
     @Override
     public Optional<Purchase> findById(Long id) {
-       return Optional.ofNullable(entityManager.find(Purchase.class, id));
+        return Optional.ofNullable(entityManager.find(Purchase.class, id));
     }
 
     @Override
     public List<Purchase> findByIdGiftCertificate(Long idGiftCertificate) {
         Query query = entityManager.createQuery(Queries.SELECT_PURCHASE_BY_ID_GIFT_CERTIFICATE, Purchase.class);
-        query.setParameter(1,idGiftCertificate);
+        query.setParameter(1, idGiftCertificate);
         return query.getResultList();
     }
 

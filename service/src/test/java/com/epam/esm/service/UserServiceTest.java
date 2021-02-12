@@ -77,15 +77,15 @@ public class UserServiceTest {
 
     @Test
     void findBySurnameTestPositive() {
+        List<UserDto> expected = new ArrayList<>();
+        expected.add(new UserDto(5L, "Ivan", "Ivanov", null));
+        expected.add(new UserDto(12L, "Nick", "Sidorov", null));
         Pagination pagination = new Pagination(10, 2);
         String surname = "ov";
         List<User> users = new ArrayList<>();
         users.add(new User(5L, "Ivan", "Ivanov", null));
         users.add(new User(12L, "Nick", "Sidorov", null));
         Mockito.when(userDao.findBySurname(surname, 10, 2)).thenReturn(users);
-        List<UserDto> expected = new ArrayList<>();
-        expected.add(new UserDto(5L, "Ivan", "Ivanov", null));
-        expected.add(new UserDto(12L, "Nick", "Sidorov", null));
 
         List<UserDto> actual = userService.findBySurname(pagination, surname);
 

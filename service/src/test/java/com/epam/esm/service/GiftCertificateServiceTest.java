@@ -22,7 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -41,6 +40,17 @@ import static org.mockito.Mockito.anyList;
 
 @ExtendWith(MockitoExtension.class)
 public class GiftCertificateServiceTest {
+    private static final GiftCertificate GIFT_CERTIFICATE_SKATING;
+    private static final GiftCertificateDto GIFT_CERTIFICATE_SKATING_DTO;
+    private static final GiftCertificateDto GIFT_CERTIFICATE_SKATING_DTO_WITHOUT_ID;
+    private static final GiftCertificate GIFT_CERTIFICATE_SKATING_WITHOUT_TAG;
+    private static final GiftCertificate GIFT_CERTIFICATE_FITNESS;
+    private static final GiftCertificateDto GIFT_CERTIFICATE_FITNESS_DTO;
+    private static final GiftCertificate GIFT_CERTIFICATE_FITNESS_OTHER_ID;
+    private static final GiftCertificateDto GIFT_CERTIFICATE_FITNESS_DTO_OTHER_ID;
+    private static final GiftCertificateDto GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS;
+    private static final GiftCertificate GIFT_CERTIFICATE_FITNESS_FOR_PATCH;
+
     @InjectMocks
     private GiftCertificateServiceImpl giftCertificateService;
 
@@ -55,6 +65,75 @@ public class GiftCertificateServiceTest {
 
     @Spy
     private final GiftCertificateConverterImpl giftCertificateConverter = new GiftCertificateConverterImpl(tagConverter);
+
+    static {
+        List<Tag> tags = new ArrayList<>();
+        tags.add(new Tag(1L, "gift"));
+        tags.add(new Tag(2L, "sport"));
+        tags.add(new Tag(7L, "make you fun"));
+        GIFT_CERTIFICATE_SKATING = new GiftCertificate(1L, "Skating", "Ice skating is a sport in which people slide " +
+                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
+                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
+                30, Timestamp.valueOf("2021-01-10 12:15:37"),
+                Timestamp.valueOf("2021-01-10 12:15:37"), tags);
+        GIFT_CERTIFICATE_SKATING_WITHOUT_TAG = new GiftCertificate(1L, "Skating", "Ice skating is a sport in which people slide " +
+                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
+                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
+                30, Timestamp.valueOf("2021-01-10 12:15:37"),
+                Timestamp.valueOf("2021-01-10 12:15:37"), null);
+        List<TagDto> tagsDto = new ArrayList<>();
+        tagsDto.add(new TagDto(1L, "gift"));
+        tagsDto.add(new TagDto(2L, "sport"));
+        tagsDto.add(new TagDto(7L, "make you fun"));
+        GIFT_CERTIFICATE_SKATING_DTO = new GiftCertificateDto(1L, "Skating", "Ice skating is a sport in which people slide " +
+                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
+                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
+                30, Timestamp.valueOf("2021-01-10 12:15:37"),
+                Timestamp.valueOf("2021-01-10 12:15:37"), tagsDto);
+        GIFT_CERTIFICATE_SKATING_DTO_WITHOUT_ID = new GiftCertificateDto(null, "Skating", "Ice skating is a sport in which people slide " +
+                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
+                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
+                30, Timestamp.valueOf("2021-01-10 12:15:37"),
+                Timestamp.valueOf("2021-01-10 12:15:37"), tagsDto);
+        tags = new ArrayList<>();
+        tags.add(new Tag(2L, "sport"));
+        tags.add(new Tag(5L, "wonderful gift"));
+        GIFT_CERTIFICATE_FITNESS = new GiftCertificate(2L, "Fitness", "Physical fitness is a state of health and " +
+                "well-being and, more specifically, the ability to perform aspects of sports, " +
+                "occupations and daily activities. Physical fitness is generally achieved through" +
+                " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
+                BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
+                Timestamp.valueOf("2021-01-11 10:30:01"), tags);
+        GIFT_CERTIFICATE_FITNESS_OTHER_ID = new GiftCertificate(1L, "Fitness", "Physical fitness is a state of health and " +
+                "well-being and, more specifically, the ability to perform aspects of sports, " +
+                "occupations and daily activities. Physical fitness is generally achieved through" +
+                " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
+                BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
+                Timestamp.valueOf("2021-01-11 10:30:01"), tags);
+        tagsDto = new ArrayList<>();
+        tagsDto.add(new TagDto(2L, "sport"));
+        tagsDto.add(new TagDto(5L, "wonderful gift"));
+        GIFT_CERTIFICATE_FITNESS_DTO = new GiftCertificateDto(2L, "Fitness", "Physical fitness is a state of health and " +
+                "well-being and, more specifically, the ability to perform aspects of sports, " +
+                "occupations and daily activities. Physical fitness is generally achieved through" +
+                " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
+                BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
+                Timestamp.valueOf("2021-01-11 10:30:01"), tagsDto);
+        GIFT_CERTIFICATE_FITNESS_DTO_OTHER_ID = new GiftCertificateDto(1L, "Fitness", "Physical fitness is a state of health and " +
+                "well-being and, more specifically, the ability to perform aspects of sports, " +
+                "occupations and daily activities. Physical fitness is generally achieved through" +
+                " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
+                BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
+                Timestamp.valueOf("2021-01-11 10:30:01"), tagsDto);
+        GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS = new GiftCertificateDto();
+        GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS.setId(1L);
+        GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS.setName("Fitness");
+        GIFT_CERTIFICATE_FITNESS_FOR_PATCH = new GiftCertificate(1L, "Fitness", "Ice skating is a sport in which people slide " +
+                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
+                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
+                30, Timestamp.valueOf("2021-01-10 12:15:37"),
+                Timestamp.valueOf("2021-01-10 12:15:37"), null);
+    }
 
     @Test
     void findAllTestEmptyList() {
@@ -72,90 +151,26 @@ public class GiftCertificateServiceTest {
     @Test
     void findAllTestPositive() {
         List<GiftCertificate> giftCertificates = new ArrayList<>();
-        giftCertificates.add(new GiftCertificate(1L, "Skating", "Ice skating is a sport in which people slide " +
-                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null));
+        giftCertificates.add(GIFT_CERTIFICATE_SKATING);
+        giftCertificates.add(GIFT_CERTIFICATE_FITNESS);
         Mockito.when(giftCertificateDao.findAll(anyInt(), anyInt())).thenReturn(giftCertificates);
-        List<GiftCertificateDto> giftCertificatesDto = new ArrayList<>();
-        giftCertificatesDto.add(new GiftCertificateDto(1L, "Skating", "Ice skating is a sport in which people slide " +
-                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null));
-        Pagination pagination = new Pagination(1, 0);
+        List<GiftCertificateDto> expected = new ArrayList<>();
+        expected.add(GIFT_CERTIFICATE_SKATING_DTO);
+        expected.add(GIFT_CERTIFICATE_FITNESS_DTO);
+        Pagination pagination = new Pagination(2, 0);
 
         List<GiftCertificateDto> actual = giftCertificateService.findAll(pagination);
 
         verify(giftCertificateConverter, times(1)).convertTo(giftCertificates);
-        assertEquals(giftCertificatesDto, actual);
-    }
-
-    @Test
-    void findAllWithTagsTest() {
-        List<GiftCertificate> giftCertificates = new ArrayList<>();
-        List<Tag> tags = new ArrayList<>();
-        tags.add(new Tag(1L, "gift"));
-        tags.add(new Tag(2L, "sport"));
-        tags.add(new Tag(7L, "make you fun"));
-        giftCertificates.add(new GiftCertificate(1L, "Skating", "Ice skating is a sport in which people slide " +
-                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), tags));
-        tags = new ArrayList<>();
-        tags.add(new Tag(2L, "sport"));
-        tags.add(new Tag(5L, "wonderful gift"));
-        tags.add(new Tag(7L, "make you fun"));
-        giftCertificates.add(new GiftCertificate(2L, "Fitness", "Physical fitness is a state of health and " +
-                "well-being and, more specifically, the ability to perform aspects of sports, " +
-                "occupations and daily activities. Physical fitness is generally achieved through" +
-                " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
-                BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
-                Timestamp.valueOf("2021-01-11 10:30:01"), tags));
-        Mockito.when(giftCertificateDao.findAll(anyInt(), anyInt())).thenReturn(giftCertificates);
-        List<GiftCertificateDto> giftCertificatesDto = new ArrayList<>();
-        List<TagDto> tagsDto = new ArrayList<>();
-        tagsDto.add(new TagDto(1L, "gift"));
-        tagsDto.add(new TagDto(2L, "sport"));
-        tagsDto.add(new TagDto(7L, "make you fun"));
-        giftCertificatesDto.add(new GiftCertificateDto(1L, "Skating", "Ice skating is a sport in which people slide " +
-                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), tagsDto));
-        tagsDto = new ArrayList<>();
-        tagsDto.add(new TagDto(2L, "sport"));
-        tagsDto.add(new TagDto(5L, "wonderful gift"));
-        tagsDto.add(new TagDto(7L, "make you fun"));
-        giftCertificatesDto.add(new GiftCertificateDto(2L, "Fitness", "Physical fitness is a state of health and " +
-                "well-being and, more specifically, the ability to perform aspects of sports, " +
-                "occupations and daily activities. Physical fitness is generally achieved through" +
-                " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
-                BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
-                Timestamp.valueOf("2021-01-11 10:30:01"), tagsDto));
-        Pagination pagination = new Pagination(1, 0);
-
-        List<GiftCertificateDto> actual = giftCertificateService.findAll(pagination);
-
-        assertEquals(giftCertificatesDto, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
     void findByIdTestPositive() {
+        GiftCertificateDto expected = GIFT_CERTIFICATE_SKATING_DTO;
         Long id = 2L;
-        Optional<GiftCertificate> giftCertificate = Optional.of(new GiftCertificate(2L, "Skating", "Ice skating is a sport in which people slide " +
-                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null));
+        Optional<GiftCertificate> giftCertificate = Optional.of(GIFT_CERTIFICATE_SKATING);
         Mockito.when(giftCertificateDao.findById(id)).thenReturn(giftCertificate);
-        GiftCertificateDto expected = new GiftCertificateDto(2L, "Skating", "Ice skating is a sport in which people slide " +
-                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
 
         GiftCertificateDto actual = giftCertificateService.findById(id);
 
@@ -172,32 +187,20 @@ public class GiftCertificateServiceTest {
 
     @Test
     void findByParametersTestPositive() {
+        List<GiftCertificateDto> expected = new ArrayList<>();
+        expected.add(GIFT_CERTIFICATE_SKATING_DTO);
         Map<String, String> parameters = new HashMap<>();
         parameters.put("nameGiftCertificate", "gift");
         parameters.put("description", "beautiful");
         parameters.put("sort", "nameGiftCertificate,-createDate");
         List<GiftCertificate> giftCertificates = new ArrayList<>();
-        GiftCertificate giftCertificate = new GiftCertificate(2L, "Skating",
-                "Ice skating is a sport in which people slide " +
-                        "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                        "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        giftCertificates.add(giftCertificate);
+        giftCertificates.add(GIFT_CERTIFICATE_SKATING);
         Mockito.when(giftCertificateDao.findByParameters(anyString(), anyInt(), anyInt())).thenReturn(giftCertificates);
-        List<GiftCertificateDto> giftCertificatesDto = new ArrayList<>();
-        GiftCertificateDto giftCertificateDto = new GiftCertificateDto(2L, "Skating",
-                "Ice skating is a sport in which people slide " +
-                        "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                        "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        giftCertificatesDto.add(giftCertificateDto);
         Pagination pagination = new Pagination(2, 0);
 
         List<GiftCertificateDto> actual = giftCertificateService.findByParameters(parameters, pagination);
 
-        assertEquals(giftCertificatesDto, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -223,27 +226,13 @@ public class GiftCertificateServiceTest {
 
     @Test
     void findByTagIdTestPositive() {
+        List<GiftCertificateDto> expected = new ArrayList<>();
+        expected.add(GIFT_CERTIFICATE_SKATING_DTO);
         Long idTag = 2L;
-        GiftCertificate giftCertificate = new GiftCertificate(2L, "Skating",
-                "It's wonderful", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        List<Tag> tags = new ArrayList<>();
-        tags.add(new Tag(2L, "Skating"));
-        giftCertificate.setTags(tags);
         List<GiftCertificate> giftCertificates = new ArrayList<>();
-        giftCertificates.add(giftCertificate);
+        giftCertificates.add(GIFT_CERTIFICATE_SKATING);
         Mockito.when(giftCertificateDao.findByTagId(anyLong(), anyInt(), anyInt()))
                 .thenReturn(giftCertificates);
-        GiftCertificateDto giftCertificateDto = new GiftCertificateDto(2L, "Skating",
-                "It's wonderful", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        List<TagDto> tagsDto = new ArrayList<>();
-        tagsDto.add(new TagDto(2L, "Skating"));
-        giftCertificateDto.setTags(tagsDto);
-        List<GiftCertificateDto> expected = new ArrayList<>();
-        expected.add(giftCertificateDto);
         Pagination pagination = new Pagination(2, 3);
 
         List<GiftCertificateDto> actual = giftCertificateService.findByTagId(idTag, pagination);
@@ -263,21 +252,9 @@ public class GiftCertificateServiceTest {
 
     @Test
     void findGiftCertificateByTagIdTestPositive() {
-        List<Tag> tags = new ArrayList<>();
-        tags.add(new Tag(2L, "Skating"));
-        Optional<GiftCertificate> giftCertificate = Optional.of(
-                new GiftCertificate(2L, "Skating",
-                        "It's wonderful", BigDecimal.valueOf(10),
-                        30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                        Timestamp.valueOf("2021-01-10 12:15:37"), tags));
+        GiftCertificateDto expected = GIFT_CERTIFICATE_SKATING_DTO;
         Mockito.when(giftCertificateDao.findByTagIdInGiftCertificate(anyLong(), anyLong()))
-                .thenReturn(giftCertificate);
-        List<TagDto> tagsDto = new ArrayList<>();
-        tagsDto.add(new TagDto(2L, "Skating"));
-        GiftCertificateDto expected = new GiftCertificateDto(2L, "Skating",
-                "It's wonderful", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), tagsDto);
+                .thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING));
 
         GiftCertificateDto actual = giftCertificateService.findGiftCertificateByTagId(2L, 2L);
 
@@ -295,25 +272,14 @@ public class GiftCertificateServiceTest {
 
     @Test
     void addTestPositive() {
-        GiftCertificate giftCertificate = new GiftCertificate(2L, "Skating",
-                "Ice skating is a sport in which people slide " +
-                        "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                        "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        Mockito.when(giftCertificateDao.findByName(giftCertificate.getName())).thenReturn(Optional.empty());
-        Mockito.when(giftCertificateDao.add(any(GiftCertificate.class))).thenReturn(giftCertificate);
-        GiftCertificateDto giftCertificateDto = new GiftCertificateDto(2L, "Skating", "Ice skating is a sport in which people slide " +
-                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
+        Long expectedId = 1L;
+        Mockito.when(giftCertificateDao.findByName(GIFT_CERTIFICATE_SKATING.getName())).thenReturn(Optional.empty());
+        Mockito.when(giftCertificateDao.add(any(GiftCertificate.class))).thenReturn(GIFT_CERTIFICATE_SKATING);
+        Mockito.when(tagService.findByRangeNames(anyList())).thenReturn(GIFT_CERTIFICATE_SKATING_DTO_WITHOUT_ID.getTags());
 
-        GiftCertificateDto actual = giftCertificateService.add(giftCertificateDto);
+        GiftCertificateDto actual = giftCertificateService.add(GIFT_CERTIFICATE_SKATING_DTO_WITHOUT_ID);
 
-        actual.setCreateDate(giftCertificateDto.getCreateDate());
-        actual.setLastUpdateDate(giftCertificateDto.getLastUpdateDate());
-        assertEquals(giftCertificateDto, actual);
+        assertEquals(expectedId, actual.getId());
     }
 
     @Test
@@ -327,32 +293,12 @@ public class GiftCertificateServiceTest {
 
     @Test
     void addTagsToGiftCertificateTestPositive() {
+        GiftCertificateDto expected = GIFT_CERTIFICATE_SKATING_DTO;
         Long id = 2L;
-        List<Tag> tags = new ArrayList<>();
-        tags.add(new Tag(2L, "wonderful gift"));
-        GiftCertificate giftCertificate = new GiftCertificate(2L, "Skating",
-                "It's wonderful gift", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), tags);
-        Mockito.when(giftCertificateDao.findById(id)).thenReturn(Optional.of(giftCertificate));
-        tags = new ArrayList<>();
-        tags.add(new Tag(2L, "wonderful gift"));
-        tags.add(new Tag(5L, "skating"));
-        giftCertificate = new GiftCertificate(2L, "Skating",
-                "It's wonderful gift", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), tags);
-        Mockito.when(giftCertificateDao.update(any(GiftCertificate.class))).thenReturn(giftCertificate);
-        List<TagDto> tagsDto = new ArrayList<>();
-        tagsDto.add(new TagDto(2L, "wonderful gift"));
-        tagsDto.add(new TagDto(5L, "skating"));
-        List<TagDto> tagsAlreadyExist = new ArrayList<>();
-        tagsAlreadyExist.add(new TagDto(2L, "wonderful gift"));
-        Mockito.when(tagService.findByRangeNames(tagsDto)).thenReturn(tagsAlreadyExist);
-        GiftCertificateDto expected = new GiftCertificateDto(2L, "Skating",
-                "It's wonderful gift", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), tagsDto);
+        Mockito.when(giftCertificateDao.findById(id)).thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING_WITHOUT_TAG));
+        Mockito.when(giftCertificateDao.update(any(GiftCertificate.class))).thenReturn(GIFT_CERTIFICATE_SKATING);
+        List<TagDto> tagsDto = GIFT_CERTIFICATE_SKATING_DTO.getTags();
+        Mockito.when(tagService.findByRangeNames(tagsDto)).thenReturn(new ArrayList<>());
 
         GiftCertificateDto actual = giftCertificateService.addTagsToGiftCertificate(id, tagsDto);
 
@@ -372,44 +318,25 @@ public class GiftCertificateServiceTest {
 
     @Test
     void addTagsToGiftCertificateTestTagsAlreadyExist() {
-        Long id = 2L;
-        List<Tag> tags = new ArrayList<>();
-        tags.add(new Tag(2L, "wonderful gift"));
-        GiftCertificate giftCertificate = new GiftCertificate(2L, "Skating",
-                "It's wonderful gift", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), tags);
-        Mockito.when(giftCertificateDao.findById(id)).thenReturn(Optional.of(giftCertificate));
-        List<TagDto> tagsDto = new ArrayList<>();
-        tagsDto.add(new TagDto(2L, "wonderful gift"));
+        Mockito.when(giftCertificateDao.findById(GIFT_CERTIFICATE_SKATING.getId())).thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING));
+        List<TagDto> tagsDto = GIFT_CERTIFICATE_SKATING_DTO.getTags();
 
         assertThrows(ResourceAlreadyExistsException.class,
-                () -> giftCertificateService.addTagsToGiftCertificate(id, tagsDto));
+                () -> giftCertificateService.addTagsToGiftCertificate(GIFT_CERTIFICATE_SKATING_DTO.getId(), tagsDto));
     }
 
     @Test
     void updateGiftCertificateTestPositive() {
-        GiftCertificateDto giftCertificateDto = new GiftCertificateDto(2L, "Skating",
-                "It's wonderful", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        GiftCertificate giftCertificate = new GiftCertificate(2L, "Fitness",
-                "It's wonderful", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        Mockito.when(giftCertificateDao.findById(giftCertificateDto.getId()))
-                .thenReturn(Optional.of(giftCertificate));
-        Mockito.when(giftCertificateDao.findByName(giftCertificateDto.getName()))
-                .thenReturn(Optional.empty());
-        giftCertificate.setName(giftCertificateDto.getName());
-        Mockito.when(giftCertificateDao.update(any(GiftCertificate.class))).thenReturn(giftCertificate);
+        String expectedName = GIFT_CERTIFICATE_FITNESS_DTO_OTHER_ID.getName();
+        Mockito.when(giftCertificateDao.findById(GIFT_CERTIFICATE_SKATING_WITHOUT_TAG.getId()))
+                .thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING_WITHOUT_TAG));
+        Mockito.when(giftCertificateDao.findByName(anyString())).thenReturn(Optional.empty());
+        Mockito.when(giftCertificateDao.update(any(GiftCertificate.class))).thenReturn(GIFT_CERTIFICATE_FITNESS_OTHER_ID);
+        Mockito.when(tagService.findByRangeNames(GIFT_CERTIFICATE_FITNESS_DTO.getTags())).thenReturn(GIFT_CERTIFICATE_FITNESS_DTO.getTags());
 
-        GiftCertificateDto actual = giftCertificateService.updateGiftCertificate(giftCertificateDto);
+        GiftCertificateDto actual = giftCertificateService.updateGiftCertificate(GIFT_CERTIFICATE_FITNESS_DTO_OTHER_ID);
 
-        Timestamp lastUpdateDate = Timestamp.valueOf(LocalDateTime.now());
-        actual.setLastUpdateDate(lastUpdateDate);
-        giftCertificateDto.setLastUpdateDate(lastUpdateDate);
-        assertEquals(giftCertificateDto, actual);
+        assertEquals(expectedName, actual.getName());
     }
 
     @Test
@@ -423,52 +350,26 @@ public class GiftCertificateServiceTest {
 
     @Test
     void updateGiftCertificateTestAlreadyExist() {
-        GiftCertificateDto giftCertificateDto = new GiftCertificateDto(2L, "Skating",
-                "It's wonderful", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        GiftCertificate giftCertificate = new GiftCertificate(2L, "Fitness",
-                "It's wonderful", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        Mockito.when(giftCertificateDao.findById(giftCertificateDto.getId()))
-                .thenReturn(Optional.of(giftCertificate));
-        GiftCertificate giftCertificateFound = new GiftCertificate(14L, "Skating",
-                "It's wonderful", BigDecimal.valueOf(9),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        Mockito.when(giftCertificateDao.findByName(giftCertificateDto.getName()))
-                .thenReturn(Optional.of(giftCertificateFound));
+        Mockito.when(giftCertificateDao.findById(GIFT_CERTIFICATE_FITNESS_DTO_OTHER_ID.getId()))
+                .thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING));
+        Mockito.when(giftCertificateDao.findByName(GIFT_CERTIFICATE_FITNESS_OTHER_ID.getName()))
+                .thenReturn(Optional.of(GIFT_CERTIFICATE_FITNESS));
 
         assertThrows(ResourceAlreadyExistsException.class,
-                () -> giftCertificateService.updateGiftCertificate(giftCertificateDto));
+                () -> giftCertificateService.updateGiftCertificate(GIFT_CERTIFICATE_FITNESS_DTO_OTHER_ID));
     }
 
     @Test
     void patchGiftCertificateTestPositive() {
-        GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
-        giftCertificateDto.setId(2L);
-        giftCertificateDto.setName("Skating");
-        GiftCertificate giftCertificate = new GiftCertificate(2L, "Fitness",
-                "It's wonderful", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        Mockito.when(giftCertificateDao.findById(giftCertificateDto.getId()))
-                .thenReturn(Optional.of(giftCertificate));
-        Mockito.when(giftCertificateDao.findByName(giftCertificateDto.getName()))
-                .thenReturn(Optional.empty());
-        giftCertificate.setName(giftCertificateDto.getName());
-        Mockito.when(giftCertificateDao.update(any(GiftCertificate.class))).thenReturn(giftCertificate);
+        String expectedName = GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS.getName();
+        Mockito.when(giftCertificateDao.findById(GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS.getId()))
+                .thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING_WITHOUT_TAG));
+        Mockito.when(giftCertificateDao.findByName(anyString())).thenReturn(Optional.empty());
+        Mockito.when(giftCertificateDao.update(any(GiftCertificate.class))).thenReturn(GIFT_CERTIFICATE_FITNESS_FOR_PATCH);
 
-        GiftCertificateDto actual = giftCertificateService.patchGiftCertificate(giftCertificateDto);
+        GiftCertificateDto actual = giftCertificateService.patchGiftCertificate(GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS);
 
-        Timestamp lastUpdateDate = Timestamp.valueOf(LocalDateTime.now());
-        actual.setLastUpdateDate(lastUpdateDate);
-        GiftCertificateDto expected = new GiftCertificateDto(2L, "Skating",
-                "It's wonderful", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                lastUpdateDate, null);
-        assertEquals(expected, actual);
+        assertEquals(expectedName, actual.getName());
     }
 
     @Test
@@ -482,23 +383,11 @@ public class GiftCertificateServiceTest {
 
     @Test
     void patchGiftCertificateTestAlreadyExist() {
-        GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
-        giftCertificateDto.setId(2L);
-        giftCertificateDto.setName("Skating");
-        GiftCertificate giftCertificate = new GiftCertificate(2L, "Fitness",
-                "It's wonderful", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        Mockito.when(giftCertificateDao.findById(giftCertificateDto.getId()))
-                .thenReturn(Optional.of(giftCertificate));
-        GiftCertificate giftCertificateFound = new GiftCertificate(14L, "Skating",
-                "It's wonderful", BigDecimal.valueOf(9),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        Mockito.when(giftCertificateDao.findByName(giftCertificateDto.getName()))
-                .thenReturn(Optional.of(giftCertificateFound));
+        Mockito.when(giftCertificateDao.findById(GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS.getId()))
+                .thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING_WITHOUT_TAG));
+        Mockito.when(giftCertificateDao.findByName(anyString())).thenReturn(Optional.of(GIFT_CERTIFICATE_FITNESS));
 
         assertThrows(ResourceAlreadyExistsException.class,
-                () -> giftCertificateService.patchGiftCertificate(giftCertificateDto));
+                () -> giftCertificateService.patchGiftCertificate(GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS));
     }
 }

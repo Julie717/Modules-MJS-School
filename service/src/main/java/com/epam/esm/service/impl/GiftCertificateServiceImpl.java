@@ -117,11 +117,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
         List<Tag> tags = giftCertificate.getTags();
         addNewTagsToGiftCertificate(giftCertificate, tagsDto);
-        System.out.println(giftCertificate);
-        tagsDto.stream().filter(t -> tags.stream()
-                .anyMatch(tag -> !tag.getName().equals(t.getName()))).forEach(
-                t -> tags.add(tagConverter.convertFrom(t))
-        );
+        if (tags != null) {
+            tagsDto.stream().filter(t -> tags.stream()
+                    .anyMatch(tag -> !tag.getName().equals(t.getName()))).forEach(
+                    t -> tags.add(tagConverter.convertFrom(t))
+            );
+        }
         return giftCertificateConverter.convertTo(giftCertificateDao.update(giftCertificate));
     }
 
@@ -223,7 +224,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private List<TagDto> receiveNewTags(List<Tag> currentTags, List<TagDto> tagsDto) {
         List<TagDto> newTags = tagsDto;
-        if (!currentTags.isEmpty()) {
+        if (currentTags != null && !currentTags.isEmpty()) {
             newTags = tagsDto.stream()
                     .filter(t -> currentTags.stream()
                             .noneMatch(c -> c.getName().equals(t.getName())))

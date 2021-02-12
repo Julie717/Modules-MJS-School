@@ -38,6 +38,12 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class PurchaseServiceTest {
+    private static final Purchase PURCHASE;
+    private static final PurchaseRequestDto PURCHASE_REQUEST_DTO;
+    private static final PurchaseResponseDto PURCHASE_RESPONSE_DTO;
+    private static final GiftCertificateDto GIFT_CERTIFICATE_SKATING;
+    private static final GiftCertificateDto GIFT_CERTIFICATE_FITNESS;
+
     @InjectMocks
     private PurchaseServiceImpl purchaseService;
 
@@ -59,6 +65,42 @@ public class PurchaseServiceTest {
     @Spy
     private final GiftCertificateConverterImpl giftCertificateConverter = new GiftCertificateConverterImpl(tagConverter);
 
+    static {
+        User user = new User();
+        user.setId(2L);
+        List<GiftCertificate> giftCertificates = new ArrayList<>();
+        giftCertificates.add(new GiftCertificate(1L, "Skating", "Ice skating is a sport in which people slide " +
+                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
+                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
+                30, Timestamp.valueOf("2021-01-10 12:15:37"),
+                Timestamp.valueOf("2021-01-10 12:15:37"), null));
+        giftCertificates.add(new GiftCertificate(7L, "Fitness", "Physical fitness is a state of health and " +
+                "well-being and, more specifically, the ability to perform aspects of sports, " +
+                "occupations and daily activities. Physical fitness is generally achieved through" +
+                " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
+                BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
+                Timestamp.valueOf("2021-01-11 10:30:01"), null));
+        PURCHASE = new Purchase(10L, BigDecimal.valueOf(90),
+                Timestamp.valueOf("2021-01-12 11:34:18"), user, giftCertificates);
+        List<Long> idGiftCertificates = new ArrayList<>();
+        idGiftCertificates.add(1L);
+        idGiftCertificates.add(7L);
+        PURCHASE_REQUEST_DTO = new PurchaseRequestDto(2L, idGiftCertificates);
+        GIFT_CERTIFICATE_SKATING = new GiftCertificateDto(1L, "Skating", "Ice skating is a sport in which people slide " +
+                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
+                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
+                30, Timestamp.valueOf("2021-01-10 12:15:37"),
+                Timestamp.valueOf("2021-01-10 12:15:37"), null);
+        GIFT_CERTIFICATE_FITNESS = new GiftCertificateDto(7L, "Fitness", "Physical fitness is a state of health and " +
+                "well-being and, more specifically, the ability to perform aspects of sports, " +
+                "occupations and daily activities. Physical fitness is generally achieved through" +
+                " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
+                BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
+                Timestamp.valueOf("2021-01-11 10:30:01"), null);
+        PURCHASE_RESPONSE_DTO = new PurchaseResponseDto(10L, BigDecimal.valueOf(90),
+                Timestamp.valueOf("2021-01-12 11:34:18"), user.getId(), idGiftCertificates);
+    }
+
     @Test
     void findAllTest() {
         List<Purchase> purchases = new ArrayList<>();
@@ -74,22 +116,11 @@ public class PurchaseServiceTest {
 
     @Test
     void findByIdTestPositive() {
-        User user = new User();
-        user.setId(2L);
-        Long id = 5L;
-        List<GiftCertificate> giftCertificates = new ArrayList<>();
-        giftCertificates.add(new GiftCertificate(1L, "Skating", "Ice skating is a sport in which people slide " +
-                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null));
-        Optional<Purchase> purchase = Optional.of(new Purchase(id, BigDecimal.valueOf(50),
-                Timestamp.valueOf("2021-01-12 11:34:18"), user, giftCertificates));
-        Mockito.when(purchaseDao.findById(id)).thenReturn(purchase);
+        PurchaseResponseDto expected = PURCHASE_RESPONSE_DTO;
+        Long id = 10L;
+        Mockito.when(purchaseDao.findById(id)).thenReturn(Optional.of(PURCHASE));
         List<Long> idGiftCertificates = new ArrayList<>();
         idGiftCertificates.add(1L);
-        PurchaseResponseDto expected = new PurchaseResponseDto(id, BigDecimal.valueOf(50),
-                Timestamp.valueOf("2021-01-12 11:34:18"), 2L, idGiftCertificates);
 
         PurchaseResponseDto actual = purchaseService.findById(id);
 
@@ -106,51 +137,15 @@ public class PurchaseServiceTest {
 
     @Test
     void makePurchaseTestPositive() {
-        Long idUser = 2L;
-        List<Long> idGiftCertificates = new ArrayList<>();
-        idGiftCertificates.add(1L);
-        idGiftCertificates.add(7L);
-        PurchaseRequestDto purchaseRequestDto = new PurchaseRequestDto(2L, idGiftCertificates);
-        GiftCertificateDto giftCertificateDto1 = new GiftCertificateDto(1L, "Skating", "Ice skating is a sport in which people slide " +
-                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null);
-        GiftCertificateDto giftCertificateDto2 = new GiftCertificateDto(7L, "Fitness", "Physical fitness is a state of health and " +
-                "well-being and, more specifically, the ability to perform aspects of sports, " +
-                "occupations and daily activities. Physical fitness is generally achieved through" +
-                " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
-                BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
-                Timestamp.valueOf("2021-01-11 10:30:01"), null);
-        Mockito.when(giftCertificateService.findById(1L)).thenReturn(giftCertificateDto1);
-        Mockito.when(giftCertificateService.findById(7L)).thenReturn(giftCertificateDto2);
-        User user = new User();
-        user.setId(idUser);
-        List<GiftCertificate> giftCertificates = new ArrayList<>();
-        giftCertificates.add(new GiftCertificate(1L, "Skating", "Ice skating is a sport in which people slide " +
-                "over a smooth ice surface on steel-bladed skates. Millions of people skate in " +
-                "those parts of the world where the winters are cold enough.", BigDecimal.valueOf(10),
-                30, Timestamp.valueOf("2021-01-10 12:15:37"),
-                Timestamp.valueOf("2021-01-10 12:15:37"), null));
-        giftCertificates.add(new GiftCertificate(7L, "Fitness", "Physical fitness is a state of health and " +
-                "well-being and, more specifically, the ability to perform aspects of sports, " +
-                "occupations and daily activities. Physical fitness is generally achieved through" +
-                " proper nutrition, moderate-vigorous physical exercise, and sufficient rest.",
-                BigDecimal.valueOf(80), 30, Timestamp.valueOf("2021-01-11 10:30:01"),
-                Timestamp.valueOf("2021-01-11 10:30:01"), null));
-        Purchase purchase = new Purchase(10L, BigDecimal.valueOf(90),
-                Timestamp.valueOf("2021-01-12 11:34:18"), user, giftCertificates);
-        Mockito.when(userDao.findById(idUser)).thenReturn(Optional.of(user));
-        Mockito.when(purchaseDao.add(any(Purchase.class))).thenReturn(purchase);
-        PurchaseResponseDto expected = new PurchaseResponseDto(10L, BigDecimal.valueOf(90),
-                Timestamp.valueOf("2021-01-12 11:34:18"), idUser, idGiftCertificates);
+        BigDecimal expectedCost = BigDecimal.valueOf(90);
+        Mockito.when(giftCertificateService.findById(GIFT_CERTIFICATE_SKATING.getId())).thenReturn(GIFT_CERTIFICATE_SKATING);
+        Mockito.when(giftCertificateService.findById(GIFT_CERTIFICATE_FITNESS.getId())).thenReturn(GIFT_CERTIFICATE_FITNESS);
+        Mockito.when(userDao.findById(PURCHASE_REQUEST_DTO.getIdUser())).thenReturn(Optional.of(PURCHASE.getUser()));
+        Mockito.when(purchaseDao.add(any(Purchase.class))).thenReturn(PURCHASE);
 
-        PurchaseResponseDto actual = purchaseService.makePurchase(purchaseRequestDto);
+        PurchaseResponseDto actual = purchaseService.makePurchase(PURCHASE_REQUEST_DTO);
 
-        Timestamp purchaseDate = Timestamp.valueOf(LocalDateTime.now());
-        actual.setPurchaseDate(purchaseDate);
-        expected.setPurchaseDate(purchaseDate);
-        assertEquals(expected, actual);
+        assertEquals(expectedCost, actual.getCost());
     }
 
     @Test

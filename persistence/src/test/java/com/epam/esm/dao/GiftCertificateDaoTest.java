@@ -26,14 +26,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 public class GiftCertificateDaoTest {
-    @Autowired
-    private GiftCertificateDao giftCertificateDao;
     private static final GiftCertificate GIFT_CERTIFICATE_TRAMPOLINE_JUMPING;
     private static final GiftCertificate GIFT_CERTIFICATE_SKATING;
     private static final GiftCertificate GIFT_CERTIFICATE_SKATING_WITH_ONE_TAG;
     private static final GiftCertificate GIFT_CERTIFICATE_FITNESS;
     private static final GiftCertificate GIFT_CERTIFICATE_HORSEBACK_RIDING;
     private static final GiftCertificate GIFT_CERTIFICATE_SPA;
+
+    @Autowired
+    private GiftCertificateDao giftCertificateDao;
 
     static {
         List<Tag> tags = new ArrayList<>();
@@ -254,6 +255,7 @@ public class GiftCertificateDaoTest {
         GiftCertificate giftCertificate = new GiftCertificate(1L, "Skating",
                 "Sales", BigDecimal.valueOf(50), 10, Timestamp.valueOf(LocalDateTime.now()),
                 null, null);
+
         GiftCertificate actual = giftCertificateDao.update(giftCertificate);
 
         GiftCertificate expected = giftCertificate;
