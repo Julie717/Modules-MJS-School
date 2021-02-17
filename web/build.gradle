@@ -1,0 +1,7 @@
+dependencies {
+    implementation project(":service")
+}
+
+bootJar {
+    mainClass = 'com.epam.esm.GiftCertificatesApplication'
+}
