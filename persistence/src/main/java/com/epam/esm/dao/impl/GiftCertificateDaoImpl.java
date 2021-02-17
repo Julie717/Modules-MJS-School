@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     public List<GiftCertificate> findAll(Integer limit, Integer offset) {
-        Query query = entityManager.createQuery(Queries.SELECT_ALL_GIFT_CERTIFICATES, GiftCertificate.class)
+        TypedQuery<GiftCertificate> query = entityManager.createQuery(Queries.SELECT_ALL_GIFT_CERTIFICATES, GiftCertificate.class)
                 .setFirstResult(offset).setMaxResults(limit);
         return query.getResultList();
     }
@@ -51,14 +52,14 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     public List<GiftCertificate> findByParameters(String queryLastPart, Integer limit, Integer offset) {
-        Query query = entityManager.createQuery(queryLastPart, GiftCertificate.class)
+        TypedQuery<GiftCertificate> query = entityManager.createQuery(queryLastPart, GiftCertificate.class)
                 .setFirstResult(offset).setMaxResults(limit);
         return query.getResultList();
     }
 
     @Override
     public List<GiftCertificate> findByTagId(Long idTag, Integer limit, Integer offset) {
-        Query query = entityManager.createQuery(Queries.SELECT_ALL_GIFT_CERTIFICATES_BY_TAG_ID, GiftCertificate.class)
+        TypedQuery<GiftCertificate> query = entityManager.createQuery(Queries.SELECT_ALL_GIFT_CERTIFICATES_BY_TAG_ID, GiftCertificate.class)
                 .setFirstResult(offset).setMaxResults(limit);
         query.setParameter(1, idTag);
         return query.getResultList();

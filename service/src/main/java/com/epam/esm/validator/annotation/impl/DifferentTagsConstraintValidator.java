@@ -23,7 +23,7 @@ public class DifferentTagsConstraintValidator implements ConstraintValidator<Dif
             Map<Long, Long> ids = value.stream().filter(v -> v.getId() != null)
                     .collect(Collectors.groupingBy(TagDto::getId, Collectors.counting()));
             Map<String, Long> names = value.stream()
-                    .filter(v -> v.getName() == null || v.getName().isEmpty())
+                    .filter(v -> v.getName() != null && !v.getName().isEmpty())
                     .collect(Collectors.groupingBy(TagDto::getName, Collectors.counting()));
             isValid = ids.entrySet().stream().allMatch(id -> id.getValue() == 1) &&
                     names.entrySet().stream().allMatch(name -> name.getValue() == 1);

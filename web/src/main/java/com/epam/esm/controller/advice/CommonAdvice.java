@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -110,6 +111,15 @@ public class CommonAdvice {
         ErrorResponse response = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, errorMessage);
         log.log(Level.ERROR, errorMessage);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleJHttpMessageNotReadableException(HttpMessageNotReadableException ex, Locale locale) {
+        String errorMessage = messageSource.getMessage(ErrorMessageReader.INCORRECT_VALUE,
+                new Object[]{}, locale);
+        ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST_VALUE, errorMessage);
+        log.log(Level.ERROR, errorMessage);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
