@@ -11,4 +11,7 @@ public class ValidationGroup {
 
     public interface PatchValidation extends Default {
     }
+
+    public interface SignIn extends Default {
+    }
 }

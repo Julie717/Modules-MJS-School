@@ -7,7 +7,7 @@ import com.epam.esm.controller.UserController;
 import com.epam.esm.model.GiftCertificateDto;
 import com.epam.esm.model.PurchaseResponseDto;
 import com.epam.esm.model.TagDto;
-import com.epam.esm.model.UserDto;
+import com.epam.esm.model.UserResponseDto;
 import org.springframework.hateoas.Link;
 
 import java.util.List;
@@ -61,12 +61,11 @@ public class HateoasLinkBuilder {
         }
     }
 
-    public static void buildUserLink(UserDto user) {
+    public static void buildUserLink(UserResponseDto user) {
         user.add(linkTo(UserController.class).slash(user.getId()).withRel(USER + user.getId()));
-        buildPurchasesLink(user.getPurchases());
     }
 
-    public static void buildUsersLink(List<UserDto> users) {
+    public static void buildUsersLink(List<UserResponseDto> users) {
         if (users != null && !users.isEmpty()) {
             users.forEach(HateoasLinkBuilder::buildUserLink);
         }

@@ -1,11 +1,18 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.model.UserDto;
+import com.epam.esm.model.CustomUserDetails;
+import com.epam.esm.model.PurchaseResponseDto;
+import com.epam.esm.model.UserResponseDto;
 import com.epam.esm.service.UserService;
+import com.epam.esm.util.ErrorMessageReader;
 import com.epam.esm.util.HateoasLinkBuilder;
 import com.epam.esm.util.Pagination;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,13 +33,15 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/users", produces = APPLICATION_JSON_VALUE)
 @Validated
 public class UserController {
+    private static final String ROLE_ADMIN = "ROLE_ADMIN";
     private final UserService userService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<UserDto> findAllUsers(@Valid @NotNull Pagination pagination,
-                                      @Size(min = 1, max = 50) String surname) {
-        List<UserDto> users;
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<UserResponseDto> findAllUsers(@Valid @NotNull Pagination pagination,
+                                              @Size(min = 1, max = 50) String surname) {
+        List<UserResponseDto> users;
         if (surname == null || surname.isEmpty()) {
             users = userService.findAll(pagination);
         } else {
@@ -44,8 +53,16 @@ public class UserController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto findById(@PathVariable @Positive Long id) {
-        UserDto user = userService.findById(id);
+    @PreAuthorize("isAuthenticated()")
+    public UserResponseDto findById(@PathVariable @Positive Long id, SecurityContextHolderAwareRequestWrapper requestWrapper) {
+        if (!requestWrapper.isUserInRole(ROLE_ADMIN)) {
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=(UsernamePasswordAuthenticationToken)requestWrapper.getUserPrincipal();
+            CustomUserDetails userDetails=(CustomUserDetails)usernamePasswordAuthenticationToken.getPrincipal();
+            if (!userDetails.getId().equals(id)){
+                throw new AccessDeniedException(ErrorMessageReader.ACCESS_DENIED);
+            }
+        }
+        UserResponseDto user = userService.findById(id);
         HateoasLinkBuilder.buildUserLink(user);
         return user;
     }

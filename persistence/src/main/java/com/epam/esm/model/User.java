@@ -7,13 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Column;
-import javax.persistence.OneToMany;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
@@ -29,11 +23,21 @@ public class User implements Serializable {
     @Column(name = ColumnName.USER_ID)
     Long id;
 
+    @Column(name = ColumnName.USER_LOGIN, length = 20)
+    String login;
+
+    @Column(name = ColumnName.USER_PASSWORD, length = 60)
+    String password;
+
     @Column(name = ColumnName.USER_NAME, length = 20)
     String name;
 
     @Column(name = ColumnName.USER_SURNAME, length = 50)
     String surname;
+
+    @ManyToOne
+    @JoinColumn(name = "id_role")
+    private UserRole userRole;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     List<Purchase> purchases;

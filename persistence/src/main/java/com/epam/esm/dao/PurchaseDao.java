@@ -15,4 +15,5 @@ public interface PurchaseDao extends CommonDao<Purchase> {
      * @return the list of purchases
      */
     List<Purchase> findByIdGiftCertificate(Long idGiftCertificate);
+    List<Purchase> findByIdUser(Long idUser,Integer limit, Integer offset);
 }

@@ -48,6 +48,12 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
+    public List<PurchaseResponseDto> findByIdUser(Long idUser, Pagination pagination) {
+        List<Purchase> purchases = purchaseDao.findByIdUser(idUser,pagination.getLimit(), pagination.getOffset());
+        return purchaseResponseConverter.convertTo(purchases);
+    }
+
+    @Override
     @Transactional
     public PurchaseResponseDto makePurchase(PurchaseRequestDto purchaseRequestDto) {
         List<Long> idGiftCertificates = purchaseRequestDto.getIdGiftCertificates();

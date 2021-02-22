@@ -26,6 +26,7 @@ public interface PurchaseService {
      */
     PurchaseResponseDto findById(Long id);
 
+    List<PurchaseResponseDto> findByIdUser(Long idUser, Pagination pagination);
     /**
      * Create purchase for user.
      *

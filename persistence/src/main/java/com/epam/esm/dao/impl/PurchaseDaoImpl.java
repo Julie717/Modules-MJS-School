@@ -38,6 +38,14 @@ public class PurchaseDaoImpl implements PurchaseDao {
     }
 
     @Override
+    public List<Purchase> findByIdUser(Long idUser, Integer limit, Integer offset) {
+        Query query = entityManager.createQuery(Queries.SELECT_PURCHASE_BY_ID_USER, Purchase.class)
+         .setFirstResult(offset).setMaxResults(limit);
+        query.setParameter(1, idUser);
+        return query.getResultList();
+    }
+
+    @Override
     public Purchase add(Purchase entity) {
         entityManager.persist(entity);
         return entity;

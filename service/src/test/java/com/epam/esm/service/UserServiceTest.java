@@ -3,9 +3,9 @@ package com.epam.esm.service;
 import com.epam.esm.dao.UserDao;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.User;
-import com.epam.esm.model.UserDto;
+import com.epam.esm.model.UserResponseDto;
 import com.epam.esm.model.converter.impl.PurchaseResponseConverterImpl;
-import com.epam.esm.model.converter.impl.UserConverterImpl;
+import com.epam.esm.model.converter.impl.UserResponseConverterImpl;
 import com.epam.esm.service.impl.UserServiceImpl;
 import com.epam.esm.util.Pagination;
 import org.junit.jupiter.api.Test;
@@ -37,16 +37,16 @@ public class UserServiceTest {
     private final PurchaseResponseConverterImpl purchaseResponseConverter = new PurchaseResponseConverterImpl();
 
     @Spy
-    private final UserConverterImpl userConverter = new UserConverterImpl(purchaseResponseConverter);
+    private final UserResponseConverterImpl userConverter = new UserResponseConverterImpl(purchaseResponseConverter);
 
     @Test
     void findAllTest() {
         List<User> users = new ArrayList<>();
         Mockito.when(userDao.findAll(anyInt(), anyInt())).thenReturn(users);
         Pagination pagination = new Pagination(10, 2);
-        List<UserDto> expected = new ArrayList<>();
+        List<UserResponseDto> expected = new ArrayList<>();
 
-        List<UserDto> actual = userService.findAll(pagination);
+        List<UserResponseDto> actual = userService.findAll(pagination);
 
         verify(userConverter).convertTo(users);
         assertEquals(expected, actual);
@@ -60,9 +60,9 @@ public class UserServiceTest {
         user.setName("Ivan");
         user.setSurname("Ivanov");
         Mockito.when(userDao.findById(idUser)).thenReturn(Optional.of(user));
-        UserDto expected = new UserDto(idUser, "Ivan", "Ivanov", null);
+        UserResponseDto expected = new UserResponseDto(idUser, "Ivan", "Ivanov", null);
 
-        UserDto actual = userService.findById(idUser);
+        UserResponseDto actual = userService.findById(idUser);
 
         assertEquals(expected, actual);
     }
@@ -77,9 +77,9 @@ public class UserServiceTest {
 
     @Test
     void findBySurnameTestPositive() {
-        List<UserDto> expected = new ArrayList<>();
-        expected.add(new UserDto(5L, "Ivan", "Ivanov", null));
-        expected.add(new UserDto(12L, "Nick", "Sidorov", null));
+        List<UserResponseDto> expected = new ArrayList<>();
+        expected.add(new UserResponseDto(5L, "Ivan", "Ivanov", null));
+        expected.add(new UserResponseDto(12L, "Nick", "Sidorov", null));
         Pagination pagination = new Pagination(10, 2);
         String surname = "ov";
         List<User> users = new ArrayList<>();
@@ -87,7 +87,7 @@ public class UserServiceTest {
         users.add(new User(12L, "Nick", "Sidorov", null));
         Mockito.when(userDao.findBySurname(surname, 10, 2)).thenReturn(users);
 
-        List<UserDto> actual = userService.findBySurname(pagination, surname);
+        List<UserResponseDto> actual = userService.findBySurname(pagination, surname);
 
         assertEquals(expected, actual);
     }
@@ -97,9 +97,9 @@ public class UserServiceTest {
         Pagination pagination = new Pagination(10, 2);
         String surname = "ov";
         Mockito.when(userDao.findBySurname(surname, 10, 2)).thenReturn(new ArrayList<>());
-        List<UserDto> expected = new ArrayList<>();
+        List<UserResponseDto> expected = new ArrayList<>();
 
-        List<UserDto> actual = userService.findBySurname(pagination, surname);
+        List<UserResponseDto> actual = userService.findBySurname(pagination, surname);
 
         assertEquals(expected, actual);
     }

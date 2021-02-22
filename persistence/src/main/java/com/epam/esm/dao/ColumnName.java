@@ -13,12 +13,17 @@ public class ColumnName {
     public static final String GIFT_CERTIFICATE_LAST_UPDATE_DATE = "last_update_date";
 
     public static final String USER_ID = "id_user";
+    public static final String USER_LOGIN = "login";
+    public static final String USER_PASSWORD = "password";
     public static final String USER_NAME = "name";
     public static final String USER_SURNAME = "surname";
 
     public static final String PURCHASE_ID = "id_purchase";
     public static final String PURCHASE_COST = "cost";
     public static final String PURCHASE_DATE = "purchase_date";
+
+    public static final String ROLE_ID = "id_role";
+    public static final String ROLE_NAME = "name";
 
     private ColumnName() {
     }

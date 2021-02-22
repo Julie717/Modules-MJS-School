@@ -8,6 +8,7 @@ public class ErrorCode {
     public static final int BAD_REQUEST_PARAM_ABSENT = 40003;
     public static final int METHOD_NOT_ALLOWED = 40501;
     public static final int INTERNAL_SERVER_ERROR = 50001;
+    public static final int ACCESS_DENIED=40301;
 
     private ErrorCode() {
     }

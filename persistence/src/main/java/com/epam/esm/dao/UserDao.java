@@ -3,6 +3,7 @@ package com.epam.esm.dao;
 import com.epam.esm.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The interface User dao.
@@ -17,4 +18,5 @@ public interface UserDao extends CommonDao<User> {
      * @return the list
      */
     List<User> findBySurname(String surname, Integer limit, Integer offset);
+    Optional<User> findByLogin(String login);
 }
