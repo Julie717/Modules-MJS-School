@@ -107,7 +107,6 @@ public class CommonAdvice {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex, Locale locale) {
-        System.out.println(ex);
         String errorMessage = messageSource.getMessage(ErrorMessageReader.INTERNAL_SERVER_ERROR,
                 new Object[]{}, locale);
         ErrorResponse response = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, errorMessage);
@@ -159,6 +158,7 @@ public class CommonAdvice {
                         f.getCode(), f.getRejectedValue(), messageSource.getMessage(ErrorMessageReader.INCORRECT_VALUE,
                         new Object[]{}, locale))));
         ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST_VALUE, errorMessage, errorFields);
+        log.log(Level.ERROR, errorMessage);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
