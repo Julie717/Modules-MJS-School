@@ -1,6 +1,5 @@
 package com.epam.esm.model;
 
-import com.epam.esm.model.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

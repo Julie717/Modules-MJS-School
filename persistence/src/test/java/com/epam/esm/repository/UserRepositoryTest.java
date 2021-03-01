@@ -1,30 +1,32 @@
-package com.epam.esm.dao;
+package com.epam.esm.repository;
 
-import com.epam.esm.config.DaoConfigTest;
-import com.epam.esm.dao.impl.UserDaoImpl;
+import com.epam.esm.config.PersistenceConfigTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = UserDaoImpl.class)
-@ContextConfiguration(classes = DaoConfigTest.class)
+@ContextConfiguration(classes = PersistenceConfigTest.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
-public class UserDaoTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataJpaTest
+public class UserRepositoryTest {
     @Autowired
-    private UserDao userDao;
+    private UserRepository userRepository;
 
     @Test
     void findAllTest() {
-        Integer limit = 10;
-        Integer offset = 0;
+        Pageable pageable = PageRequest.of(0, 3);
 
-        int actualAmountOfUsers = userDao.findAll(limit, offset).size();
+        int actualAmountOfUsers = userRepository.findAll(pageable).getContent().size();
 
         int expectedAmountOfUsers = 3;
         assertEquals(expectedAmountOfUsers, actualAmountOfUsers);
@@ -34,7 +36,7 @@ public class UserDaoTest {
     void findByIdTest() {
         Long id = 2L;
 
-        String actualSurname = userDao.findById(id).get().getSurname();
+        String actualSurname = userRepository.findById(id).get().getSurname();
 
         String expectedSurname = "Petrov";
         assertEquals(expectedSurname, actualSurname);
@@ -43,10 +45,9 @@ public class UserDaoTest {
     @Test
     void findBySurnameTest() {
         String surname = "ov";
-        Integer limit = 10;
-        Integer offset = 0;
+        Pageable pageable = PageRequest.of(0, 3);
 
-        int actualAmountOfUsers = userDao.findBySurname(surname, limit, offset).size();
+        int actualAmountOfUsers = userRepository.findBySurnameLike(surname, pageable).size();
 
         int expectedAmountOfUsers = 3;
         assertEquals(expectedAmountOfUsers, actualAmountOfUsers);

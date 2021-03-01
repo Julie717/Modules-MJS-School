@@ -1,15 +1,12 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.model.CustomUserDetails;
-import com.epam.esm.model.PurchaseResponseDto;
 import com.epam.esm.model.UserResponseDto;
 import com.epam.esm.service.UserService;
-import com.epam.esm.util.ErrorMessageReader;
 import com.epam.esm.util.HateoasLinkBuilder;
 import com.epam.esm.util.Pagination;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
@@ -28,14 +25,24 @@ import java.util.List;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
+/**
+ * The type User controller controller is used to receive REST API requests
+ * with mapping "/users".
+ */
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/users", produces = APPLICATION_JSON_VALUE)
 @Validated
 public class UserController {
-    private static final String ROLE_ADMIN = "ROLE_ADMIN";
     private final UserService userService;
 
+    /**
+     * Find all users.
+     *
+     * @param pagination contains number of page and amount of pages on each page
+     * @param surname    is the surname of user
+     * @return the list of users
+     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -51,18 +58,23 @@ public class UserController {
         return users;
     }
 
+    /**
+     * Find by id user response dto.
+     *
+     * @param id             is the user's id
+     * @param requestWrapper is the request wrapper
+     * @return the information about user
+     */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("isAuthenticated()")
     public UserResponseDto findById(@PathVariable @Positive Long id, SecurityContextHolderAwareRequestWrapper requestWrapper) {
-        if (!requestWrapper.isUserInRole(ROLE_ADMIN)) {
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=(UsernamePasswordAuthenticationToken)requestWrapper.getUserPrincipal();
-            CustomUserDetails userDetails=(CustomUserDetails)usernamePasswordAuthenticationToken.getPrincipal();
-            if (!userDetails.getId().equals(id)){
-                throw new AccessDeniedException(ErrorMessageReader.ACCESS_DENIED);
-            }
-        }
-        UserResponseDto user = userService.findById(id);
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                (UsernamePasswordAuthenticationToken) requestWrapper.getUserPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) usernamePasswordAuthenticationToken.getPrincipal();
+        Long idUser = userDetails.getId();
+        String role = userDetails.getAuthorities().iterator().next().getAuthority();
+        UserResponseDto user = userService.findById(id, idUser, role);
         HateoasLinkBuilder.buildUserLink(user);
         return user;
     }

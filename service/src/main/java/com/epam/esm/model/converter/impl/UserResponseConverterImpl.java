@@ -12,8 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @Component
 public class UserResponseConverterImpl implements CommonConverter<User, UserResponseDto> {
-    private final PurchaseResponseConverterImpl purchaseResponseConverter;
-
     @Override
     public UserResponseDto convertTo(User entity) {
         return new UserResponseDto(entity.getId(), entity.getLogin(), entity.getName(), entity.getSurname());

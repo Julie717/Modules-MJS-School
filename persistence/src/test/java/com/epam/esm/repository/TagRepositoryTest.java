@@ -1,11 +1,13 @@
-package com.epam.esm.dao;
+package com.epam.esm.repository;
 
-import com.epam.esm.config.DaoConfigTest;
-import com.epam.esm.dao.impl.TagDaoImpl;
+import com.epam.esm.config.PersistenceConfigTest;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,16 +18,15 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@SpringBootTest(classes = TagDaoImpl.class)
-@ContextConfiguration(classes = DaoConfigTest.class)
+@ContextConfiguration(classes = PersistenceConfigTest.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
-public class TagDaoTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataJpaTest
+public class TagRepositoryTest {
     @Autowired
-    private TagDao tagDao;
+    private TagRepository tagRepository;
 
     @Test
     void findAllTest() {
@@ -37,23 +38,22 @@ public class TagDaoTest {
         expected.add(new Tag(5L, "wonderful gift"));
         expected.add(new Tag(6L, "relax"));
         expected.add(new Tag(7L, "make you fun"));
-        Integer limit = 50;
-        Integer offset = 0;
+        Pageable pageable = PageRequest.of(0, 10);
 
-        List<Tag> actual = tagDao.findAll(limit, offset);
+        List<Tag> actual = tagRepository.findAll(pageable).getContent();
 
         assertEquals(expected, actual);
     }
 
     @Test
-    void findAllFromOffsetPositionTest() {
+    void findAllSecondPageTest() {
         List<Tag> expected = new ArrayList<>();
         expected.add(new Tag(4L, "riding"));
         expected.add(new Tag(5L, "wonderful gift"));
-        Integer limit = 2;
-        Integer offset = 3;
+        expected.add(new Tag(6L, "relax"));
+        Pageable pageable = PageRequest.of(1, 3);
 
-        List<Tag> actual = tagDao.findAll(limit, offset);
+        List<Tag> actual = tagRepository.findAll(pageable).getContent();
 
         assertEquals(expected, actual);
     }
@@ -62,7 +62,7 @@ public class TagDaoTest {
     void findByIdTestPositive() {
         Long id = 2L;
 
-        Optional<Tag> actual = tagDao.findById(id);
+        Optional<Tag> actual = tagRepository.findById(id);
 
         Tag tag = new Tag(2L, "sport");
         Optional<Tag> expected = Optional.of(tag);
@@ -73,7 +73,7 @@ public class TagDaoTest {
     void findByIdTestNotFound() {
         Long id = 25L;
 
-        Optional<Tag> actual = tagDao.findById(id);
+        Optional<Tag> actual = tagRepository.findById(id);
 
         Optional<Tag> expected = Optional.empty();
         assertEquals(expected, actual);
@@ -83,7 +83,7 @@ public class TagDaoTest {
     void findTagByNameTestPositive() {
         String name = "gift";
 
-        Optional<Tag> actual = tagDao.findTagByName(name);
+        Optional<Tag> actual = tagRepository.findByName(name);
 
         Tag tag = new Tag(1L, "gift");
         Optional<Tag> expected = Optional.of(tag);
@@ -94,7 +94,7 @@ public class TagDaoTest {
     void findTagByNameTestNotFound() {
         String name = "skating";
 
-        Optional<Tag> actual = tagDao.findTagByName(name);
+        Optional<Tag> actual = tagRepository.findByName(name);
 
         Optional<Tag> expected = Optional.empty();
         assertEquals(expected, actual);
@@ -113,7 +113,7 @@ public class TagDaoTest {
         tagNames.add("relax");
         tagNames.add("fitness");
 
-        List<Tag> actual = tagDao.findTagByNameInRange(tagNames);
+        List<Tag> actual = tagRepository.findByNameIn(tagNames);
 
         assertEquals(expected, actual);
     }
@@ -125,7 +125,7 @@ public class TagDaoTest {
         tagNames.add("skating");
         tagNames.add("fitness");
 
-        List<Tag> actual = tagDao.findTagByNameInRange(tagNames);
+        List<Tag> actual = tagRepository.findByNameIn(tagNames);
 
         assertEquals(expected, actual);
     }
@@ -134,10 +134,9 @@ public class TagDaoTest {
     void findTopTagTest() {
         List<Tag> expected = new ArrayList<>();
         expected.add(new Tag(1L, "gift"));
-        Integer limit = 10;
-        Integer offset = 0;
+        Pageable pageable = PageRequest.of(0, 10);
 
-        List<Tag> actual = tagDao.findTopTag(limit, offset);
+        List<Tag> actual = tagRepository.findTopTag(pageable);
 
         assertEquals(expected, actual);
     }
@@ -149,31 +148,11 @@ public class TagDaoTest {
         Tag tag = new Tag();
         tag.setName(name);
 
-        Tag actual = tagDao.add(tag);
+        Tag actual = tagRepository.save(tag);
 
         Tag expected = new Tag();
         expected.setId(8L);
         expected.setName(name);
         assertEquals(expected, actual);
-    }
-
-    @Test
-    @Transactional
-    void deleteFromGiftCertificateTagPositive() {
-        Long id = 4L;
-
-        boolean actual = tagDao.deleteTagFromGiftCertificates(id);
-
-        assertTrue(actual);
-    }
-
-    @Test
-    @Transactional
-    void deleteFromGiftCertificateTagNegative() {
-        Long id = 44L;
-
-        boolean actual = tagDao.deleteTagFromGiftCertificates(id);
-
-        assertFalse(actual);
     }
 }

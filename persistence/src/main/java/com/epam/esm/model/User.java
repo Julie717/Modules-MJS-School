@@ -1,13 +1,21 @@
 package com.epam.esm.model;
 
-import com.epam.esm.dao.ColumnName;
+import com.epam.esm.util.ColumnName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.OneToMany;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
+import javax.persistence.GenerationType;
 import java.io.Serializable;
 import java.util.List;
 
@@ -35,9 +43,9 @@ public class User implements Serializable {
     @Column(name = ColumnName.USER_SURNAME, length = 50)
     String surname;
 
-    @ManyToOne
-    @JoinColumn(name = "id_role")
-    private UserRole userRole;
+    @Enumerated(EnumType.STRING)
+    @Column(name = ColumnName.USER_ROLE)
+    private Role role;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     List<Purchase> purchases;

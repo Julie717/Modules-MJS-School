@@ -19,7 +19,7 @@ public class CustomUserDetailsConverterImpl implements CommonConverter<User, Cus
         userDetails.setId(entity.getId());
         userDetails.setLogin(entity.getLogin());
         userDetails.setPassword(entity.getPassword());
-        userDetails.setGrantedAuthorities(Collections.singletonList(new SimpleGrantedAuthority(entity.getUserRole().getName())));
+        userDetails.setGrantedAuthorities(Collections.singletonList(new SimpleGrantedAuthority(entity.getRole().name())));
         return userDetails;
     }
 

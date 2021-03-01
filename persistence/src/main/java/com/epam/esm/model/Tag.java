@@ -1,6 +1,6 @@
 package com.epam.esm.model;
 
-import com.epam.esm.dao.ColumnName;
+import com.epam.esm.util.ColumnName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DifferentTagsConstraintValidatorTest {
-    DifferentTagsConstraintValidator tagsConstraintValidator = new DifferentTagsConstraintValidator();
+    private final DifferentTagsConstraintValidator tagsConstraintValidator = new DifferentTagsConstraintValidator();
 
     public static Stream<Arguments> data() {
         List<TagDto> value1 = new ArrayList<>();

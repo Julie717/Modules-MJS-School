@@ -8,10 +8,10 @@ import com.epam.esm.model.TagDto;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.util.HateoasLinkBuilder;
 import com.epam.esm.util.Pagination;
-import com.epam.esm.util.PaginationParser;
 import com.epam.esm.validator.ValidationGroup;
 import com.epam.esm.validator.annotation.Different;
 import com.epam.esm.validator.annotation.IncludePagination;
+import com.epam.esm.validator.annotation.SearchParametersValid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -75,14 +75,11 @@ public class GiftCertificateController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("permitAll()")
-    public List<GiftCertificateDto> findByParameters(@NotEmpty @IncludePagination @RequestParam Map<String, String> parameters) {
+    public List<GiftCertificateDto> findByParameters(@NotEmpty @IncludePagination
+                                                     @SearchParametersValid
+                                                     @RequestParam Map<String, String> parameters) {
         List<GiftCertificateDto> giftCertificates;
-        Pagination pagination = PaginationParser.parsePagination(parameters);
-        if (parameters.isEmpty()) {
-            giftCertificates = giftCertificateService.findAll(pagination);
-        } else {
-            giftCertificates = giftCertificateService.findByParameters(parameters, pagination);
-        }
+        giftCertificates = giftCertificateService.findByParameters(parameters);
         HateoasLinkBuilder.buildGiftCertificatesLink(giftCertificates);
         return giftCertificates;
     }
@@ -91,7 +88,7 @@ public class GiftCertificateController {
      * Find gift certificates by tag id.
      *
      * @param idTag      is the id of tag
-     * @param pagination contains limit and offset for search
+     * @param pagination contains number of page and amount of pages on each page
      * @return the list of gift certificate DTO
      */
     @GetMapping(value = "/tags/{idTag}")

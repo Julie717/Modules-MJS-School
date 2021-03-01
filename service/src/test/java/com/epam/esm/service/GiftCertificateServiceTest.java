@@ -1,7 +1,5 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.GiftCertificateDao;
-import com.epam.esm.exception.IllegalParameterException;
 import com.epam.esm.exception.ResourceAlreadyExistsException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.GiftCertificate;
@@ -10,8 +8,10 @@ import com.epam.esm.model.Tag;
 import com.epam.esm.model.TagDto;
 import com.epam.esm.model.converter.impl.GiftCertificateConverterImpl;
 import com.epam.esm.model.converter.impl.TagConverterImpl;
+import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import com.epam.esm.util.Pagination;
+import com.querydsl.core.types.Predicate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +19,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -30,7 +33,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.any;
@@ -55,7 +57,7 @@ public class GiftCertificateServiceTest {
     private GiftCertificateServiceImpl giftCertificateService;
 
     @Mock
-    private GiftCertificateDao giftCertificateDao;
+    private GiftCertificateRepository giftCertificateRepository;
 
     @Mock
     private TagService tagService;
@@ -136,41 +138,11 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    void findAllTestEmptyList() {
-        List<GiftCertificate> giftCertificates = new ArrayList<>();
-        Mockito.when(giftCertificateDao.findAll(anyInt(), anyInt())).thenReturn(giftCertificates);
-        List<GiftCertificateDto> giftCertificatesDto = new ArrayList<>();
-        Pagination pagination = new Pagination(10, 2);
-
-        List<GiftCertificateDto> actual = giftCertificateService.findAll(pagination);
-
-        verify(giftCertificateConverter).convertTo(giftCertificates);
-        assertEquals(giftCertificatesDto, actual);
-    }
-
-    @Test
-    void findAllTestPositive() {
-        List<GiftCertificate> giftCertificates = new ArrayList<>();
-        giftCertificates.add(GIFT_CERTIFICATE_SKATING);
-        giftCertificates.add(GIFT_CERTIFICATE_FITNESS);
-        Mockito.when(giftCertificateDao.findAll(anyInt(), anyInt())).thenReturn(giftCertificates);
-        List<GiftCertificateDto> expected = new ArrayList<>();
-        expected.add(GIFT_CERTIFICATE_SKATING_DTO);
-        expected.add(GIFT_CERTIFICATE_FITNESS_DTO);
-        Pagination pagination = new Pagination(2, 0);
-
-        List<GiftCertificateDto> actual = giftCertificateService.findAll(pagination);
-
-        verify(giftCertificateConverter, times(1)).convertTo(giftCertificates);
-        assertEquals(expected, actual);
-    }
-
-    @Test
     void findByIdTestPositive() {
         GiftCertificateDto expected = GIFT_CERTIFICATE_SKATING_DTO;
         Long id = 2L;
         Optional<GiftCertificate> giftCertificate = Optional.of(GIFT_CERTIFICATE_SKATING);
-        Mockito.when(giftCertificateDao.findById(id)).thenReturn(giftCertificate);
+        Mockito.when(giftCertificateRepository.findById(id)).thenReturn(giftCertificate);
 
         GiftCertificateDto actual = giftCertificateService.findById(id);
 
@@ -180,7 +152,7 @@ public class GiftCertificateServiceTest {
     @Test
     void findByIdTestNegative() {
         Long id = 25L;
-        Mockito.when(giftCertificateDao.findById(id)).thenReturn(Optional.empty());
+        Mockito.when(giftCertificateRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> giftCertificateService.findById(id));
     }
@@ -193,35 +165,48 @@ public class GiftCertificateServiceTest {
         parameters.put("nameGiftCertificate", "gift");
         parameters.put("description", "beautiful");
         parameters.put("sort", "nameGiftCertificate,-createDate");
+        parameters.put("page","10");
+        parameters.put("perPage","2");
         List<GiftCertificate> giftCertificates = new ArrayList<>();
         giftCertificates.add(GIFT_CERTIFICATE_SKATING);
-        Mockito.when(giftCertificateDao.findByParameters(anyString(), anyInt(), anyInt())).thenReturn(giftCertificates);
-        Pagination pagination = new Pagination(2, 0);
+        Mockito.when(giftCertificateRepository.findAll(any(Predicate.class), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(giftCertificates));
 
-        List<GiftCertificateDto> actual = giftCertificateService.findByParameters(parameters, pagination);
+        List<GiftCertificateDto> actual = giftCertificateService.findByParameters(parameters);
 
         assertEquals(expected, actual);
-    }
-
-    @Test
-    void findByParametersTestIncorrectInputParameters() {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("color", "gift");
-        parameters.put("description", "beautiful");
-        Pagination pagination = new Pagination(2, 0);
-
-        assertThrows(IllegalParameterException.class, () -> giftCertificateService.findByParameters(parameters, pagination));
     }
 
     @Test
     void findByParametersTestNotFound() {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("nameGiftCertificate", "gift");
+        parameters.put("perPage","2");
         List<GiftCertificate> giftCertificates = new ArrayList<>();
-        Mockito.when(giftCertificateDao.findByParameters(anyString(), anyInt(), anyInt())).thenReturn(giftCertificates);
-        Pagination pagination = new Pagination(2, 0);
+        Mockito.when(giftCertificateRepository.findAll(any(Predicate.class), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(giftCertificates));
 
-        assertThrows(ResourceNotFoundException.class, () -> giftCertificateService.findByParameters(parameters, pagination));
+        assertThrows(ResourceNotFoundException.class, () -> giftCertificateService.findByParameters(parameters));
+    }
+
+    @Test
+    void findAllTestPositive() {
+        List<GiftCertificate> giftCertificates = new ArrayList<>();
+        giftCertificates.add(GIFT_CERTIFICATE_SKATING);
+        giftCertificates.add(GIFT_CERTIFICATE_FITNESS);
+        Page<GiftCertificate> giftCertificatePage = new PageImpl<>(giftCertificates);
+        Mockito.when(giftCertificateRepository.findAll(any(Pageable.class))).thenReturn(giftCertificatePage);
+        List<GiftCertificateDto> expected = new ArrayList<>();
+        expected.add(GIFT_CERTIFICATE_SKATING_DTO);
+        expected.add(GIFT_CERTIFICATE_FITNESS_DTO);
+        Map<String,String>parameters=new HashMap<>();
+        parameters.put("page","2");
+        parameters.put("perPage","2");
+
+        List<GiftCertificateDto> actual = giftCertificateService.findByParameters(parameters);
+
+        verify(giftCertificateConverter, times(1)).convertTo(giftCertificates);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -231,7 +216,7 @@ public class GiftCertificateServiceTest {
         Long idTag = 2L;
         List<GiftCertificate> giftCertificates = new ArrayList<>();
         giftCertificates.add(GIFT_CERTIFICATE_SKATING);
-        Mockito.when(giftCertificateDao.findByTagId(anyLong(), anyInt(), anyInt()))
+        Mockito.when(giftCertificateRepository.findByIdTag(anyLong(), any(Pageable.class)))
                 .thenReturn(giftCertificates);
         Pagination pagination = new Pagination(2, 3);
 
@@ -243,7 +228,7 @@ public class GiftCertificateServiceTest {
     @Test
     void findByTagIdTestNegative() {
         Long idTag = 2L;
-        Mockito.when(giftCertificateDao.findByTagId(anyLong(), anyInt(), anyInt()))
+        Mockito.when(giftCertificateRepository.findByIdTag(anyLong(), any(Pageable.class)))
                 .thenReturn(new ArrayList<>());
         Pagination pagination = new Pagination(2, 3);
 
@@ -253,7 +238,7 @@ public class GiftCertificateServiceTest {
     @Test
     void findGiftCertificateByTagIdTestPositive() {
         GiftCertificateDto expected = GIFT_CERTIFICATE_SKATING_DTO;
-        Mockito.when(giftCertificateDao.findByTagIdInGiftCertificate(anyLong(), anyLong()))
+        Mockito.when(giftCertificateRepository.findByIdTagInGiftCertificate(anyLong(), anyLong()))
                 .thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING));
 
         GiftCertificateDto actual = giftCertificateService.findGiftCertificateByTagId(2L, 2L);
@@ -263,7 +248,7 @@ public class GiftCertificateServiceTest {
 
     @Test
     void findGiftCertificateByTagIdTestNegative() {
-        Mockito.when(giftCertificateDao.findByTagIdInGiftCertificate(anyLong(), anyLong()))
+        Mockito.when(giftCertificateRepository.findByIdTagInGiftCertificate(anyLong(), anyLong()))
                 .thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> giftCertificateService.findGiftCertificateByTagId(21L, 5L));
@@ -273,8 +258,8 @@ public class GiftCertificateServiceTest {
     @Test
     void addTestPositive() {
         Long expectedId = 1L;
-        Mockito.when(giftCertificateDao.findByName(GIFT_CERTIFICATE_SKATING.getName())).thenReturn(Optional.empty());
-        Mockito.when(giftCertificateDao.add(any(GiftCertificate.class))).thenReturn(GIFT_CERTIFICATE_SKATING);
+        Mockito.when(giftCertificateRepository.findByName(GIFT_CERTIFICATE_SKATING.getName())).thenReturn(Optional.empty());
+        Mockito.when(giftCertificateRepository.save(any(GiftCertificate.class))).thenReturn(GIFT_CERTIFICATE_SKATING);
         Mockito.when(tagService.findByRangeNames(anyList())).thenReturn(GIFT_CERTIFICATE_SKATING_DTO_WITHOUT_ID.getTags());
 
         GiftCertificateDto actual = giftCertificateService.add(GIFT_CERTIFICATE_SKATING_DTO_WITHOUT_ID);
@@ -284,7 +269,7 @@ public class GiftCertificateServiceTest {
 
     @Test
     void addTestNegative() {
-        Mockito.when(giftCertificateDao.findByName(anyString())).thenReturn(Optional.of(new GiftCertificate()));
+        Mockito.when(giftCertificateRepository.findByName(anyString())).thenReturn(Optional.of(new GiftCertificate()));
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
         giftCertificateDto.setName("Skating");
 
@@ -295,8 +280,8 @@ public class GiftCertificateServiceTest {
     void addTagsToGiftCertificateTestPositive() {
         GiftCertificateDto expected = GIFT_CERTIFICATE_SKATING_DTO;
         Long id = 2L;
-        Mockito.when(giftCertificateDao.findById(id)).thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING_WITHOUT_TAG));
-        Mockito.when(giftCertificateDao.update(any(GiftCertificate.class))).thenReturn(GIFT_CERTIFICATE_SKATING);
+        Mockito.when(giftCertificateRepository.findById(id)).thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING_WITHOUT_TAG));
+        Mockito.when(giftCertificateRepository.save(any(GiftCertificate.class))).thenReturn(GIFT_CERTIFICATE_SKATING);
         List<TagDto> tagsDto = GIFT_CERTIFICATE_SKATING_DTO.getTags();
         Mockito.when(tagService.findByRangeNames(tagsDto)).thenReturn(new ArrayList<>());
 
@@ -308,7 +293,7 @@ public class GiftCertificateServiceTest {
     @Test
     void addTagsToGiftCertificateTestNegative() {
         Long id = 2L;
-        Mockito.when(giftCertificateDao.findById(id)).thenThrow(ResourceNotFoundException.class);
+        Mockito.when(giftCertificateRepository.findById(id)).thenThrow(ResourceNotFoundException.class);
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
         giftCertificateDto.setName("Skating");
 
@@ -318,7 +303,7 @@ public class GiftCertificateServiceTest {
 
     @Test
     void addTagsToGiftCertificateTestTagsAlreadyExist() {
-        Mockito.when(giftCertificateDao.findById(GIFT_CERTIFICATE_SKATING.getId())).thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING));
+        Mockito.when(giftCertificateRepository.findById(GIFT_CERTIFICATE_SKATING.getId())).thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING));
         List<TagDto> tagsDto = GIFT_CERTIFICATE_SKATING_DTO.getTags();
 
         assertThrows(ResourceAlreadyExistsException.class,
@@ -328,10 +313,10 @@ public class GiftCertificateServiceTest {
     @Test
     void updateGiftCertificateTestPositive() {
         String expectedName = GIFT_CERTIFICATE_FITNESS_DTO_OTHER_ID.getName();
-        Mockito.when(giftCertificateDao.findById(GIFT_CERTIFICATE_SKATING_WITHOUT_TAG.getId()))
+        Mockito.when(giftCertificateRepository.findById(GIFT_CERTIFICATE_SKATING_WITHOUT_TAG.getId()))
                 .thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING_WITHOUT_TAG));
-        Mockito.when(giftCertificateDao.findByName(anyString())).thenReturn(Optional.empty());
-        Mockito.when(giftCertificateDao.update(any(GiftCertificate.class))).thenReturn(GIFT_CERTIFICATE_FITNESS_OTHER_ID);
+        Mockito.when(giftCertificateRepository.findByName(anyString())).thenReturn(Optional.empty());
+        Mockito.when(giftCertificateRepository.save(any(GiftCertificate.class))).thenReturn(GIFT_CERTIFICATE_FITNESS_OTHER_ID);
         Mockito.when(tagService.findByRangeNames(GIFT_CERTIFICATE_FITNESS_DTO.getTags())).thenReturn(GIFT_CERTIFICATE_FITNESS_DTO.getTags());
 
         GiftCertificateDto actual = giftCertificateService.updateGiftCertificate(GIFT_CERTIFICATE_FITNESS_DTO_OTHER_ID);
@@ -341,7 +326,7 @@ public class GiftCertificateServiceTest {
 
     @Test
     void updateGiftCertificateTestNotFound() {
-        Mockito.when(giftCertificateDao.findById(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(giftCertificateRepository.findById(anyLong())).thenReturn(Optional.empty());
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
         giftCertificateDto.setId(15L);
 
@@ -350,9 +335,9 @@ public class GiftCertificateServiceTest {
 
     @Test
     void updateGiftCertificateTestAlreadyExist() {
-        Mockito.when(giftCertificateDao.findById(GIFT_CERTIFICATE_FITNESS_DTO_OTHER_ID.getId()))
+        Mockito.when(giftCertificateRepository.findById(GIFT_CERTIFICATE_FITNESS_DTO_OTHER_ID.getId()))
                 .thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING));
-        Mockito.when(giftCertificateDao.findByName(GIFT_CERTIFICATE_FITNESS_OTHER_ID.getName()))
+        Mockito.when(giftCertificateRepository.findByName(GIFT_CERTIFICATE_FITNESS_OTHER_ID.getName()))
                 .thenReturn(Optional.of(GIFT_CERTIFICATE_FITNESS));
 
         assertThrows(ResourceAlreadyExistsException.class,
@@ -362,10 +347,10 @@ public class GiftCertificateServiceTest {
     @Test
     void patchGiftCertificateTestPositive() {
         String expectedName = GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS.getName();
-        Mockito.when(giftCertificateDao.findById(GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS.getId()))
+        Mockito.when(giftCertificateRepository.findById(GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS.getId()))
                 .thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING_WITHOUT_TAG));
-        Mockito.when(giftCertificateDao.findByName(anyString())).thenReturn(Optional.empty());
-        Mockito.when(giftCertificateDao.update(any(GiftCertificate.class))).thenReturn(GIFT_CERTIFICATE_FITNESS_FOR_PATCH);
+        Mockito.when(giftCertificateRepository.findByName(anyString())).thenReturn(Optional.empty());
+        Mockito.when(giftCertificateRepository.save(any(GiftCertificate.class))).thenReturn(GIFT_CERTIFICATE_FITNESS_FOR_PATCH);
 
         GiftCertificateDto actual = giftCertificateService.patchGiftCertificate(GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS);
 
@@ -374,7 +359,7 @@ public class GiftCertificateServiceTest {
 
     @Test
     void patchGiftCertificateTestNotFound() {
-        Mockito.when(giftCertificateDao.findById(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(giftCertificateRepository.findById(anyLong())).thenReturn(Optional.empty());
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
         giftCertificateDto.setId(15L);
 
@@ -383,9 +368,9 @@ public class GiftCertificateServiceTest {
 
     @Test
     void patchGiftCertificateTestAlreadyExist() {
-        Mockito.when(giftCertificateDao.findById(GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS.getId()))
+        Mockito.when(giftCertificateRepository.findById(GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS.getId()))
                 .thenReturn(Optional.of(GIFT_CERTIFICATE_SKATING_WITHOUT_TAG));
-        Mockito.when(giftCertificateDao.findByName(anyString())).thenReturn(Optional.of(GIFT_CERTIFICATE_FITNESS));
+        Mockito.when(giftCertificateRepository.findByName(anyString())).thenReturn(Optional.of(GIFT_CERTIFICATE_FITNESS));
 
         assertThrows(ResourceAlreadyExistsException.class,
                 () -> giftCertificateService.patchGiftCertificate(GIFT_CERTIFICATE_FITNESS_DTO_NOT_ALL_PARAMETERS));

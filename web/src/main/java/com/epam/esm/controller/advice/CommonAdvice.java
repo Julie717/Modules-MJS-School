@@ -107,6 +107,7 @@ public class CommonAdvice {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex, Locale locale) {
+        System.out.println(ex);
         String errorMessage = messageSource.getMessage(ErrorMessageReader.INTERNAL_SERVER_ERROR,
                 new Object[]{}, locale);
         ErrorResponse response = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, errorMessage);

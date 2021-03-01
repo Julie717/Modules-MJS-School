@@ -24,7 +24,7 @@ public interface UserService {
      * @param id is the id of user
      * @return the user DTO
      */
-    UserResponseDto findById(Long id);
+    UserResponseDto findById(Long id, Long idUser, String role);
 
     /**
      * Find users by surname.
@@ -35,7 +35,11 @@ public interface UserService {
      */
     List<UserResponseDto> findBySurname(Pagination pagination, String surname);
 
-    UserResponseDto findByLogin(String login);
-
+    /**
+     * Add user to db.
+     *
+     * @param userDto is the user dto that should be added
+     * @return the user response dto that was added
+     */
     UserResponseDto add(UserRequestDto userDto);
 }

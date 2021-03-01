@@ -40,7 +40,7 @@ public class TagController {
     /**
      * Find all tags.
      *
-     * @param pagination contains limit and offset for search
+     * @param pagination contains number of page and amount of pages on each page
      * @return the list
      */
     @GetMapping
@@ -71,7 +71,7 @@ public class TagController {
     /**
      * Find the most widely used tag of a user with the highest cost of all orders.
      *
-     * @param pagination contains limit and offset for search
+     * @param pagination contains number of page and amount of pages on each page
      * @return the list of tag DTO
      */
     @GetMapping("/top")

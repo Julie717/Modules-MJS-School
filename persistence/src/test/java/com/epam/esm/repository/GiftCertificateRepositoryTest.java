@@ -1,12 +1,14 @@
-package com.epam.esm.dao;
+package com.epam.esm.repository;
 
-import com.epam.esm.config.DaoConfigTest;
-import com.epam.esm.dao.impl.GiftCertificateDaoImpl;
+import com.epam.esm.config.PersistenceConfigTest;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,11 +23,12 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = GiftCertificateDaoImpl.class)
-@ContextConfiguration(classes = DaoConfigTest.class)
+@ContextConfiguration(classes = PersistenceConfigTest.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
-public class GiftCertificateDaoTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataJpaTest
+public class GiftCertificateRepositoryTest {
     private static final GiftCertificate GIFT_CERTIFICATE_TRAMPOLINE_JUMPING;
     private static final GiftCertificate GIFT_CERTIFICATE_SKATING;
     private static final GiftCertificate GIFT_CERTIFICATE_SKATING_WITH_ONE_TAG;
@@ -34,7 +37,7 @@ public class GiftCertificateDaoTest {
     private static final GiftCertificate GIFT_CERTIFICATE_SPA;
 
     @Autowired
-    private GiftCertificateDao giftCertificateDao;
+    private GiftCertificateRepository giftCertificateRepository;
 
     static {
         List<Tag> tags = new ArrayList<>();
@@ -95,7 +98,7 @@ public class GiftCertificateDaoTest {
         Optional<GiftCertificate> expected = Optional.of(GIFT_CERTIFICATE_TRAMPOLINE_JUMPING);
         Long id = 4L;
 
-        Optional<GiftCertificate> actual = giftCertificateDao.findById(id);
+        Optional<GiftCertificate> actual = giftCertificateRepository.findById(id);
 
         assertEquals(expected, actual);
     }
@@ -105,7 +108,7 @@ public class GiftCertificateDaoTest {
         Optional<GiftCertificate> expected = Optional.empty();
         Long id = 25L;
 
-        Optional<GiftCertificate> actual = giftCertificateDao.findById(id);
+        Optional<GiftCertificate> actual = giftCertificateRepository.findById(id);
 
         assertEquals(expected, actual);
     }
@@ -118,10 +121,9 @@ public class GiftCertificateDaoTest {
         expected.add(GIFT_CERTIFICATE_FITNESS);
         expected.add(GIFT_CERTIFICATE_HORSEBACK_RIDING);
         expected.add(GIFT_CERTIFICATE_TRAMPOLINE_JUMPING);
-        Integer limit = 10;
-        Integer offset = 0;
+        Pageable pageable = PageRequest.of(0, 4);
 
-        List<GiftCertificate> actual = giftCertificateDao.findAll(limit, offset);
+        List<GiftCertificate> actual = giftCertificateRepository.findAll(pageable).getContent();
 
         assertEquals(expected, actual);
     }
@@ -130,12 +132,11 @@ public class GiftCertificateDaoTest {
     @Transactional
     void findAllFromOffsetPositionTest() {
         List<GiftCertificate> expected = new ArrayList<>();
-        expected.add(GIFT_CERTIFICATE_FITNESS);
         expected.add(GIFT_CERTIFICATE_HORSEBACK_RIDING);
-        Integer limit = 2;
-        Integer offset = 1;
+        expected.add(GIFT_CERTIFICATE_TRAMPOLINE_JUMPING);
+        Pageable pageable = PageRequest.of(1, 2);
 
-        List<GiftCertificate> actual = giftCertificateDao.findAll(limit, offset);
+        List<GiftCertificate> actual = giftCertificateRepository.findAll(pageable).getContent();
 
         assertEquals(expected, actual);
     }
@@ -146,7 +147,7 @@ public class GiftCertificateDaoTest {
         Optional<GiftCertificate> expected = Optional.of(GIFT_CERTIFICATE_HORSEBACK_RIDING);
         String name = "Horseback riding";
 
-        Optional<GiftCertificate> actual = giftCertificateDao.findByName(name);
+        Optional<GiftCertificate> actual = giftCertificateRepository.findByName(name);
 
         assertEquals(expected, actual);
     }
@@ -156,63 +157,30 @@ public class GiftCertificateDaoTest {
         Optional<GiftCertificate> expected = Optional.empty();
         String name = "gift";
 
-        Optional<GiftCertificate> actual = giftCertificateDao.findByName(name);
+        Optional<GiftCertificate> actual = giftCertificateRepository.findByName(name);
 
         assertEquals(expected, actual);
     }
 
     @Test
-    void findByParametersTest() {
-        List<GiftCertificate> expected = new ArrayList<>();
-        expected.add(GIFT_CERTIFICATE_HORSEBACK_RIDING);
-        expected.add(GIFT_CERTIFICATE_SKATING);
-        Integer limit = 20;
-        Integer offset = 0;
-        String query = "FROM GiftCertificate gift JOIN FETCH gift.tags tag " +
-                "WHERE gift.name LIKE CONCAT('%', 'a', '%') AND gift.description LIKE CONCAT('%', 'is', '%') " +
-                "ORDER BY gift.name ASC";
-
-        List<GiftCertificate> actual = giftCertificateDao.findByParameters(query, limit, offset);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void findByParametersNameTagTest() {
-        List<GiftCertificate> expected = new ArrayList<>();
-        expected.add(GIFT_CERTIFICATE_HORSEBACK_RIDING);
-        String query = "FROM GiftCertificate gift JOIN FETCH gift.tags tag " +
-                "WHERE tag.name LIKE CONCAT('%', 'a', '%') OR tag.name LIKE CONCAT('%', 'i', '%') " +
-                "ORDER BY gift.name DESC";
-        Integer limit = 1;
-        Integer offset = 2;
-
-        List<GiftCertificate> actual = giftCertificateDao.findByParameters(query, limit, offset);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void findByTagIdTestPositive() {
+    void findByIdTagTestPositive() {
         List<GiftCertificate> expected = new ArrayList<>();
         expected.add(GIFT_CERTIFICATE_SKATING_WITH_ONE_TAG);
         Long id = 2L;
-        Integer limit = 1;
-        Integer offset = 0;
+        Pageable pageable = PageRequest.of(0, 1);
 
-        List<GiftCertificate> actual = giftCertificateDao.findByTagId(id, limit, offset);
+        List<GiftCertificate> actual = giftCertificateRepository.findByIdTag(id, pageable);
 
         assertEquals(expected, actual);
     }
 
     @Test
-    void findByTagIdTestNotFound() {
+    void findByIdTagTestNotFound() {
         List<GiftCertificate> expected = new ArrayList<>();
         Long id = 25L;
-        Integer limit = 10;
-        Integer offset = 0;
+        Pageable pageable = PageRequest.of(5, 40);
 
-        List<GiftCertificate> actual = giftCertificateDao.findByTagId(id, limit, offset);
+        List<GiftCertificate> actual = giftCertificateRepository.findByIdTag(id, pageable);
 
         assertEquals(expected, actual);
     }
@@ -223,7 +191,7 @@ public class GiftCertificateDaoTest {
         Long idGiftCertificate = 1L;
         Long idTag = 2L;
 
-        Optional<GiftCertificate> actual = giftCertificateDao.findByTagIdInGiftCertificate(idGiftCertificate, idTag);
+        Optional<GiftCertificate> actual = giftCertificateRepository.findByIdTagInGiftCertificate(idGiftCertificate, idTag);
 
         assertEquals(expected, actual);
     }
@@ -234,7 +202,7 @@ public class GiftCertificateDaoTest {
         Long idGiftCertificate = 1L;
         Long idTag = 27L;
 
-        Optional<GiftCertificate> actual = giftCertificateDao.findByTagIdInGiftCertificate(idGiftCertificate, idTag);
+        Optional<GiftCertificate> actual = giftCertificateRepository.findByIdTagInGiftCertificate(idGiftCertificate, idTag);
 
         assertEquals(expected, actual);
     }
@@ -242,7 +210,7 @@ public class GiftCertificateDaoTest {
     @Test
     @Transactional
     void addTest() {
-        GiftCertificate actual = giftCertificateDao.add(GIFT_CERTIFICATE_SPA);
+        GiftCertificate actual = giftCertificateRepository.save(GIFT_CERTIFICATE_SPA);
 
         GiftCertificate expected = GIFT_CERTIFICATE_SPA;
         expected.setId(5L);
@@ -256,7 +224,7 @@ public class GiftCertificateDaoTest {
                 "Sales", BigDecimal.valueOf(50), 10, Timestamp.valueOf(LocalDateTime.now()),
                 null, null);
 
-        GiftCertificate actual = giftCertificateDao.update(giftCertificate);
+        GiftCertificate actual = giftCertificateRepository.save(giftCertificate);
 
         GiftCertificate expected = giftCertificate;
         expected.setLastUpdateDate(actual.getLastUpdateDate());

@@ -1,18 +1,20 @@
-package com.epam.esm.dao;
+package com.epam.esm.repository;
 
-import com.epam.esm.config.DaoConfigTest;
-import com.epam.esm.dao.impl.PurchaseDaoImpl;
+import com.epam.esm.config.PersistenceConfigTest;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Purchase;
 import com.epam.esm.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -20,17 +22,18 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = PurchaseDaoImpl.class)
-@ContextConfiguration(classes = DaoConfigTest.class)
+@ContextConfiguration(classes = PersistenceConfigTest.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
-public class PurchaseDaoTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataJpaTest
+public class PurchaseRepositoryTest {
     private static final Purchase PURCHASE;
 
     @Autowired
-    private PurchaseDao purchaseDao;
+    private PurchaseRepository purchaseRepository;
 
-    static{
+    static {
         PURCHASE = new Purchase();
         User user = new User();
         user.setId(2L);
@@ -47,10 +50,9 @@ public class PurchaseDaoTest {
     @Test
     void findAllTest() {
         int expectedAmountOfPurchases = 7;
-        Integer limit = 10;
-        Integer offset = 0;
+        Pageable pageable = PageRequest.of(0, 10);
 
-        int actualAmountOfPurchases = purchaseDao.findAll(limit, offset).size();
+        int actualAmountOfPurchases = purchaseRepository.findAll(pageable).getContent().size();
 
         assertEquals(expectedAmountOfPurchases, actualAmountOfPurchases);
     }
@@ -60,9 +62,20 @@ public class PurchaseDaoTest {
         BigDecimal expectedCost = BigDecimal.valueOf(20);
         Long id = 3L;
 
-        BigDecimal actualCost = purchaseDao.findById(id).get().getCost();
+        BigDecimal actualCost = purchaseRepository.findById(id).get().getCost();
 
         assertEquals(expectedCost, actualCost);
+    }
+
+    @Test
+    void findByIdUserTest() {
+        int expectedAmountOfPurchases = 2;
+        Pageable pageable = PageRequest.of(0, 10);
+        Long id = 3L;
+
+        int amountOfPurchases= purchaseRepository.findByIdUser(id,pageable).size();
+
+        assertEquals(expectedAmountOfPurchases, amountOfPurchases);
     }
 
     @Test
@@ -70,7 +83,7 @@ public class PurchaseDaoTest {
         int expectedAmountOfPurchases = 3;
         Long id = 4L;
 
-        int actualAmountOfPurchases = purchaseDao.findByIdGiftCertificate(id).size();
+        int actualAmountOfPurchases = purchaseRepository.findByIdGiftCertificate(id).size();
 
         assertEquals(expectedAmountOfPurchases, actualAmountOfPurchases);
     }
@@ -80,7 +93,7 @@ public class PurchaseDaoTest {
     void addTest() {
         int expectedPurchaseId = 8;
 
-        Long actualPurchaseId = purchaseDao.add(PURCHASE).getId();
+        Long actualPurchaseId = purchaseRepository.save(PURCHASE).getId();
 
         assertEquals(expectedPurchaseId, actualPurchaseId);
     }

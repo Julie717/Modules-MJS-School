@@ -1,6 +1,7 @@
 package com.epam.esm.model.converter.impl;
 
-import com.epam.esm.model.*;
+import com.epam.esm.model.User;
+import com.epam.esm.model.UserRequestDto;
 import com.epam.esm.model.converter.CommonConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @Component
 public class UserRequestConverterImpl implements CommonConverter<User, UserRequestDto> {
-    private final PurchaseResponseConverterImpl purchaseResponseConverter;
 
     @Override
     public UserRequestDto convertTo(User entity) {

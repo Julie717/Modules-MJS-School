@@ -16,7 +16,7 @@ public interface PurchaseService {
      * @param pagination contains limit and offset for search
      * @return the list of purchases
      */
-    List<PurchaseResponseDto> findAll(Pagination pagination);
+    List<PurchaseResponseDto> findAll(Pagination pagination, Long idUser, String role);
 
     /**
      * Find purchase by id.
@@ -24,9 +24,8 @@ public interface PurchaseService {
      * @param id is the id of purchase
      * @return the purchase response DTO
      */
-    PurchaseResponseDto findById(Long id);
+    PurchaseResponseDto findById(Long id, Long idUser, String role);
 
-    List<PurchaseResponseDto> findByIdUser(Long idUser, Pagination pagination);
     /**
      * Create purchase for user.
      *

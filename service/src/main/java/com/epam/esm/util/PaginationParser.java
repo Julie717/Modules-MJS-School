@@ -1,20 +1,22 @@
 package com.epam.esm.util;
 
+import org.springframework.util.ObjectUtils;
+
 import java.util.Map;
 
 public class PaginationParser {
-    private static final String LIMIT = "limit";
-    private static final String OFFSET = "offset";
+    private static final String PAGE = "page";
+    private static final String PER_PAGE = "perPage";
 
     public static Pagination parsePagination(Map<String, String> parameters) {
-        Integer limit = Integer.parseInt(parameters.get(LIMIT));
-        parameters.remove(LIMIT);
-        String offsetParam = parameters.get(OFFSET);
-        Integer offset = 0;
-        if (offsetParam != null && !offsetParam.isEmpty()) {
-            offset = Integer.parseInt(parameters.get(OFFSET));
+        Integer perPage = Integer.parseInt(parameters.get(PER_PAGE));
+        parameters.remove(PER_PAGE);
+        String pageParam = parameters.get(PAGE);
+        int page = 0;
+        if (!ObjectUtils.isEmpty(pageParam)) {
+            page = Integer.parseInt(pageParam);
         }
-        parameters.remove(OFFSET);
-        return new Pagination(limit, offset);
+        parameters.remove(PAGE);
+        return new Pagination(page, perPage);
     }
 }
