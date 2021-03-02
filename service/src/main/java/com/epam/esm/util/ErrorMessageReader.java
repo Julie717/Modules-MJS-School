@@ -26,6 +26,7 @@ public class ErrorMessageReader {
     public static final String USER_INCORRECT_NAME_SIZE = "user.incorrect_name_size";
     public static final String USER_INCORRECT_SURNAME_SIZE = "user.incorrect_surname_size";
     public static final String USER_ALREADY_EXISTS = "user.already_exist";
+    public static final String INCORRECT_LOGIN_OR_PASSWORD="incorrect_login_or_password";
     public static final String ACCESS_DENIED="access_denied";
 
     private ErrorMessageReader() {

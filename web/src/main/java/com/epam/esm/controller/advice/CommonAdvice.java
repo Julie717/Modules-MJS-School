@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -35,9 +36,6 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.Iterator;
 
-import static com.epam.esm.controller.advice.error.ErrorCode.RESOURCE_NOT_FOUND;
-import static com.epam.esm.controller.advice.error.ErrorCode.RESOURCE_ALREADY_EXIST;
-
 @ControllerAdvice
 @Log4j2
 public class CommonAdvice {
@@ -51,14 +49,14 @@ public class CommonAdvice {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, Locale locale) {
         String errorMessage;
-        if (ex.getNameResource() != null) {
+        if (ex.getNameResource() != null && ex.getIdResource() != null) {
             errorMessage = String.format(messageSource.getMessage(ex.getMessage(), new Object[]{},
                     locale), ex.getNameResource(), ex.getIdResource());
         } else {
             errorMessage = String.format(messageSource.getMessage(ex.getMessage(), new Object[]{},
-                    locale), ex.getIdResource());
+                    locale), (ex.getIdResource() != null) ? ex.getIdResource() : ex.getNameResource());
         }
-        ErrorResponse errorResponse = new ErrorResponse(RESOURCE_NOT_FOUND, errorMessage);
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.RESOURCE_NOT_FOUND, errorMessage);
         log.log(Level.ERROR, errorMessage);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
@@ -68,9 +66,9 @@ public class CommonAdvice {
         String errorMessage;
         errorMessage = String.format(messageSource.getMessage(ex.getMessage(), new Object[]{},
                 locale), ex.getNameResource());
-        ErrorResponse errorResponse = new ErrorResponse(RESOURCE_ALREADY_EXIST, errorMessage);
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.RESOURCE_ALREADY_EXIST, errorMessage);
         log.log(Level.ERROR, errorMessage);
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalParameterException.class)
@@ -205,5 +203,14 @@ public class CommonAdvice {
         ErrorResponse errorResponse = new ErrorResponse(ErrorCode.BAD_REQUEST_VALUE, errorMessage);
         log.log(Level.ERROR, errorMessage);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({AuthenticationException.class})
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex, Locale locale) {
+        String errorMessage = messageSource.getMessage(ErrorMessageReader.INCORRECT_LOGIN_OR_PASSWORD, new Object[]{},
+                locale);
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.ACCESS_DENIED, errorMessage);
+        log.log(Level.ERROR, errorMessage);
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 }

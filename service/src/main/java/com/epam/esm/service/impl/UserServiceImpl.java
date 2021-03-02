@@ -2,7 +2,10 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.exception.ResourceAlreadyExistsException;
 import com.epam.esm.exception.ResourceNotFoundException;
-import com.epam.esm.model.*;
+import com.epam.esm.model.User;
+import com.epam.esm.model.UserRequestDto;
+import com.epam.esm.model.UserResponseDto;
+import com.epam.esm.model.Role;
 import com.epam.esm.model.converter.impl.UserRequestConverterImpl;
 import com.epam.esm.model.converter.impl.UserResponseConverterImpl;
 import com.epam.esm.repository.UserRepository;

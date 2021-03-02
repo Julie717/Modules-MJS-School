@@ -1,6 +1,7 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.config.PersistenceConfigTest;
+import com.epam.esm.model.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -51,5 +52,15 @@ public class UserRepositoryTest {
 
         int expectedAmountOfUsers = 3;
         assertEquals(expectedAmountOfUsers, actualAmountOfUsers);
+    }
+
+    @Test
+    void findByLoginTest() {
+        String login = "ivanov_i";
+
+        Role actualRole = userRepository.findByLogin(login).get().getRole();
+
+        Role expectedRole = Role.ROLE_ADMIN;
+        assertEquals(expectedRole, actualRole);
     }
 }
