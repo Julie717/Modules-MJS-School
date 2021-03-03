@@ -1,18 +1,13 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.model.CustomUserDetails;
 import com.epam.esm.model.UserRequestDto;
 import com.epam.esm.model.UserResponseDto;
-import com.epam.esm.security.JwtProvider;
+import com.epam.esm.security.impl.AuthServiceImpl;
 import com.epam.esm.service.UserService;
 import com.epam.esm.util.AuthenticationResponse;
 import com.epam.esm.validator.ValidationGroup;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,8 +26,7 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 @Validated
 public class AuthenticationController {
     private final UserService userService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtProvider jwtProvider;
+    private final AuthServiceImpl authService;
 
     /**
      * Sign up is used to sign up for application and receive access as User.
@@ -57,15 +51,6 @@ public class AuthenticationController {
     @PreAuthorize("permitAll()")
     public AuthenticationResponse signIn(@Validated(ValidationGroup.SignIn.class)
                                          @RequestBody UserRequestDto userRequestDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userRequestDto.getLogin(), userRequestDto.getPassword()));
-        AuthenticationResponse authenticationResponse = new AuthenticationResponse();
-        if (authentication.isAuthenticated()) {
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            String token = jwtProvider.generateToken(userDetails.getLogin());
-            authenticationResponse.setToken(token);
-        }
-        return authenticationResponse;
+        return new AuthenticationResponse(authService.signIn(userRequestDto));
     }
 }
