@@ -63,15 +63,24 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     @Transactional
-    public PurchaseResponseDto makePurchase(PurchaseRequestDto purchaseRequestDto) {
+    public PurchaseResponseDto makePurchase(PurchaseRequestDto purchaseRequestDto, Long idUser, String role) {
+        if (purchaseRequestDto.getIdUser() != null) {
+            if (Role.valueOf(role) == Role.ROLE_ADMIN) {
+                idUser = purchaseRequestDto.getIdUser();
+            } else {
+                if (!idUser.equals(purchaseRequestDto.getIdUser())) {
+                    throw new AccessDeniedException(ErrorMessageReader.ACCESS_DENIED);
+                }
+            }
+        }
+        Long finalIdUser = idUser;
+        User user = userRepository.findById(idUser)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessageReader.RESOURCE_NOT_FOUND, finalIdUser,
+                        User.class.getSimpleName()));
         List<Long> idGiftCertificates = purchaseRequestDto.getIdGiftCertificates();
-        Long idUser = purchaseRequestDto.getIdUser();
         List<GiftCertificate> giftCertificates = new ArrayList<>();
         idGiftCertificates.stream().map(giftCertificateService::findById)
                 .forEach(g -> giftCertificates.add(giftCertificateConverter.convertFrom(g)));
-        User user = userRepository.findById(idUser)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessageReader.RESOURCE_NOT_FOUND, idUser,
-                        User.class.getSimpleName()));
         Purchase purchase = new Purchase();
         purchase.setUser(user);
         purchase.setGiftCertificates(giftCertificates);

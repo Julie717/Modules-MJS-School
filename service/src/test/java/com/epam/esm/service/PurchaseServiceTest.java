@@ -24,6 +24,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -165,30 +166,41 @@ public class PurchaseServiceTest {
         Mockito.when(userRepository.findById(PURCHASE_REQUEST_DTO.getIdUser())).thenReturn(Optional.of(PURCHASE.getUser()));
         Mockito.when(purchaseRepository.save(any(Purchase.class))).thenReturn(PURCHASE);
 
-        PurchaseResponseDto actual = purchaseService.makePurchase(PURCHASE_REQUEST_DTO);
+        PurchaseResponseDto actual = purchaseService.makePurchase(PURCHASE_REQUEST_DTO, PURCHASE_REQUEST_DTO.getIdUser(),
+                Role.ROLE_USER.name());
 
         assertEquals(expectedCost, actual.getCost());
     }
 
     @Test
     void makePurchaseTestUserNotFound() {
-        Mockito.when(giftCertificateService.findById(anyLong())).thenReturn(new GiftCertificateDto());
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
         List<Long> idGiftCertificates = new ArrayList<>();
         idGiftCertificates.add(1L);
         PurchaseRequestDto purchaseRequestDto = new PurchaseRequestDto(2L, idGiftCertificates);
 
-        assertThrows(ResourceNotFoundException.class, () -> purchaseService.makePurchase(purchaseRequestDto));
+        assertThrows(ResourceNotFoundException.class, () -> purchaseService.makePurchase(purchaseRequestDto,
+                18L, Role.ROLE_ADMIN.name()));
     }
 
     @Test
     void makePurchaseTestGiftCertificateNotFound() {
-        Mockito.when(giftCertificateService.findById(anyLong())).thenThrow(new ResourceNotFoundException());
+        Mockito.when(userRepository.findById(PURCHASE_REQUEST_DTO.getIdUser())).thenReturn(Optional.of(PURCHASE.getUser()));
+        Mockito.when(giftCertificateService.findById(GIFT_CERTIFICATE_SKATING.getId())).thenReturn(GIFT_CERTIFICATE_SKATING);
+        Mockito.when(giftCertificateService.findById(GIFT_CERTIFICATE_FITNESS.getId())).thenThrow(new ResourceNotFoundException());
+
+        assertThrows(ResourceNotFoundException.class, () -> purchaseService.makePurchase(PURCHASE_REQUEST_DTO,
+                18L, Role.ROLE_ADMIN.name()));
+    }
+
+    @Test
+    void makePurchaseTestAccessDenied() {
         List<Long> idGiftCertificates = new ArrayList<>();
         idGiftCertificates.add(1L);
         idGiftCertificates.add(7L);
         PurchaseRequestDto purchaseRequestDto = new PurchaseRequestDto(2L, idGiftCertificates);
 
-        assertThrows(ResourceNotFoundException.class, () -> purchaseService.makePurchase(purchaseRequestDto));
+        assertThrows(AccessDeniedException.class, () -> purchaseService.makePurchase(purchaseRequestDto,
+                18L, Role.ROLE_USER.name()));
     }
 }

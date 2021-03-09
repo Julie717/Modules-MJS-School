@@ -69,7 +69,8 @@ public class PurchaseController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("isAuthenticated()")
-    public PurchaseResponseDto findById(@PathVariable @Positive Long id, SecurityContextHolderAwareRequestWrapper requestWrapper) {
+    public PurchaseResponseDto findById(@PathVariable @Positive Long id,
+                                        SecurityContextHolderAwareRequestWrapper requestWrapper) {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 (UsernamePasswordAuthenticationToken) requestWrapper.getUserPrincipal();
         CustomUserDetails userDetails = (CustomUserDetails) usernamePasswordAuthenticationToken.getPrincipal();
@@ -89,8 +90,14 @@ public class PurchaseController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("isAuthenticated()")
-    public PurchaseResponseDto makePurchase(@RequestBody @Valid PurchaseRequestDto purchaseDto) {
-        PurchaseResponseDto purchase = purchaseService.makePurchase(purchaseDto);
+    public PurchaseResponseDto makePurchase(@RequestBody @Valid PurchaseRequestDto purchaseDto,
+                                            SecurityContextHolderAwareRequestWrapper requestWrapper) {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                (UsernamePasswordAuthenticationToken) requestWrapper.getUserPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) usernamePasswordAuthenticationToken.getPrincipal();
+        Long idUser = userDetails.getId();
+        String role = userDetails.getAuthorities().iterator().next().getAuthority();
+        PurchaseResponseDto purchase = purchaseService.makePurchase(purchaseDto, idUser, role);
         HateoasLinkBuilder.buildPurchaseLink(purchase);
         return purchase;
     }
