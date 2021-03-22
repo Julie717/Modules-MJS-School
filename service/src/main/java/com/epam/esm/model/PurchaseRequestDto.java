@@ -22,7 +22,6 @@ import java.util.List;
 @Validated
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PurchaseRequestDto implements Serializable {
-    @NotNull
     @Positive
     Long idUser;
 

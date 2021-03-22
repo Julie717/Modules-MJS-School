@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GiftCertificateDescriptionValidatorTest {
-    GiftCertificateDescriptionValidator descriptionValidator = new GiftCertificateDescriptionValidator();
+    private final GiftCertificateDescriptionValidator descriptionValidator = new GiftCertificateDescriptionValidator();
 
     public static Stream<Arguments> data() {
         return Stream.of(

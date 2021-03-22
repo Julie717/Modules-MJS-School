@@ -1,6 +1,7 @@
 package com.epam.esm.service;
 
-import com.epam.esm.model.UserDto;
+import com.epam.esm.model.UserRequestDto;
+import com.epam.esm.model.UserResponseDto;
 import com.epam.esm.util.Pagination;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface UserService {
      * @param pagination contains limit and offset for search
      * @return the list of user DTO
      */
-    List<UserDto> findAll(Pagination pagination);
+    List<UserResponseDto> findAll(Pagination pagination);
 
     /**
      * Find user by id.
@@ -23,7 +24,7 @@ public interface UserService {
      * @param id is the id of user
      * @return the user DTO
      */
-    UserDto findById(Long id);
+    UserResponseDto findById(Long id, Long idUser, String role);
 
     /**
      * Find users by surname.
@@ -32,5 +33,13 @@ public interface UserService {
      * @param surname    is the user's surname
      * @return the list of users
      */
-    List<UserDto> findBySurname(Pagination pagination, String surname);
+    List<UserResponseDto> findBySurname(Pagination pagination, String surname);
+
+    /**
+     * Add user to db.
+     *
+     * @param userDto is the user dto that should be added
+     * @return the user response dto that was added
+     */
+    UserResponseDto add(UserRequestDto userDto);
 }

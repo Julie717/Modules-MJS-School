@@ -1,12 +1,11 @@
 package com.epam.esm.model;
 
-import com.epam.esm.dao.ColumnName;
+import com.epam.esm.util.ColumnName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,7 +38,7 @@ public class GiftCertificate implements Serializable {
     @Column(name = ColumnName.GIFT_CERTIFICATE_ID)
     Long id;
 
-    @Column(name = ColumnName.GIFT_CERTIFICATE_NAME,length = 45)
+    @Column(name = ColumnName.GIFT_CERTIFICATE_NAME, length = 45)
     String name;
 
     @Column(name = ColumnName.GIFT_CERTIFICATE_DESCRIPTION, length = 1000)

@@ -1,11 +1,14 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.UserDao;
+import com.epam.esm.exception.ResourceAlreadyExistsException;
 import com.epam.esm.exception.ResourceNotFoundException;
+import com.epam.esm.model.Role;
 import com.epam.esm.model.User;
-import com.epam.esm.model.UserDto;
-import com.epam.esm.model.converter.impl.PurchaseResponseConverterImpl;
-import com.epam.esm.model.converter.impl.UserConverterImpl;
+import com.epam.esm.model.UserRequestDto;
+import com.epam.esm.model.UserResponseDto;
+import com.epam.esm.model.converter.impl.UserRequestConverterImpl;
+import com.epam.esm.model.converter.impl.UserResponseConverterImpl;
+import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.impl.UserServiceImpl;
 import com.epam.esm.util.Pagination;
 import org.junit.jupiter.api.Test;
@@ -15,6 +18,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,34 +30,57 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
+    private static final User USER;
+    private static final UserResponseDto USER_RESPONSE_DTO;
+    private static final UserRequestDto USER_REQUEST_DTO;
+
     @InjectMocks
     private UserServiceImpl userService;
 
     @Mock
-    private UserDao userDao;
+    private UserRepository userRepository;
 
     @Spy
-    private final PurchaseResponseConverterImpl purchaseResponseConverter = new PurchaseResponseConverterImpl();
+    private final UserResponseConverterImpl userResponseConverter = new UserResponseConverterImpl();
 
     @Spy
-    private final UserConverterImpl userConverter = new UserConverterImpl(purchaseResponseConverter);
+    private final UserRequestConverterImpl userRequestConverter = new UserRequestConverterImpl();
+
+    @Spy
+    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    static {
+        USER = new User(20L, "ivanov_i", "123", "Ivan", "Ivanov", Role.ROLE_USER, null);
+        USER_RESPONSE_DTO = new UserResponseDto(20L, "ivanov_i", "Ivan", "Ivanov");
+        USER_REQUEST_DTO = new UserRequestDto("ivanov_i", "123", "Ivan", "Ivanov");
+    }
 
     @Test
-    void findAllTest() {
+    void findAllTestPositive() {
         List<User> users = new ArrayList<>();
-        Mockito.when(userDao.findAll(anyInt(), anyInt())).thenReturn(users);
+        users.add(USER);
+        Mockito.when(userRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(users));
         Pagination pagination = new Pagination(10, 2);
-        List<UserDto> expected = new ArrayList<>();
+        List<UserResponseDto> expected = new ArrayList<>();
+        expected.add(USER_RESPONSE_DTO);
 
-        List<UserDto> actual = userService.findAll(pagination);
+        List<UserResponseDto> actual = userService.findAll(pagination);
 
-        verify(userConverter).convertTo(users);
+        verify(userResponseConverter).convertTo(users);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void findAllTestNegative() {
+        Mockito.when(userRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(new ArrayList<>()));
+        Pagination pagination = new Pagination(10, 2);
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.findAll(pagination));
     }
 
     @Test
@@ -57,12 +88,13 @@ public class UserServiceTest {
         Long idUser = 5L;
         User user = new User();
         user.setId(idUser);
+        user.setLogin("ivanov_123");
         user.setName("Ivan");
         user.setSurname("Ivanov");
-        Mockito.when(userDao.findById(idUser)).thenReturn(Optional.of(user));
-        UserDto expected = new UserDto(idUser, "Ivan", "Ivanov", null);
+        Mockito.when(userRepository.findById(idUser)).thenReturn(Optional.of(user));
+        UserResponseDto expected = new UserResponseDto(idUser, "ivanov_123", "Ivan", "Ivanov");
 
-        UserDto actual = userService.findById(idUser);
+        UserResponseDto actual = userService.findById(idUser, idUser, "ROLE_USER");
 
         assertEquals(expected, actual);
     }
@@ -70,37 +102,54 @@ public class UserServiceTest {
     @Test
     void findByIdTestNegative() {
         Long id = 25L;
-        Mockito.when(userDao.findById(id)).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> userService.findById(id));
+        assertThrows(ResourceNotFoundException.class, () -> userService.findById(id, id, "ROLE_USER"));
     }
 
     @Test
     void findBySurnameTestPositive() {
-        List<UserDto> expected = new ArrayList<>();
-        expected.add(new UserDto(5L, "Ivan", "Ivanov", null));
-        expected.add(new UserDto(12L, "Nick", "Sidorov", null));
+        List<UserResponseDto> expected = new ArrayList<>();
+        expected.add(USER_RESPONSE_DTO);
         Pagination pagination = new Pagination(10, 2);
         String surname = "ov";
         List<User> users = new ArrayList<>();
-        users.add(new User(5L, "Ivan", "Ivanov", null));
-        users.add(new User(12L, "Nick", "Sidorov", null));
-        Mockito.when(userDao.findBySurname(surname, 10, 2)).thenReturn(users);
+        users.add(USER);
+        Pageable pageable = PageRequest.of(10, 2);
+        Mockito.when(userRepository.findBySurnameLike(surname, pageable)).thenReturn(users);
 
-        List<UserDto> actual = userService.findBySurname(pagination, surname);
+        List<UserResponseDto> actual = userService.findBySurname(pagination, surname);
 
         assertEquals(expected, actual);
     }
 
     @Test
-    void findBySurnameTestEmptyList() {
+    void findBySurnameTestNegative() {
         Pagination pagination = new Pagination(10, 2);
         String surname = "ov";
-        Mockito.when(userDao.findBySurname(surname, 10, 2)).thenReturn(new ArrayList<>());
-        List<UserDto> expected = new ArrayList<>();
+        Pageable pageable = PageRequest.of(10, 2);
+        Mockito.when(userRepository.findBySurnameLike(surname, pageable)).thenReturn(new ArrayList<>());
 
-        List<UserDto> actual = userService.findBySurname(pagination, surname);
+        assertThrows(ResourceNotFoundException.class, () -> userService.findBySurname(pagination, surname));
+    }
+
+    @Test
+    void addTestPositive() {
+        UserResponseDto expected = USER_RESPONSE_DTO;
+        String login = USER_REQUEST_DTO.getLogin();
+        Mockito.when(userRepository.findByLogin(login)).thenReturn(Optional.empty());
+        Mockito.when(userRepository.save(any(User.class))).thenReturn(USER);
+
+        UserResponseDto actual = userService.add(USER_REQUEST_DTO);
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void addTestNegative() {
+        String login = USER_REQUEST_DTO.getLogin();
+        Mockito.when(userRepository.findByLogin(login)).thenReturn(Optional.of(USER));
+
+        assertThrows(ResourceAlreadyExistsException.class, () -> userService.add(USER_REQUEST_DTO));
     }
 }

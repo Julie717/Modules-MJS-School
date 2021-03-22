@@ -12,11 +12,11 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 public enum GiftCertificateSortParameterName {
-    NAME("nameGiftCertificate", "gift.name"),
-    CREATE_DATE("createDate", "gift.createDate");
+    NAME("nameGiftCertificate","name"),
+    CREATE_DATE("createDate","createDate");
 
     private final String parameterName;
-    private final String parameterNameInDb;
+    private final String fieldNameInClass;
 
     public static Optional<GiftCertificateSortParameterName> getSortParameterName(String name) {
         GiftCertificateSortParameterName[] sortParameterNames = GiftCertificateSortParameterName.values();
