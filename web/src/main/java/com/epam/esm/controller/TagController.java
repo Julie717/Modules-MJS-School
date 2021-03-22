@@ -8,6 +8,7 @@ import com.epam.esm.util.HateoasLinkBuilder;
 import com.epam.esm.util.Pagination;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,11 +40,12 @@ public class TagController {
     /**
      * Find all tags.
      *
-     * @param pagination contains limit and offset for search
+     * @param pagination contains number of page and amount of pages on each page
      * @return the list
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("permitAll()")
     public List<TagDto> findAll(@NotNull @Valid Pagination pagination) {
         List<TagDto> tags = tagService.findAll(pagination);
         HateoasLinkBuilder.buildTagsLink(tags);
@@ -59,6 +61,7 @@ public class TagController {
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("permitAll()")
     public TagDto findById(@PathVariable @Positive Long id) {
         TagDto tag = tagService.findById(id);
         HateoasLinkBuilder.buildTagLink(tag);
@@ -68,11 +71,12 @@ public class TagController {
     /**
      * Find the most widely used tag of a user with the highest cost of all orders.
      *
-     * @param pagination contains limit and offset for search
+     * @param pagination contains number of page and amount of pages on each page
      * @return the list of tag DTO
      */
     @GetMapping("/top")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<TagDto> findTopTag(@NotNull @Valid Pagination pagination) {
         List<TagDto> tags = tagService.findTopTag(pagination);
         HateoasLinkBuilder.buildTagsLink(tags);
@@ -88,6 +92,7 @@ public class TagController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public TagDto addTag(@Valid @RequestBody TagDto tagDto) {
         TagDto tag = tagService.add(tagDto);
         HateoasLinkBuilder.buildTagLink(tag);
@@ -102,6 +107,7 @@ public class TagController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteTag(@PathVariable @Positive Long id) {
         tagService.deleteById(id);
     }

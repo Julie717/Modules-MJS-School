@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -15,19 +16,21 @@ import javax.validation.constraints.PositiveOrZero;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Pagination {
-    private static final Integer DEFAULT_OFFSET = 0;
+    private static final Integer DEFAULT_PAGE = 0;
+
+    @PositiveOrZero
+    @Max(value = 2000000)
+    Integer page;
 
     @NotNull
     @Positive
-    Integer limit;
+    @Max(value = 2000000)
+    Integer perPage;
 
-    @PositiveOrZero
-    Integer offset;
-
-    public Integer getOffset() {
-        if (offset == null) {
-            offset = DEFAULT_OFFSET;
+    public Integer getPage() {
+        if (page == null) {
+            page = DEFAULT_PAGE;
         }
-        return offset;
+        return page;
     }
 }

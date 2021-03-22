@@ -8,12 +8,13 @@ import com.epam.esm.model.TagDto;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.util.HateoasLinkBuilder;
 import com.epam.esm.util.Pagination;
-import com.epam.esm.util.PaginationParser;
 import com.epam.esm.validator.ValidationGroup;
 import com.epam.esm.validator.annotation.Different;
 import com.epam.esm.validator.annotation.IncludePagination;
+import com.epam.esm.validator.annotation.SearchParametersValid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,6 +57,7 @@ public class GiftCertificateController {
      */
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("permitAll()")
     public GiftCertificateDto findById(@PathVariable @Positive Long id) {
         GiftCertificateDto giftCertificate = giftCertificateService.findById(id);
         HateoasLinkBuilder.buildGiftCertificateLink(giftCertificate);
@@ -72,14 +74,12 @@ public class GiftCertificateController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> findByParameters(@NotEmpty @IncludePagination @RequestParam Map<String, String> parameters) {
+    @PreAuthorize("permitAll()")
+    public List<GiftCertificateDto> findByParameters(@NotEmpty @IncludePagination
+                                                     @SearchParametersValid
+                                                     @RequestParam Map<String, String> parameters) {
         List<GiftCertificateDto> giftCertificates;
-        Pagination pagination = PaginationParser.parsePagination(parameters);
-        if (parameters.isEmpty()) {
-            giftCertificates = giftCertificateService.findAll(pagination);
-        } else {
-            giftCertificates = giftCertificateService.findByParameters(parameters, pagination);
-        }
+        giftCertificates = giftCertificateService.findByParameters(parameters);
         HateoasLinkBuilder.buildGiftCertificatesLink(giftCertificates);
         return giftCertificates;
     }
@@ -88,11 +88,12 @@ public class GiftCertificateController {
      * Find gift certificates by tag id.
      *
      * @param idTag      is the id of tag
-     * @param pagination contains limit and offset for search
+     * @param pagination contains number of page and amount of pages on each page
      * @return the list of gift certificate DTO
      */
     @GetMapping(value = "/tags/{idTag}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("permitAll()")
     public List<GiftCertificateDto> findGiftCertificatesByTag(@PathVariable @Positive Long idTag,
                                                               @Valid @NotNull Pagination pagination) {
         List<GiftCertificateDto> giftCertificates = giftCertificateService.findByTagId(idTag, pagination);
@@ -109,6 +110,7 @@ public class GiftCertificateController {
      */
     @GetMapping(value = "/{idGiftCertificate}/tags/{idTag}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("permitAll()")
     public GiftCertificateDto findGiftCertificatesByTag(@PathVariable @Positive Long idGiftCertificate,
                                                         @PathVariable @Positive Long idTag) {
         GiftCertificateDto giftCertificate = giftCertificateService.findGiftCertificateByTagId(idGiftCertificate, idTag);
@@ -125,6 +127,7 @@ public class GiftCertificateController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public GiftCertificateDto addGiftCertificate(@Validated(ValidationGroup.CreateValidation.class)
                                                  @RequestBody GiftCertificateDto giftCertificateDto) {
         GiftCertificateDto giftCertificate = giftCertificateService.add(giftCertificateDto);
@@ -142,6 +145,7 @@ public class GiftCertificateController {
      */
     @PostMapping(value = "/{id}/tags")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public GiftCertificateDto addTagsToGiftCertificate(@PathVariable @Positive Long id,
                                                        @Valid @Different @NotNull @NotEmpty @RequestBody List<TagDto> tags) {
         GiftCertificateDto giftCertificate = giftCertificateService.addTagsToGiftCertificate(id, tags);
@@ -157,6 +161,7 @@ public class GiftCertificateController {
      */
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteGiftCertificate(@PathVariable @Positive Long id) {
         giftCertificateService.deleteById(id);
     }
@@ -170,6 +175,7 @@ public class GiftCertificateController {
      */
     @DeleteMapping(value = "/{idGiftCertificate}/tags/{idTag}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteTagFromGiftCertificate(@PathVariable @Positive Long idGiftCertificate,
                                              @PathVariable @Positive Long idTag) {
         giftCertificateService.deleteTagFromGiftCertificate(idGiftCertificate, idTag);
@@ -186,6 +192,7 @@ public class GiftCertificateController {
      */
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public GiftCertificateDto updateGiftCertificate(@PathVariable
                                                     @Positive Long id,
                                                     @Validated(ValidationGroup.PutValidation.class)
@@ -207,6 +214,7 @@ public class GiftCertificateController {
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public GiftCertificateDto patchGiftCertificate(@PathVariable
                                                    @Positive Long id,
                                                    @Validated(ValidationGroup.PatchValidation.class)

@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TagNameValidatorTest {
-    TagNameValidator tagNameValidator = new TagNameValidator();
+    private final TagNameValidator tagNameValidator = new TagNameValidator();
 
     public static Stream<Arguments> data() {
         return Stream.of(

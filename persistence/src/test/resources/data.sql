@@ -24,8 +24,11 @@ CREATE TABLE gift_certificate_tag (
 
 CREATE TABLE user (
   id_user BIGINT NOT NULL AUTO_INCREMENT,
+  login VARCHAR(20) NOT NULL,
+  password VARCHAR(60) NOT NULL,
   surname VARCHAR(50) NOT NULL,
   name VARCHAR(20) NOT NULL,
+  role ENUM('ROLE_USER', 'ROLE_ADMIN') NOT NULL DEFAULT 'ROLE_USER',
   PRIMARY KEY (id_user));
 
 CREATE TABLE purchase (

@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DifferentIdConstraintValidatorTest {
-    DifferentIdConstraintValidator differentIdConstraintValidator = new DifferentIdConstraintValidator();
+    private final DifferentIdConstraintValidator differentIdConstraintValidator = new DifferentIdConstraintValidator();
 
     public static Stream<Arguments> data() {
         List<Long> ids1 = new ArrayList<>();

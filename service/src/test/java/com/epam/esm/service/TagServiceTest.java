@@ -1,11 +1,11 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.TagDao;
 import com.epam.esm.exception.ResourceAlreadyExistsException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.model.TagDto;
 import com.epam.esm.model.converter.impl.TagConverterImpl;
+import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.impl.TagServiceImpl;
 import com.epam.esm.util.Pagination;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.any;
 
 @ExtendWith(MockitoExtension.class)
 public class TagServiceTest {
@@ -32,36 +37,21 @@ public class TagServiceTest {
     private TagServiceImpl tagService;
 
     @Mock
-    private TagDao tagDao;
+    private TagRepository tagRepository;
 
     @Spy
     private final TagConverterImpl tagConverter = new TagConverterImpl();
 
     @Test
-    void findAllTestEmptyList() {
-        List<Tag> tags = new ArrayList<>();
-        Integer limit = 10;
-        Integer offset = 2;
-        Mockito.when(tagDao.findAll(10, 2)).thenReturn(tags);
-        Pagination pagination = new Pagination(limit, offset);
-        List<TagDto> tagsDto = new ArrayList<>();
-
-        List<TagDto> actual = tagService.findAll(pagination);
-
-        verify(tagConverter).convertTo(tags);
-        assertEquals(tagsDto, actual);
-    }
-
-    @Test
     void findAllTestPositive() {
-        Integer limit = 3;
-        Integer offset = 0;
         List<Tag> tags = new ArrayList<>();
         tags.add(new Tag(1L, "gift"));
         tags.add(new Tag(2L, "sport"));
         tags.add(new Tag(3L, "jumping"));
-        Mockito.when(tagDao.findAll(limit, offset)).thenReturn(tags);
-        Pagination pagination = new Pagination(limit, offset);
+        Page<Tag> tagPage = new PageImpl<>(tags);
+        Pageable pageable = PageRequest.of(3, 10);
+        Mockito.when(tagRepository.findAll(pageable)).thenReturn(tagPage);
+        Pagination pagination = new Pagination(3, 10);
         List<TagDto> tagsDto = new ArrayList<>();
         tagsDto.add(new TagDto(1L, "gift"));
         tagsDto.add(new TagDto(2L, "sport"));
@@ -74,10 +64,19 @@ public class TagServiceTest {
     }
 
     @Test
+    void findAllTestNegative() {
+        Page<Tag> tagPage = new PageImpl<>(new ArrayList<>());
+        Mockito.when(tagRepository.findAll(any(Pageable.class))).thenReturn(tagPage);
+        Pagination pagination = new Pagination(10, 2);
+
+        assertThrows(ResourceNotFoundException.class, () -> tagService.findAll(pagination));
+    }
+
+    @Test
     void findByIdTestPositive() {
         Long id = 2L;
         Optional<Tag> tag = Optional.of(new Tag(2L, "sport"));
-        Mockito.when(tagDao.findById(id)).thenReturn(tag);
+        Mockito.when(tagRepository.findById(id)).thenReturn(tag);
         TagDto expected = new TagDto(2L, "sport");
 
         TagDto actual = tagService.findById(id);
@@ -88,7 +87,7 @@ public class TagServiceTest {
     @Test
     void findByIdTestNegative() {
         Long id = 25L;
-        Mockito.when(tagDao.findById(id)).thenReturn(Optional.empty());
+        Mockito.when(tagRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> tagService.findById(id));
     }
@@ -106,7 +105,7 @@ public class TagServiceTest {
         List<Tag> tags = new ArrayList<>();
         tags.add(new Tag(1L, "gift"));
         tags.add(new Tag(8L, "jumping"));
-        Mockito.when(tagDao.findTagByNameInRange(tagNames)).thenReturn(tags);
+        Mockito.when(tagRepository.findByNameIn(tagNames)).thenReturn(tags);
 
         List<TagDto> actual = tagService.findByRangeNames(tagsDto);
 
@@ -125,7 +124,7 @@ public class TagServiceTest {
         tagNames.add("gift");
         tagNames.add("sport");
         List<Tag> tags = new ArrayList<>();
-        Mockito.when(tagDao.findTagByNameInRange(tagNames)).thenReturn(tags);
+        Mockito.when(tagRepository.findByNameIn(tagNames)).thenReturn(tags);
 
         List<TagDto> actual = tagService.findByRangeNames(tagsDto);
 
@@ -134,14 +133,15 @@ public class TagServiceTest {
     }
 
     @Test
-    void  findTopTagTest() {
+    void findTopTagTest() {
         List<Tag> tags = new ArrayList<>();
         tags.add(new Tag(1L, "gift"));
         tags.add(new Tag(8L, "jumping"));
-        Integer limit = 3;
-        Integer offset = 0;
-        Pagination pagination = new Pagination(limit, offset);
-        Mockito.when(tagDao.findTopTag(limit,offset)).thenReturn(tags);
+        int page = 3;
+        int perPage = 2;
+        Pagination pagination = new Pagination(page, perPage);
+        Pageable pageable = PageRequest.of(page, perPage);
+        Mockito.when(tagRepository.findTopTag(pageable)).thenReturn(tags);
 
         List<TagDto> actual = tagService.findTopTag(pagination);
 
@@ -154,9 +154,9 @@ public class TagServiceTest {
     @Test
     void addTestPositive() {
         Tag tag = new Tag(null, "jumping");
-        Mockito.when(tagDao.findTagByName(tag.getName())).thenReturn(Optional.empty());
+        Mockito.when(tagRepository.findByName(tag.getName())).thenReturn(Optional.empty());
         Tag tagWithId = new Tag(3L, "jumping");
-        Mockito.when(tagDao.add(tag)).thenReturn(tagWithId);
+        Mockito.when(tagRepository.save(tag)).thenReturn(tagWithId);
         TagDto tagDto = new TagDto(null, "jumping");
 
         TagDto actual = tagService.add(tagDto);
@@ -167,7 +167,7 @@ public class TagServiceTest {
 
     @Test
     void addTestNegative() {
-        Mockito.when(tagDao.findTagByName(anyString())).thenReturn(Optional.of(new Tag()));
+        Mockito.when(tagRepository.findByName(anyString())).thenReturn(Optional.of(new Tag()));
         TagDto tagDto = new TagDto();
         tagDto.setName("Skating");
 

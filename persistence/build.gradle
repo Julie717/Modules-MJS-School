@@ -1,10 +1,19 @@
-dependencies {
-    implementation("com.h2database:h2:${dbh2Version}")
-    implementation("mysql:mysql-connector-java:${jdbcVersion}")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-jdbc")
-    testImplementation("org.springframework.boot:spring-boot-starter-jdbc")
+plugins {
+    id "com.ewerk.gradle.plugins.querydsl"
 }
+
+dependencies {
+    compile("com.h2database:h2:${dbh2Version}")
+    compile("mysql:mysql-connector-java:${jdbcVersion}")
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile("org.springframework.boot:spring-boot-starter-jdbc")
+    compile("com.querydsl:querydsl-jpa")
+
+    annotationProcessor("com.querydsl:querydsl-apt")
+
+    testCompile("org.springframework.boot:spring-boot-starter-jdbc")
+}
+
 bootJar {
     enabled = false
 }
@@ -15,4 +24,27 @@ jar {
 
 bootRun {
     enabled = false
+}
+
+def querydslDir = "$buildDir/generated-source"
+
+sourceSets {
+    main {
+        java {
+            srcDir querydslDir
+        }
+    }
+}
+
+querydsl {
+    jpa = true
+    querydslSourcesDir =  querydslDir
+}
+
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+    compile.exclude module: 'spring-boot-starter-logging'
 }

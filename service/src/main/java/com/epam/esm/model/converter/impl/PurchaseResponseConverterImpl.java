@@ -1,5 +1,6 @@
 package com.epam.esm.model.converter.impl;
 
+import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Purchase;
 import com.epam.esm.model.PurchaseResponseDto;
 import com.epam.esm.model.converter.CommonConverter;
@@ -16,7 +17,7 @@ public class PurchaseResponseConverterImpl implements CommonConverter<Purchase, 
         PurchaseResponseDto purchase = null;
         if (entity != null) {
             Long idUser = entity.getUser().getId();
-            List<Long> idGiftCertificates = entity.getGiftCertificates().stream().map(g -> g.getId())
+            List<Long> idGiftCertificates = entity.getGiftCertificates().stream().map(GiftCertificate::getId)
                     .collect(Collectors.toList());
             purchase = new PurchaseResponseDto(entity.getId(), entity.getCost(), entity.getPurchaseDate(), idUser,
                     idGiftCertificates);

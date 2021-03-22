@@ -13,16 +13,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class PaginationParserTest {
     public static Stream<Arguments> data() {
         Map<String, String> parameters1 = new HashMap<>();
-        parameters1.put("limit", "5");
-        parameters1.put("offset", "4");
+        parameters1.put("page", "5");
+        parameters1.put("perPage", "10");
         Map<String, String> parameters2 = new HashMap<>();
-        parameters2.put("limit", "3");
+        parameters2.put("perPage", "3");
         Map<String, String> parameters3 = new HashMap<>();
-        parameters3.put("limit", "14");
-        parameters3.put("offset", "10");
+        parameters3.put("page", "14");
+        parameters3.put("perPage", "10");
         return Stream.of(
-                Arguments.of(parameters1, new Pagination(5, 4)),
-                Arguments.of(parameters2, new Pagination(3, 0)),
+                Arguments.of(parameters1, new Pagination(5, 10)),
+                Arguments.of(parameters2, new Pagination(0, 3)),
                 Arguments.of(parameters3, new Pagination(14, 10))
         );
     }

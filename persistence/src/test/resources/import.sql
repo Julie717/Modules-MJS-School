@@ -30,10 +30,10 @@ INSERT INTO gift_certificate_tag (id_gift_certificate, id_tag) VALUES
 (4, 6),
 (4, 7);
 
-INSERT INTO user (id_user, surname, name) VALUES
-(1, 'Ivanov', 'Ivan'),
-(2, 'Petrov', 'Mihail'),
-(3, 'Sokolov', 'Sergey');
+INSERT INTO user (id_user, login, password, surname, name, role) VALUES
+(1, 'ivanov_i','$2a$10$dndFSHtItCy/DKyWWT7yceBjmgVfv5IL8yx6T4p/VHgfXPD2bWiAS', 'Ivanov', 'Ivan','ROLE_ADMIN'),
+(2, 'petrov_m','$2a$10$lf3DJ80QSjtTxTA.HR2JnOzq1G4ojTU.ASbD1dxnVg3IQMDR69QV.','Petrov', 'Mihail','ROLE_USER'),
+(3, 'sokolov_s','$2a$10$b6x3LgE82QRWpZlS1XioLOD1rEFqxAl4XMO0F4QLrldBCFS4AgHye','Sokolov', 'Sergey','ROLE_USER');
 
 INSERT INTO purchase (id_purchase, purchase_date,id_user,cost) VALUES
 (1, '2021-01-10 10:29:18',1,110),

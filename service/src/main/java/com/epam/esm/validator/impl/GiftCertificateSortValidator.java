@@ -2,6 +2,7 @@ package com.epam.esm.validator.impl;
 
 import com.epam.esm.querybuilder.GiftCertificateSortParameterName;
 import com.epam.esm.validator.CommonValidator;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Arrays;
 
@@ -12,10 +13,13 @@ public class GiftCertificateSortValidator implements CommonValidator {
     @Override
     public boolean isValid(String value) {
         boolean isValid = false;
-        if (value != null && !value.isEmpty()) {
+        if (!ObjectUtils.isEmpty(value)) {
             String[] sortParameters = value.split(COMMA);
-            sortParameters = Arrays.stream(sortParameters).map(p -> findSortParameterName(p)).toArray(String[]::new);
-            isValid = Arrays.stream(sortParameters).allMatch(p -> isOneParameterValid(p));
+            sortParameters = Arrays.stream(sortParameters)
+                    .map(GiftCertificateSortValidator::findSortParameterName)
+                    .toArray(String[]::new);
+            isValid = Arrays.stream(sortParameters)
+                    .allMatch(p -> isOneParameterValid(p));
         }
         return isValid;
     }
