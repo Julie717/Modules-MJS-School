@@ -50,7 +50,7 @@ allprojects {
     jacocoTestReport {
         reports {
             csv.enabled false
-            html.destination file("${buildDir}/jacocoTestReport/")
+            html.enabled false
             xml.destination file("${buildDir}/jacocoTest/")
         }
         dependsOn test
