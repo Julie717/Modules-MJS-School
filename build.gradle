@@ -51,6 +51,7 @@ allprojects {
         reports {
             csv.enabled false
             html.enabled false
+            xml.enabled true
             xml.destination file("${buildDir}/jacocoTest/")
         }
         dependsOn test
