@@ -2,6 +2,8 @@ plugins {
     id "org.springframework.boot" version "${springBootVersion}"
     id "io.spring.dependency-management" version "${dependencyManagementVersion}"
     id "com.ewerk.gradle.plugins.querydsl" version "${querydslVersion}" apply false
+    id "org.sonarqube" version "3.1.1"
+    id "jacoco"
 }
 
 group = 'com.epam.esm'
@@ -11,6 +13,7 @@ allprojects {
     apply plugin: 'java'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'jacoco'
 
     java {
         sourceCompatibility = JavaVersion.valueOf(String.valueOf(versionJava))
@@ -42,6 +45,18 @@ allprojects {
     }
     test {
         useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+    jacocoTestReport {
+        reports {
+            csv.enabled false
+            html.destination file("${buildDir}/jacocoTestReport/")
+            xml.destination file("${buildDir}/jacocoTest/")
+        }
+        dependsOn test
+    }
+    jacoco {
+        toolVersion = "0.8.6"
     }
     configurations {
         compile.exclude module: 'spring-boot-starter-logging'
