@@ -52,7 +52,7 @@ allprojects {
             csv.enabled false
             html.enabled false
             xml.enabled true
-            xml.destination file("${buildDir}/jacocoTest/")
+            xml.destination file("${buildDir}/jacocoTest/coverage.xml")
         }
         dependsOn test
     }
