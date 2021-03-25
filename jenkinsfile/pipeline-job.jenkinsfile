@@ -9,7 +9,7 @@ pipeline {
                     cpsScm {
                         scm {
                             git {
-                                url('https://github.com/Julie717/Modules-MJS-School.git')
+                                url 'https://github.com/Julie717/Modules-MJS-School.git'
                                 branches('module6')
                             }
                         }
