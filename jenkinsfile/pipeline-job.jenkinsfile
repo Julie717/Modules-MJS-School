@@ -30,7 +30,7 @@ pipeline {
             }
             steps {
                 deploy adapters: [tomcat9(url: 'http://localhost:8080/',
-                        credentialsId: 'tomcat')],
+                        credentialsId: '70b23eb6-20b0-412e-9c5b-e9ddd03f018e')],
                         war: '**/web/build/libs/web.war',
                         contextPath: '/'
             }
