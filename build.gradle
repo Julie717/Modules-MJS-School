@@ -63,11 +63,11 @@ allprojects {
     configurations {
         compile.exclude module: 'spring-boot-starter-logging'
     }
+    bootJar {
+        enabled = false
+    }
 }
 
-bootJar {
-    enabled = false
-}
 bootWar {
     enabled = false
 }

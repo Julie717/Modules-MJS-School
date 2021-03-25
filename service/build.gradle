@@ -5,10 +5,6 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-jdbc")
 }
 
-bootJar {
-    enabled = false
-}
-
 jar {
     enabled = true
 }

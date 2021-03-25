@@ -2,10 +2,6 @@ dependencies {
     compile project(":service")
 }
 
-bootJar {
-    mainClass = 'com.epam.esm.GiftCertificatesApplication'
-}
-
 bootWar {
     mainClass = 'com.epam.esm.GiftCertificatesApplication'
 }
