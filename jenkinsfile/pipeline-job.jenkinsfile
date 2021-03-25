@@ -18,31 +18,31 @@ pipeline {
                     }
                 }
             }
-            stage('gradle build') {
-                script {
-                    sh 'build'
+        }
+        stage('gradle build') {
+            script {
+                sh 'build'
+            }
+        }
+        stage('sonarqube') {
+            environment {
+                scannerHome = tool 'SonarScanner'
+            }
+            steps {
+                withSonarQubeEnv('sonarqube') {
+                    sh "${scannerHome}/bin/sonar-scanner"
                 }
             }
-            stage('sonarqube') {
-                environment {
-                    scannerHome = tool 'SonarScanner'
-                }
-                steps {
-                    withSonarQubeEnv('sonarqube') {
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
+        }
+        stage('deploy') {
+            environment {
+                scannerHome = tool 'SonarScanner'
             }
-            stage('deploy') {
-                environment {
-                    scannerHome = tool 'SonarScanner'
-                }
-                steps {
-                    deploy adapters: [tomcat9(url: 'http://localhost:8080/',
-                            credentialsId: 'tomcat')],
-                            war: '**/web/build/libs/web.war',
-                            contextPath: '/'
-                }
+            steps {
+                deploy adapters: [tomcat9(url: 'http://localhost:8080/',
+                        credentialsId: 'tomcat')],
+                        war: '**/web/build/libs/web.war',
+                        contextPath: '/'
             }
         }
     }
