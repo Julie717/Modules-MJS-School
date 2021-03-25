@@ -5,16 +5,7 @@ pipeline {
     stages {
         stage('git download') {
             steps {
-                definition {
-                    cpsScm {
-                        scm {
-                            git {
-                                url 'https://github.com/Julie717/Modules-MJS-School.git'
-                                branches('module6')
-                            }
-                        }
-                    }
-                }
+                git branch: 'module6', url: 'https://github.com/Julie717/Modules-MJS-School.git'
             }
         }
         stage('gradle build') {
