@@ -1,0 +1,51 @@
+pipeline {
+    agent {
+        label 'slave'
+    }
+    stages {
+        stage('git download') {
+            steps {
+                definition {
+                    cpsScm {
+                        scm {
+                            git {
+                                remote {
+                                    url('https://github.com/Julie717/Modules-MJS-School.git')
+                                }
+                                branches('module6')
+                            }
+                        }
+                    }
+                }
+            }
+            stage('gradle build') {
+                script {
+                    sh 'build'
+                }
+            }
+            stage('sonarqube') {
+                environment {
+                    scannerHome = tool 'SonarScanner'
+                }
+                steps {
+                    withSonarQubeEnv('sonarqube') {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
+            stage('deploy') {
+                environment {
+                    scannerHome = tool 'SonarScanner'
+                }
+                steps {
+                    deploy adapters: [tomcat9(url: 'http://localhost:8080/',
+                            credentialsId: 'tomcat')],
+                            war: '**/web/build/libs/web.war',
+                            contextPath: '/'
+                }
+            }
+        }
+    }
+}
+}
+}
