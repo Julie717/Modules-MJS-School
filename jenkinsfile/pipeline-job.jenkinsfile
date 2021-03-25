@@ -18,8 +18,10 @@ pipeline {
             }
         }
         stage('gradle build') {
-            script {
-                sh 'build'
+            steps {
+                script {
+                    sh 'build'
+                }
             }
         }
         stage('sonarqube') {
