@@ -69,7 +69,7 @@ bootJar {
     enabled = false
 }
 bootWar {
-    enabled = true
+    enabled = false
 }
 
 bootRun {

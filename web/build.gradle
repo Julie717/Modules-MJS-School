@@ -5,3 +5,7 @@ dependencies {
 bootJar {
     mainClass = 'com.epam.esm.GiftCertificatesApplication'
 }
+
+bootWar {
+    mainClass = 'com.epam.esm.GiftCertificatesApplication'
+}
