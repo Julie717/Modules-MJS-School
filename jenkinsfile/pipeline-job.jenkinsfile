@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('git download') {
             steps {
@@ -10,7 +10,7 @@ pipeline {
         stage('gradle build') {
             steps {
                 script {
-                    sh 'build'
+                    bat 'build'
                 }
             }
         }
@@ -20,7 +20,7 @@ pipeline {
             }
             steps {
                 withSonarQubeEnv('sonarqube') {
-                    sh "${scannerHome}/bin/sonar-scanner"
+                    bat "${scannerHome}/bin/sonar-scanner"
                 }
             }
         }
