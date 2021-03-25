@@ -13,6 +13,10 @@ jar {
     enabled = true
 }
 
+bootWar{
+    enabled = false
+}
+
 bootRun {
     enabled = false
 }
