@@ -25,9 +25,6 @@ pipeline {
             }
         }
         stage('deploy') {
-            environment {
-                scannerHome = tool 'SonarScanner'
-            }
             steps {
                 deploy adapters: [tomcat9(url: 'http://localhost:8080/',
                         credentialsId: '70b23eb6-20b0-412e-9c5b-e9ddd03f018e')],
